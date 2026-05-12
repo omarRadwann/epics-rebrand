@@ -1,10 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Nav } from "../_components/Nav";
 import { Footer } from "../_components/Footer";
-import { ProductIllustration } from "../_components/ProductIllustration";
 import { products } from "@/lib/catalog";
 
-const featured = products.find((p) => p.slug === "european-baking-mix")!;
+const featured = products.find((p) => p.slug === "euro")!;
 
 /**
  * Arabic-RTL homepage mirror. Specimen Pantry territory, Arabic-first typography.
@@ -13,7 +13,7 @@ const featured = products.find((p) => p.slug === "european-baking-mix")!;
  * IBM Plex Sans Arabic / Tajawal (Bukra substitute) — never default Noto.
  */
 export default function ArHome() {
-  const popular = ["flat-bread-pizza-mix", "brownies-mix", "soft-flour", "basbousa-mix", "cocoa-powder"]
+  const popular = ["flat", "brownies", "soft", "basbousa", "cocoa-powder", "multi-grain"]
     .map((s) => products.find((p) => p.slug === s)!)
     .filter(Boolean);
 
@@ -63,13 +63,19 @@ export default function ArHome() {
               </header>
 
               <div className="absolute inset-0 flex items-center justify-center px-12 py-20 pointer-events-none" dir="ltr">
-                <div className="w-[65%] h-[75%]">
-                  <ProductIllustration product={featured} variant="hero" />
-                </div>
+                <Image
+                  src={featured.imageUrl}
+                  alt={`${featured.name} package`}
+                  width={600}
+                  height={750}
+                  unoptimized
+                  priority
+                  className="object-contain max-w-[78%] max-h-[78%] mix-blend-multiply"
+                />
               </div>
 
               <footer className="flex items-baseline justify-between relative z-10">
-                <span className="specimen-spec [direction:ltr]">{featured.priceEgp} EGP</span>
+                <span className="specimen-spec [direction:ltr]">{featured.priceEgp ?? "—"} EGP</span>
                 <Link href={`/products/${featured.slug}`} className="specimen-spec underline underline-offset-4 decoration-[0.5px]">
                   ← العيّنة
                 </Link>
@@ -200,20 +206,30 @@ function ArSpecimenCard({ product }: { product: (typeof products)[number] }) {
   const isCrystal = product.subBrand === "crystal";
   return (
     <Link href={`/products/${product.slug}`} className="block group no-underline">
-      <div className={`aspect-[3/4] flex flex-col justify-between p-5 ${isCrystal ? "bg-[rgb(var(--pomegranate)/0.08)]" : "bg-[rgb(var(--linen-mid)/0.45)]"}`}>
-        <header className="flex items-start justify-between">
-          <p className="specimen-lot [direction:ltr] text-right">{product.loafNumber.toUpperCase()}</p>
+      <div className={`aspect-[3/4] flex flex-col justify-between p-5 relative overflow-hidden ${isCrystal ? "bg-[rgb(var(--pomegranate)/0.08)]" : "bg-[rgb(var(--linen-mid)/0.45)]"}`}>
+        <div className="absolute inset-0 flex items-center justify-center px-6 py-12 pointer-events-none" dir="ltr">
+          <Image
+            src={product.imageUrl}
+            alt={product.name}
+            width={400}
+            height={500}
+            unoptimized
+            className="object-contain max-w-[70%] max-h-[68%] mix-blend-multiply"
+          />
+        </div>
+        <header className="flex items-start justify-between relative z-10">
+          <div className="flex flex-col gap-0.5">
+            <p className="specimen-lot [direction:ltr] text-right">{product.loafNumber.toUpperCase()}</p>
+            {isCrystal && <p className="specimen-lot text-[rgb(var(--pomegranate))] [direction:ltr] text-right">CRYSTAL · BY EPICS</p>}
+          </div>
           <div className="flex gap-1">
             {product.freeFrom.map((c) => (<span key={c} className="specimen-lot opacity-60 [direction:ltr]">{c}</span>))}
           </div>
         </header>
-        <div className="flex flex-col items-center text-center text-[rgb(var(--ink-black))]">
-          {isCrystal ? <div className="specimen-spec mb-2 text-[rgb(var(--pomegranate))]">CRYSTAL BY EPICS</div> : <div className="specimen-spec mb-2 opacity-50">EPICS</div>}
-          <h3 className="font-arabic font-bold text-[22px] leading-[1.4]">{product.arabicName}</h3>
-          <div className="specimen-lot mt-3 opacity-60 [direction:ltr]">{product.weight.toUpperCase()} · LOT {product.lot}</div>
-        </div>
-        <footer className="flex items-baseline justify-between text-[rgb(var(--ink-black))]">
-          <span className="specimen-spec [direction:ltr]">{product.priceEgp} EGP</span>
+        <footer className="flex items-baseline justify-between text-[rgb(var(--ink-black))] relative z-10">
+          <span className="specimen-spec [direction:ltr]">
+            {product.priceEgp != null ? `${product.priceEgp} EGP` : "WHOLESALE"}
+          </span>
           <span className="specimen-spec group-hover:underline underline-offset-4 decoration-[0.5px]">← العيّنة</span>
         </footer>
       </div>

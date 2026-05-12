@@ -1,11 +1,11 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Nav } from "../../_components/Nav";
 import { Footer } from "../../_components/Footer";
 import { ProductCard } from "../../_components/ProductCard";
 import { Strikethrough } from "../../_components/Strikethrough";
 import { SpecimenHeader } from "../../_components/SpecimenHeader";
-import { ProductIllustration } from "../../_components/ProductIllustration";
 import { AddToCartButton } from "../../_components/AddToCartButton";
 import { products, productBySlug, productsByCategory } from "@/lib/catalog";
 
@@ -73,10 +73,16 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   {p.freeFrom.includes("S-03") && <Strikethrough variant="protein" size={40} />}
                 </div>
               </div>
-              <div className="absolute inset-0 flex items-center justify-center px-16 py-20 pointer-events-none">
-                <div className="w-[70%] h-[78%]">
-                  <ProductIllustration product={p} variant="hero" />
-                </div>
+              <div className="absolute inset-0 flex items-center justify-center px-12 py-20 pointer-events-none">
+                <Image
+                  src={p.imageUrl}
+                  alt={`${p.name} package`}
+                  width={800}
+                  height={1000}
+                  unoptimized
+                  priority
+                  className="object-contain max-w-[78%] max-h-[80%] mix-blend-multiply"
+                />
               </div>
               <p className="specimen-lot opacity-60 relative z-10">ISO {p.iso}:2018 · BUREAU VERITAS</p>
             </div>
@@ -100,16 +106,33 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
             <div className="mt-10 flex items-end gap-6 border-t border-[rgb(var(--ink-black)/0.6)] border-t-[0.5px] pt-6">
               <div>
-                <p className="specimen-lot opacity-60">PRICE</p>
-                <p className="font-serif-display text-[40px] leading-none tracking-[-0.01em]">
-                  {p.priceEgp} <span className="specimen-spec ml-1 opacity-70">EGP</span>
-                </p>
+                <p className="specimen-lot opacity-60">{p.isWholesale ? "WHOLESALE" : "PRICE"}</p>
+                {p.priceEgp != null ? (
+                  <p className="font-serif-display text-[40px] leading-none tracking-[-0.01em]">
+                    {p.priceEgp} <span className="specimen-spec ml-1 opacity-70">EGP</span>
+                  </p>
+                ) : (
+                  <p className="font-serif-display text-[28px] leading-tight tracking-[-0.01em]">
+                    Contact sales
+                  </p>
+                )}
               </div>
-              <AddToCartButton slug={p.slug} />
+              {p.isWholesale ? (
+                <a
+                  href="mailto:sales@epics-group.com?subject=Wholesale enquiry — Epics"
+                  className="ml-auto bg-[rgb(var(--ink-black))] text-[rgb(var(--cream-paper))] px-8 py-4 specimen-spec hover:bg-[rgb(var(--saffron))] hover:text-[rgb(var(--ink-black))] transition-colors no-underline"
+                >
+                  EMAIL SALES →
+                </a>
+              ) : (
+                <AddToCartButton slug={p.slug} />
+              )}
             </div>
 
             <p className="specimen-lot mt-6 opacity-60">
-              Ships within 24 hours of order, anywhere in Egypt. Cash on delivery available.
+              {p.isWholesale
+                ? "20kg sacks for bakeries, hotel kitchens, and specialist pâtisserie. Delivery to Cairo, Alexandria, Hurghada on request."
+                : "Ships within 24 hours of order, anywhere in Egypt. Cash on delivery available."}
             </p>
           </div>
         </div>

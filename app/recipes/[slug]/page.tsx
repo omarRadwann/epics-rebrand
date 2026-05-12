@@ -95,8 +95,7 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
 export default function RecipePage({ params }: { params: { slug: string } }) {
   const r = recipes.find((x) => x.slug === params.slug);
   if (!r) return notFound();
-  const d = detail[params.slug];
-  if (!d) return notFound();
+  const d = detail[params.slug]; // may be undefined — render gracefully without
   const product = productBySlug(r.productSlug)!;
   const isPku = product.category === "pku";
 
@@ -109,7 +108,7 @@ export default function RecipePage({ params }: { params: { slug: string } }) {
         <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 pt-12 pb-20 grid grid-cols-12 gap-x-8 gap-y-10">
           <div className="col-span-12 md:col-span-3 flex flex-col gap-3">
             <p className="specimen-lot opacity-60">{r.code} · METHOD</p>
-            <p className="specimen-spec opacity-60">{d.date}</p>
+            {d && <p className="specimen-spec opacity-60">{d.date}</p>}
           </div>
           <div className="col-span-12 md:col-span-9">
             <h1 className="font-serif-display text-[80px] sm:text-[112px] leading-[0.95] tracking-[-0.03em]">
@@ -136,75 +135,98 @@ export default function RecipePage({ params }: { params: { slug: string } }) {
         </div>
       </section>
 
-      {/* Why — pull quote */}
-      <section className={`${isPku ? "bg-[rgb(var(--pomegranate)/0.08)]" : "bg-[rgb(var(--linen-mid)/0.35)]"} border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]`}>
-        <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-20">
-          <p className="specimen-lot opacity-60 mb-4">W-01 · WHY</p>
-          <blockquote className="font-serif-display italic text-[36px] sm:text-[44px] leading-[1.2] tracking-[-0.01em] max-w-[1000px]">
-            {d.why}
-          </blockquote>
-          <p className="specimen-lot mt-6 opacity-60">{d.byline}</p>
-        </div>
-      </section>
-
-      {/* Ingredients + Method */}
-      <section className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]">
-        <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-20 grid grid-cols-12 gap-x-12 gap-y-12">
-          {/* Ingredients column */}
-          <div className="col-span-12 lg:col-span-4 lg:sticky lg:top-8 self-start">
-            <p className="specimen-lot opacity-60 mb-2">I · INGREDIENTS</p>
-            <h2 className="font-serif-display text-[40px] leading-[1.05] tracking-[-0.015em]">
-              What you need.
-            </h2>
-            <ol className="mt-8 list-none p-0 space-y-0 border-t border-[rgb(var(--ink-black)/0.6)] border-t-[0.5px]">
-              {d.ingredients.map((ing, i) => (
-                <li
-                  key={i}
-                  className="grid grid-cols-[auto_1fr] gap-x-4 items-baseline py-4 border-b border-[rgb(var(--ink-black)/0.15)] border-b-[0.5px]"
-                >
-                  <span className="specimen-spec font-medium">{ing.qty}</span>
-                  <div>
-                    <p className="font-sans-text text-[15px]">{ing.item}</p>
-                    {ing.note && (
-                      <p className="specimen-lot opacity-60 mt-1">{ing.note}</p>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ol>
+      {/* Why — pull quote (only when long-form detail exists) */}
+      {d && (
+        <section className={`${isPku ? "bg-[rgb(var(--pomegranate)/0.08)]" : "bg-[rgb(var(--linen-mid)/0.35)]"} border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]`}>
+          <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-20">
+            <p className="specimen-lot opacity-60 mb-4">W-01 · WHY</p>
+            <blockquote className="font-serif-display italic text-[36px] sm:text-[44px] leading-[1.2] tracking-[-0.01em] max-w-[1000px]">
+              {d.why}
+            </blockquote>
+            <p className="specimen-lot mt-6 opacity-60">{d.byline}</p>
           </div>
+        </section>
+      )}
 
-          {/* Method column */}
-          <div className="col-span-12 lg:col-span-7 lg:col-start-6">
-            <p className="specimen-lot opacity-60 mb-2">M · METHOD</p>
-            <h2 className="font-serif-display text-[40px] leading-[1.05] tracking-[-0.015em]">
-              What you do.
-            </h2>
-            <ol className="mt-10 list-none p-0 space-y-12">
-              {d.method.map((step) => (
-                <li key={step.code} className="grid grid-cols-[60px_1fr] gap-x-6">
-                  <span className="font-serif-display text-[48px] leading-none italic text-[rgb(var(--saffron))]">
-                    {step.code}
-                  </span>
-                  <div>
-                    <div className="flex items-baseline justify-between">
-                      <h3 className="font-serif-display text-[24px] leading-[1.1] tracking-[-0.005em]">
-                        {step.title}
-                      </h3>
-                      {step.time && (
-                        <span className="specimen-lot opacity-60">{step.time.toUpperCase()}</span>
-                      )}
+      {/* Ingredients + Method (only when long-form detail exists) */}
+      {d ? (
+        <section className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]">
+          <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-20 grid grid-cols-12 gap-x-12 gap-y-12">
+            <div className="col-span-12 lg:col-span-4 lg:sticky lg:top-8 self-start">
+              <p className="specimen-lot opacity-60 mb-2">I · INGREDIENTS</p>
+              <h2 className="font-serif-display text-[40px] leading-[1.05] tracking-[-0.015em]">What you need.</h2>
+              <ol className="mt-8 list-none p-0 space-y-0 border-t border-[rgb(var(--ink-black)/0.6)] border-t-[0.5px]">
+                {d.ingredients.map((ing, i) => (
+                  <li key={i} className="grid grid-cols-[auto_1fr] gap-x-4 items-baseline py-4 border-b border-[rgb(var(--ink-black)/0.15)] border-b-[0.5px]">
+                    <span className="specimen-spec font-medium">{ing.qty}</span>
+                    <div>
+                      <p className="font-sans-text text-[15px]">{ing.item}</p>
+                      {ing.note && <p className="specimen-lot opacity-60 mt-1">{ing.note}</p>}
                     </div>
-                    <p className="font-sans-text text-[16px] leading-[1.6] mt-3 text-[rgb(var(--charcoal-sub))]">
-                      {step.body}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
+                  </li>
+                ))}
+              </ol>
+            </div>
+            <div className="col-span-12 lg:col-span-7 lg:col-start-6">
+              <p className="specimen-lot opacity-60 mb-2">M · METHOD</p>
+              <h2 className="font-serif-display text-[40px] leading-[1.05] tracking-[-0.015em]">What you do.</h2>
+              <ol className="mt-10 list-none p-0 space-y-12">
+                {d.method.map((step) => (
+                  <li key={step.code} className="grid grid-cols-[60px_1fr] gap-x-6">
+                    <span className="font-serif-display text-[48px] leading-none italic text-[rgb(var(--saffron))]">{step.code}</span>
+                    <div>
+                      <div className="flex items-baseline justify-between">
+                        <h3 className="font-serif-display text-[24px] leading-[1.1] tracking-[-0.005em]">{step.title}</h3>
+                        {step.time && <span className="specimen-lot opacity-60">{step.time.toUpperCase()}</span>}
+                      </div>
+                      <p className="font-sans-text text-[16px] leading-[1.6] mt-3 text-[rgb(var(--charcoal-sub))]">{step.body}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : (
+        /* Cross-link card for recipes whose full method is on the Epics archive */
+        <section className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]">
+          <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-20 grid grid-cols-12 gap-x-12 gap-y-12">
+            <div className="col-span-12 md:col-span-5">
+              <p className="specimen-lot opacity-60 mb-2">B-01 · BUILT ON</p>
+              <h2 className="font-serif-display text-[40px] leading-[1.05] tracking-[-0.015em]">
+                Built on {product.name}.
+              </h2>
+              <p className="font-sans-text text-[16px] leading-[1.6] mt-6 max-w-[460px] text-[rgb(var(--charcoal-sub))]">
+                {product.description}
+              </p>
+              <Link
+                href={`/products/${product.slug}`}
+                className="inline-block mt-8 specimen-spec underline underline-offset-[6px] decoration-[0.5px]"
+              >
+                {product.loafNumber.toUpperCase()} · {product.weight.toUpperCase()} · {product.priceEgp ?? "—"} EGP →
+              </Link>
+            </div>
+            <div className="col-span-12 md:col-span-7 bg-[rgb(var(--linen-mid)/0.35)] p-8">
+              <p className="specimen-lot opacity-60">M · METHOD</p>
+              <h3 className="font-serif-display text-[26px] leading-[1.2] tracking-[-0.005em] mt-3">
+                The full method is in our printed method book and on the legacy archive.
+              </h3>
+              <p className="font-sans-text text-[15px] leading-[1.6] mt-4 text-[rgb(var(--charcoal-sub))]">
+                We&rsquo;re moving every recipe over to this site as part of the rebrand — until then, the original
+                step-by-step lives on the legacy site.
+              </p>
+              <a
+                href={`https://epics-group.com/recipes/${params.slug}/`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-6 specimen-spec underline underline-offset-[6px] decoration-[0.5px]"
+              >
+                READ ON THE LEGACY ARCHIVE →
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Footnote */}
       <section>

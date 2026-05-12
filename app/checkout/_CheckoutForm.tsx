@@ -17,8 +17,10 @@ export function CheckoutForm() {
 
   const resolved = lines
     .map((l) => ({ product: productBySlug(l.slug), qty: l.qty }))
-    .filter((l): l is { product: NonNullable<ReturnType<typeof productBySlug>>; qty: number } => Boolean(l.product));
-  const subtotal = resolved.reduce((s, l) => s + l.product.priceEgp * l.qty, 0);
+    .filter((l): l is { product: NonNullable<ReturnType<typeof productBySlug>>; qty: number } =>
+      Boolean(l.product) && l.product!.priceEgp != null
+    );
+  const subtotal = resolved.reduce((s, l) => s + (l.product.priceEgp ?? 0) * l.qty, 0);
   const total = subtotal + DELIVERY_EGP;
 
   if (!hydrated) {
@@ -142,7 +144,7 @@ export function CheckoutForm() {
                     <p className="font-sans-text text-[14px] truncate">{l.product.name}</p>
                     <p className="specimen-lot opacity-60">{l.product.weight.toUpperCase()} · ×{l.qty}</p>
                   </div>
-                  <span className="specimen-spec tabular-nums">{l.product.priceEgp * l.qty} EGP</span>
+                  <span className="specimen-spec tabular-nums">{(l.product.priceEgp ?? 0) * l.qty} EGP</span>
                 </li>
               ))}
             </ol>

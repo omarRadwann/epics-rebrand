@@ -19,9 +19,9 @@ const Ctx = createContext<CartCtx | null>(null);
 const STORAGE_KEY = "epics.cart.v1";
 
 const seed: CartLine[] = [
-  { slug: "european-baking-mix", qty: 2 },
-  { slug: "brownies-mix", qty: 1 },
-  { slug: "crystal-low-protein-flat-bread", qty: 1 },
+  { slug: "euro", qty: 2 },
+  { slug: "brownies", qty: 1 },
+  { slug: "pku-baking-mix", qty: 1 },
 ];
 
 export function CartProvider({ children }: { children: React.ReactNode }) {

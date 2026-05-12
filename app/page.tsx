@@ -1,15 +1,16 @@
 import Link from "next/link";
 import { Nav } from "./_components/Nav";
 import { Footer } from "./_components/Footer";
+import Image from "next/image";
 import { Strikethrough } from "./_components/Strikethrough";
-import { ProductIllustration } from "./_components/ProductIllustration";
+import { ProductCard } from "./_components/ProductCard";
 import { products, recipes } from "@/lib/catalog";
 
-const featuredProduct = products.find((p) => p.slug === "european-baking-mix")!;
+const featuredProduct = products.find((p) => p.slug === "euro")!;
 const featuredRecipe = recipes.find((r) => r.slug === "european-loaf")!;
 
 export default function Home() {
-  const popular = ["flat-bread-pizza-mix", "brownies-mix", "soft-flour", "basbousa-mix", "cocoa-powder"]
+  const popular = ["flat", "brownies", "soft", "basbousa", "cocoa-powder", "multi-grain"]
     .map((s) => products.find((p) => p.slug === s)!)
     .filter(Boolean);
 
@@ -78,15 +79,21 @@ export default function Home() {
                 <Strikethrough variant="wheat" size={48} />
               </header>
 
-              {/* Hairline-art product package illustration */}
+              {/* Real product photo — Epics catalogue */}
               <div className="absolute inset-0 flex items-center justify-center px-12 py-20 pointer-events-none">
-                <div className="w-[65%] h-[75%]">
-                  <ProductIllustration product={featuredProduct} variant="hero" />
-                </div>
+                <Image
+                  src={featuredProduct.imageUrl}
+                  alt={`${featuredProduct.name} package`}
+                  width={600}
+                  height={750}
+                  unoptimized
+                  priority
+                  className="object-contain max-w-[78%] max-h-[78%] mix-blend-multiply"
+                />
               </div>
 
               <footer className="flex items-baseline justify-between relative z-10">
-                <span className="specimen-spec">{featuredProduct.priceEgp} EGP</span>
+                <span className="specimen-spec">{featuredProduct.priceEgp ?? "—"} EGP</span>
                 <Link href={`/products/${featuredProduct.slug}`} className="specimen-spec underline underline-offset-4 decoration-[0.5px]">
                   SPECIMEN →
                 </Link>
@@ -202,7 +209,7 @@ export default function Home() {
           <ol className="no-scrollbar flex gap-6 overflow-x-auto pr-6 sm:pr-12 lg:pr-24 pb-2 list-none p-0">
             {popular.map((p) => (
               <li key={p.slug} className="shrink-0 w-[260px]">
-                <SpecimenCard product={p} />
+                <ProductCard product={p} variant="rail" />
               </li>
             ))}
           </ol>
@@ -415,45 +422,6 @@ function CategoryTile({
         >
           BROWSE SHELF →
         </p>
-      </div>
-    </Link>
-  );
-}
-
-function SpecimenCard({ product }: { product: (typeof products)[number] }) {
-  const isCrystal = product.subBrand === "crystal";
-  return (
-    <Link
-      href={`/products/${product.slug}`}
-      className="block group no-underline"
-    >
-      <div
-        className={`aspect-[3/4] flex flex-col justify-between p-5 ${
-          isCrystal ? "bg-[rgb(var(--pomegranate)/0.08)]" : "bg-[rgb(var(--linen-mid)/0.45)]"
-        }`}
-      >
-        <header className="flex items-start justify-between">
-          <p className="specimen-lot">{product.loafNumber.toUpperCase()}</p>
-          <div className="flex gap-1">
-            {product.freeFrom.map((c) => (
-              <span key={c} className="specimen-lot opacity-60">
-                {c}
-              </span>
-            ))}
-          </div>
-        </header>
-
-        <div className="flex flex-col items-center text-center text-[rgb(var(--ink-black))]">
-          {isCrystal && <div className="specimen-spec mb-2 text-[rgb(var(--pomegranate))]">CRYSTAL BY EPICS</div>}
-          {!isCrystal && <div className="specimen-spec mb-2 opacity-50">EPICS</div>}
-          <div className="font-serif-display text-[22px] leading-[24px] tracking-[-0.01em]">{product.name}</div>
-          <div className="specimen-lot mt-3 opacity-60">{product.weight.toUpperCase()} · LOT {product.lot}</div>
-        </div>
-
-        <footer className="flex items-baseline justify-between text-[rgb(var(--ink-black))]">
-          <span className="specimen-spec">{product.priceEgp} EGP</span>
-          <span className="specimen-spec group-hover:underline underline-offset-4 decoration-[0.5px]">SPECIMEN →</span>
-        </footer>
       </div>
     </Link>
   );

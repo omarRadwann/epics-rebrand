@@ -11,9 +11,11 @@ export function CartView() {
 
   const resolved = lines
     .map((l) => ({ product: productBySlug(l.slug), qty: l.qty }))
-    .filter((l): l is { product: NonNullable<ReturnType<typeof productBySlug>>; qty: number } => Boolean(l.product));
+    .filter((l): l is { product: NonNullable<ReturnType<typeof productBySlug>>; qty: number } =>
+      Boolean(l.product) && l.product!.priceEgp != null
+    );
 
-  const subtotal = resolved.reduce((s, l) => s + l.product.priceEgp * l.qty, 0);
+  const subtotal = resolved.reduce((s, l) => s + (l.product.priceEgp ?? 0) * l.qty, 0);
   const total = resolved.length === 0 ? 0 : subtotal + DELIVERY_EGP;
 
   return (
@@ -91,7 +93,7 @@ export function CartView() {
                       </button>
                     </div>
                     <span className="font-serif-display text-[18px] sm:text-[20px] tracking-[-0.005em] text-right hidden sm:inline tabular-nums">
-                      {l.product.priceEgp * l.qty} <span className="specimen-spec ml-1 opacity-60">EGP</span>
+                      {(l.product.priceEgp ?? 0) * l.qty} <span className="specimen-spec ml-1 opacity-60">EGP</span>
                     </span>
                     <button
                       onClick={() => removeItem(l.product.slug)}
