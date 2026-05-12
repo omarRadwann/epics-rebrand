@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  =========================================================================
+  EPICS GROUP · SPECIMEN PANTRY · BASE STYLES
+  =========================================================================
+  Production fonts (licensed, to be self-hosted under /public/fonts/):
+    - Untitled Serif      (Klim Type Foundry)       → Latin display
+    - Söhne               (Klim Type Foundry)       → Latin text
+    - GT America Mono     (Grilli Type)             → Latin mono / specimen
+    - 29LT Bukra          (29LT)                    → Arabic display + text
+
+  Open-source fallbacks (loaded via next/font/google in layout.tsx):
+    - Newsreader        → Untitled Serif fallback
+    - Inter             → Söhne fallback
+    - JetBrains Mono    → GT America Mono fallback
+    - Tajawal           → 29LT Bukra fallback
+*/
+
+@layer base {
+  :root {
+    --cream-paper: 245 239 226;       /* #F5EFE2 */
+    --ink-black: 26 24 23;            /* #1A1817 */
+    --saffron: 212 128 27;            /* #D4801B */
+    --pomegranate: 142 42 42;         /* #8E2A2A */
+    --linen-mid: 220 210 189;         /* #DCD2BD */
+    --charcoal-sub: 74 70 65;         /* #4A4641 */
+  }
+
+  html {
+    background: rgb(var(--cream-paper));
+    color: rgb(var(--ink-black));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "ss01", "ss02";
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-sans), "Söhne", Inter, system-ui, sans-serif;
+    line-height: 1.55;
+    background: rgb(var(--cream-paper));
+  }
+
+  /* Latin display — literary serif. Production uses Untitled Serif. */
+  .font-serif-display {
+    font-family: "Untitled Serif", var(--font-serif), Newsreader, Georgia, serif;
+    font-feature-settings: "lnum", "ss01";
+    letter-spacing: -0.015em;
+  }
+
+  /* Latin text — neutral technical sans. Production uses Söhne. */
+  .font-sans-text {
+    font-family: "Söhne", var(--font-sans), Inter, system-ui, sans-serif;
+    font-feature-settings: "ss01";
+  }
+
+  /* Latin mono — the specimen language. Production uses GT America Mono. */
+  .font-mono-spec {
+    font-family: "GT America Mono", var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
+    font-feature-settings: "ss01", "ss02";
+  }
+
+  /* Arabic — production uses 29LT Bukra. */
+  .font-arabic {
+    font-family: "29LT Bukra", var(--font-arabic), Tajawal, "Noto Naskh Arabic", sans-serif;
+    font-feature-settings: "kern", "calt";
+  }
+
+  /* RTL layout direction inherited from <html dir="rtl"> on /ar pages */
+  [dir="rtl"] {
+    font-family: "29LT Bukra", var(--font-arabic), Tajawal, "Noto Naskh Arabic", sans-serif;
+  }
+}
+
+/*
+  =========================================================================
+  TYPE SCALE — the specimen language
+  =========================================================================
+*/
+
+@layer components {
+  .specimen-lot {
+    font-family: "GT America Mono", var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    line-height: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(var(--charcoal-sub));
+  }
+
+  .specimen-spec {
+    font-family: "GT America Mono", var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    line-height: 17px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgb(var(--ink-black));
+  }
+
+  .hairline {
+    border-color: rgb(var(--ink-black) / 0.6);
+    border-width: 0.5px;
+  }
+
+  .hairline-soft {
+    border-color: rgb(var(--ink-black) / 0.15);
+    border-width: 0.5px;
+  }
+
+  /* The specimen-header treatment used across product cards and PDPs */
+  .specimen-header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 8px 0;
+    border-top: 0.5px solid rgb(var(--ink-black) / 0.6);
+    border-bottom: 0.5px solid rgb(var(--ink-black) / 0.6);
+  }
+}
+
+/*
+  =========================================================================
+  SELECTION
+  =========================================================================
+*/
+::selection {
+  background: rgb(var(--saffron));
+  color: rgb(var(--cream-paper));
+}
+
+/* Hide scrollbars for horizontal rails but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

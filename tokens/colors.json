@@ -1,0 +1,38 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "brand": "Epics Group",
+  "territory": "Specimen Pantry",
+  "version": "1.0.0",
+  "color": {
+    "cream-paper": {
+      "value": "#F5EFE2",
+      "darkValue": "#1A1817",
+      "description": "Primary surface — warm white, lightly toothed. Dark mode inverts with ink-black."
+    },
+    "ink-black": {
+      "value": "#1A1817",
+      "darkValue": "#F5EFE2",
+      "description": "Display + headline. Dark mode inverts with cream-paper."
+    },
+    "saffron": {
+      "value": "#D4801B",
+      "darkValue": "#C97719",
+      "description": "Sole saturated accent — buttons, callouts. Desaturated in dark mode for ambient contrast."
+    },
+    "pomegranate": {
+      "value": "#8E2A2A",
+      "darkValue": "#7E2424",
+      "description": "Secondary deep accent — PKU / Crystal-by-Epics range only. Gravity color."
+    },
+    "linen-mid": {
+      "value": "#DCD2BD",
+      "darkValue": "#3A3631",
+      "description": "Quiet ground / table fills."
+    },
+    "charcoal-sub": {
+      "value": "#4A4641",
+      "darkValue": "#B6B0A6",
+      "description": "Body text, secondary nav."
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "brand": "Epics Group",
+  "territory": "Specimen Pantry",
+  "version": "1.0.0",
+  "fontFamily": {
+    "latin-display": {
+      "value": "'Untitled Serif', 'Georgia', serif",
+      "source": "Klim Type Foundry — Untitled Serif",
+      "use": "High-contrast literary serif; museum-card feel. Headline + display only."
+    },
+    "latin-text": {
+      "value": "'Söhne', 'Inter', system-ui, sans-serif",
+      "source": "Klim Type Foundry — Söhne",
+      "use": "Neutral technical sans. Body, nav, captions."
+    },
+    "latin-mono": {
+      "value": "'GT America Mono', 'JetBrains Mono', ui-monospace, monospace",
+      "source": "Grilli Type — GT America Mono",
+      "use": "Lot codes, batch numbers, nutrition specimens. The specimen language."
+    },
+    "arabic-display": {
+      "value": "'29LT Bukra Bold', 'Tajawal', 'Noto Naskh Arabic', sans-serif",
+      "source": "29LT — Bukra",
+      "use": "Geometric, ISO-precise Arabic display. Headlines + display."
+    },
+    "arabic-text": {
+      "value": "'29LT Bukra', 'Tajawal', 'Noto Naskh Arabic', sans-serif",
+      "source": "29LT — Bukra Regular",
+      "use": "Long-form Arabic body. Never default Noto."
+    }
+  },
+  "scale": {
+    "display": { "size": "72px", "lineHeight": "1.05", "tracking": "-0.02em", "weight": 400 },
+    "headline-1": { "size": "48px", "lineHeight": "1.1", "tracking": "-0.015em", "weight": 400 },
+    "headline-2": { "size": "32px", "lineHeight": "1.15", "tracking": "-0.01em", "weight": 400 },
+    "subhead": { "size": "20px", "lineHeight": "1.3", "tracking": "0", "weight": 500 },
+    "body": { "size": "16px", "lineHeight": "1.55", "tracking": "0", "weight": 400 },
+    "small": { "size": "13px", "lineHeight": "1.5", "tracking": "0.005em", "weight": 400 },
+    "mono-spec": { "size": "12px", "lineHeight": "1.4", "tracking": "0.08em", "weight": 400, "transform": "uppercase" },
+    "mono-lot": { "size": "11px", "lineHeight": "1.4", "tracking": "0.12em", "weight": 400, "transform": "uppercase" }
+  }
+}
