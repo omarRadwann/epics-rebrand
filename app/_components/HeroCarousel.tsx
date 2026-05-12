@@ -185,36 +185,48 @@ export function HeroCarousel() {
             </motion.p>
           </AnimatePresence>
 
-          {/* Headline — split word reveal */}
+          {/* Headline — per-word reveal with direct props (variants + masks
+              were getting stuck on first paint; this version animates each
+              word independently so it can't fall into a bad state). */}
           <div className="mt-8 lg:mt-10">
             <AnimatePresence mode="wait">
               <motion.h1
                 key={`h-${slide.id}`}
                 className={`font-serif-display text-[64px] sm:text-[100px] lg:text-[132px] leading-[0.95] tracking-[-0.035em] ${accentText[slide.accent]}`}
-                initial="hidden"
-                animate="show"
-                exit="exit"
-                variants={{
-                  hidden: { transition: { staggerChildren: 0.05 } },
-                  show:   { transition: { staggerChildren: 0.06, delayChildren: 0.15 } },
-                  exit:   { transition: { staggerChildren: 0.03, staggerDirection: -1 } },
-                }}
+                initial={{ opacity: 1 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, transition: { duration: 0.25 } }}
               >
-                {slide.headline.map((line, li) => {
-                  const isLast = li === slide.headline.length - 1;
-                  const words = line.split(" ");
-                  return (
-                    <span key={li} className="block">
-                      {words.map((w, wi) => (
-                        <span key={`${li}-${wi}`} className={`inline-block overflow-hidden align-baseline ${isLast ? "italic" : ""}`} style={{ whiteSpace: "pre" }}>
-                          <motion.span className="inline-block" variants={wordVariants}>
-                            {w}{wi < words.length - 1 ? " " : ""}
-                          </motion.span>
-                        </span>
-                      ))}
-                    </span>
-                  );
-                })}
+                {(() => {
+                  let wordIdx = 0;
+                  return slide.headline.map((line, li) => {
+                    const isLast = li === slide.headline.length - 1;
+                    const words = line.split(" ");
+                    return (
+                      <span key={li} className={`block ${isLast ? "italic" : ""}`}>
+                        {words.map((w, wi) => {
+                          const i = wordIdx++;
+                          return (
+                            <motion.span
+                              key={`${slide.id}-${li}-${wi}`}
+                              className="inline-block"
+                              initial={{ y: 32, opacity: 0 }}
+                              animate={{ y: 0, opacity: 1 }}
+                              transition={{
+                                duration: 0.7,
+                                ease: easeOut,
+                                delay: 0.08 + i * 0.055,
+                              }}
+                              style={{ whiteSpace: "pre" }}
+                            >
+                              {w}{wi < words.length - 1 ? " " : ""}
+                            </motion.span>
+                          );
+                        })}
+                      </span>
+                    );
+                  });
+                })()}
               </motion.h1>
             </AnimatePresence>
 

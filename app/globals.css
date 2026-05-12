@@ -102,7 +102,9 @@
     line-height: 15px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgb(var(--charcoal-sub));
+    /* No hard-coded color — inherit from the closest text-color ancestor so
+       the same utility class works on cream surfaces AND on the ink-black
+       ticker band. */
   }
 
   .specimen-spec {
@@ -111,7 +113,7 @@
     line-height: 17px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgb(var(--ink-black));
+    /* Same — inherit color. */
   }
 
   .hairline {
