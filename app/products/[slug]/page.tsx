@@ -5,6 +5,8 @@ import { Footer } from "../../_components/Footer";
 import { ProductCard } from "../../_components/ProductCard";
 import { Strikethrough } from "../../_components/Strikethrough";
 import { SpecimenHeader } from "../../_components/SpecimenHeader";
+import { ProductIllustration } from "../../_components/ProductIllustration";
+import { AddToCartButton } from "../../_components/AddToCartButton";
 import { products, productBySlug, productsByCategory } from "@/lib/catalog";
 
 export function generateStaticParams() {
@@ -27,7 +29,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   const related = productsByCategory(p.category).filter((q) => q.slug !== p.slug).slice(0, 4);
 
   return (
-    <main className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))]">
+    <main id="main" className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))]">
       <Nav />
 
       {/* Specimen header — typographic banner */}
@@ -56,14 +58,14 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       {/* Product hero — 2 columns */}
       <section className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]">
         <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-16 grid grid-cols-12 gap-x-12 gap-y-10">
-          {/* Photography column — typographic plinth */}
+          {/* Photography column — hairline package illustration */}
           <div className="col-span-12 lg:col-span-6">
             <div
-              className={`aspect-[4/5] flex flex-col justify-between p-12 ${
+              className={`aspect-[4/5] flex flex-col justify-between p-12 relative overflow-hidden ${
                 isCrystal ? "bg-[rgb(var(--pomegranate)/0.10)]" : "bg-[rgb(var(--linen-mid)/0.5)]"
               }`}
             >
-              <div className="flex items-start justify-between">
+              <div className="flex items-start justify-between relative z-10">
                 <p className="specimen-lot">LOT {p.lot}</p>
                 <div className="flex gap-2">
                   {p.freeFrom.includes("S-01") && <Strikethrough variant="wheat" size={40} />}
@@ -71,19 +73,12 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   {p.freeFrom.includes("S-03") && <Strikethrough variant="protein" size={40} />}
                 </div>
               </div>
-              <div className="flex flex-col items-center text-center text-[rgb(var(--ink-black))]">
-                <p className={`specimen-spec mb-3 ${isCrystal ? "text-[rgb(var(--pomegranate))]" : "opacity-60"}`}>
-                  {isCrystal ? "CRYSTAL BY EPICS" : "EPICS"}
-                </p>
-                <h2
-                  className="font-serif-display text-[56px] leading-[58px] tracking-[-0.02em]"
-                  style={isCrystal ? { color: "rgb(var(--pomegranate))" } : undefined}
-                >
-                  {p.name}
-                </h2>
-                <p className="specimen-spec mt-3 opacity-70">{p.weight.toUpperCase()}</p>
+              <div className="absolute inset-0 flex items-center justify-center px-16 py-20 pointer-events-none">
+                <div className="w-[70%] h-[78%]">
+                  <ProductIllustration product={p} variant="hero" />
+                </div>
               </div>
-              <p className="specimen-lot opacity-60">ISO {p.iso}:2018 · BUREAU VERITAS</p>
+              <p className="specimen-lot opacity-60 relative z-10">ISO {p.iso}:2018 · BUREAU VERITAS</p>
             </div>
           </div>
 
@@ -110,12 +105,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   {p.priceEgp} <span className="specimen-spec ml-1 opacity-70">EGP</span>
                 </p>
               </div>
-              <button
-                className="ml-auto bg-[rgb(var(--ink-black))] text-[rgb(var(--cream-paper))] px-8 py-4 specimen-spec hover:bg-[rgb(var(--saffron))] hover:text-[rgb(var(--ink-black))] transition-colors"
-                aria-label={`Add ${p.name} to cart`}
-              >
-                ADD TO CART →
-              </button>
+              <AddToCartButton slug={p.slug} />
             </div>
 
             <p className="specimen-lot mt-6 opacity-60">

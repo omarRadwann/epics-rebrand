@@ -14,7 +14,7 @@ export default function SugarFreePage() {
   const items = productsByCategory("sugar-free");
 
   return (
-    <main className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))]">
+    <main id="main" className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))]">
       <Nav />
 
       <section className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]">

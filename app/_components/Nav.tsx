@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { CartCount } from "./CartCount";
 
 /**
  * Top navigation. Cream-paper surface with a hairline-bottom rule.
@@ -12,6 +16,12 @@ import Link from "next/link";
 type NavLocale = "en" | "ar";
 
 export function Nav({ locale = "en" }: { locale?: NavLocale }) {
+  const pathname = usePathname() || "/";
+  const isActive = (href: string) => {
+    if (href === "/" || href === "/ar") return pathname === href;
+    return pathname.startsWith(href);
+  };
+
   const t =
     locale === "ar"
       ? {
@@ -33,6 +43,13 @@ export function Nav({ locale = "en" }: { locale?: NavLocale }) {
           home: "/",
         };
 
+  const navLinkClass = (href: string) =>
+    `font-sans-text text-[14px] underline-offset-4 decoration-[0.5px] transition-colors ${
+      isActive(href)
+        ? "text-[rgb(var(--ink-black))] underline decoration-[rgb(var(--saffron))] decoration-[1.5px]"
+        : "text-[rgb(var(--ink-black))] hover:underline"
+    }`;
+
   return (
     <nav
       className="w-full bg-[rgb(var(--cream-paper))] border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]"
@@ -53,26 +70,34 @@ export function Nav({ locale = "en" }: { locale?: NavLocale }) {
         {/* Right: links + locale + cart */}
         <div className="flex items-center gap-6 sm:gap-8">
           <Link
-            href={locale === "ar" ? "/ar" : "/"}
-            className="font-sans-text text-[14px] text-[rgb(var(--ink-black))] hover:underline underline-offset-4 decoration-[0.5px]"
+            href={locale === "ar" ? "/ar" : "/gluten-free"}
+            aria-current={isActive("/gluten-free") || isActive("/sugar-free") ? "page" : undefined}
+            className={navLinkClass("/gluten-free")}
           >
             {t.shop}
           </Link>
           <Link
-            href={locale === "ar" ? "/ar" : "/"}
-            className="font-sans-text text-[14px] text-[rgb(var(--ink-black))] hover:underline underline-offset-4 decoration-[0.5px]"
+            href={locale === "ar" ? "/ar" : "/recipes/european-loaf"}
+            aria-current={isActive("/recipes") ? "page" : undefined}
+            className={`${navLinkClass("/recipes")} hidden sm:inline`}
           >
             {t.recipes}
           </Link>
           <Link
-            href={locale === "ar" ? "/ar" : "/"}
-            className="font-sans-text text-[14px] text-[rgb(var(--ink-black))] hover:underline underline-offset-4 decoration-[0.5px] hidden md:inline"
+            href={locale === "ar" ? "/ar" : "/about"}
+            aria-current={isActive("/about") ? "page" : undefined}
+            className={`${navLinkClass("/about")} hidden md:inline`}
           >
             {t.about}
           </Link>
           <Link
-            href={locale === "ar" ? "/ar" : "/"}
-            className="specimen-spec text-[rgb(var(--pomegranate))] hover:underline underline-offset-4 decoration-[0.5px] hidden md:inline"
+            href={locale === "ar" ? "/ar" : "/pku"}
+            aria-current={isActive("/pku") ? "page" : undefined}
+            className={`specimen-spec text-[rgb(var(--pomegranate))] underline-offset-4 decoration-[0.5px] hidden md:inline transition-colors ${
+              isActive("/pku")
+                ? "underline decoration-[rgb(var(--pomegranate))] decoration-[1.5px]"
+                : "hover:underline"
+            }`}
           >
             {t.pku}
           </Link>
@@ -86,13 +111,8 @@ export function Nav({ locale = "en" }: { locale?: NavLocale }) {
             {t.toggle}
           </Link>
 
-          {/* Cart */}
-          <button
-            className="font-sans-text text-[14px] text-[rgb(var(--ink-black))] hover:underline underline-offset-4 decoration-[0.5px]"
-            aria-label={locale === "ar" ? "السلة" : "Cart"}
-          >
-            {locale === "ar" ? "السلة · 0" : "Cart · 0"}
-          </button>
+          {/* Cart (live count from CartProvider) */}
+          <CartCount locale={locale} />
         </div>
       </div>
     </nav>

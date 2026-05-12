@@ -14,7 +14,7 @@ export const metadata = {
  */
 export default function NotFound() {
   return (
-    <main className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))] flex flex-col">
+    <main id="main" className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))] flex flex-col">
       <Nav />
 
       <section className="flex-1 border-y border-[rgb(var(--ink-black)/0.6)] border-y-[0.5px]">

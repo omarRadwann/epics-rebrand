@@ -101,7 +101,7 @@ export default function RecipePage({ params }: { params: { slug: string } }) {
   const isPku = product.category === "pku";
 
   return (
-    <main className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))]">
+    <main id="main" className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))]">
       <Nav />
 
       {/* Editorial hero — magazine spread, not a blog post */}

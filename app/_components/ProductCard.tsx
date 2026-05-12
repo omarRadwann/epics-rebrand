@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Product } from "@/lib/catalog";
+import { ProductIllustration } from "./ProductIllustration";
 
 /**
  * Reusable product specimen card. Used on:
@@ -27,8 +28,8 @@ export function ProductCard({
 
   return (
     <Link href={`/products/${product.slug}`} className="block group no-underline">
-      <article className={`${aspect} flex flex-col justify-between p-5 ${surface}`}>
-        <header className="flex items-start justify-between">
+      <article className={`${aspect} flex flex-col justify-between p-5 ${surface} relative overflow-hidden`}>
+        <header className="flex items-start justify-between relative z-10">
           <p className="specimen-lot">{product.loafNumber.toUpperCase()}</p>
           <div className="flex gap-1">
             {product.freeFrom.map((c) => (
@@ -39,25 +40,14 @@ export function ProductCard({
           </div>
         </header>
 
-        <div className="flex flex-col items-center text-center text-[rgb(var(--ink-black))]">
-          {isCrystal ? (
-            <div className="specimen-spec mb-2 text-[rgb(var(--pomegranate))]">CRYSTAL BY EPICS</div>
-          ) : (
-            <div className="specimen-spec mb-2 opacity-50">EPICS</div>
-          )}
-          <h3
-            className={`font-serif-display tracking-[-0.01em] ${
-              variant === "hero" ? "text-[32px] leading-[34px]" : "text-[22px] leading-[24px]"
-            }`}
-          >
-            {product.name}
-          </h3>
-          <div className="specimen-lot mt-3 opacity-60">
-            {product.weight.toUpperCase()} · LOT {product.lot}
+        {/* Hairline-art product package illustration */}
+        <div className="absolute inset-0 flex items-center justify-center px-8 py-12 pointer-events-none">
+          <div className={variant === "hero" ? "w-[55%] h-[80%]" : "w-[70%] h-[68%]"}>
+            <ProductIllustration product={product} variant={variant === "hero" ? "hero" : "card"} />
           </div>
         </div>
 
-        <footer className="flex items-baseline justify-between text-[rgb(var(--ink-black))]">
+        <footer className="flex items-baseline justify-between text-[rgb(var(--ink-black))] relative z-10">
           <span className="specimen-spec">{product.priceEgp} EGP</span>
           <span className="specimen-spec group-hover:underline underline-offset-4 decoration-[0.5px]">
             SPECIMEN →

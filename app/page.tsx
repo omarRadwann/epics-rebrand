@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Nav } from "./_components/Nav";
 import { Footer } from "./_components/Footer";
 import { Strikethrough } from "./_components/Strikethrough";
+import { ProductIllustration } from "./_components/ProductIllustration";
 import { products, recipes } from "@/lib/catalog";
 
 const featuredProduct = products.find((p) => p.slug === "european-baking-mix")!;
@@ -13,7 +14,7 @@ export default function Home() {
     .filter(Boolean);
 
   return (
-    <main className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))]">
+    <main id="main" className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))]">
       <Nav />
 
       {/* ============================================================ */}
@@ -67,9 +68,9 @@ export default function Home() {
           <div className="col-span-12 lg:col-span-5 lg:pl-8">
             <article
               aria-label="Featured specimen"
-              className="bg-[rgb(var(--linen-mid)/0.45)] aspect-[3/4] flex flex-col justify-between p-8"
+              className="bg-[rgb(var(--linen-mid)/0.45)] aspect-[3/4] flex flex-col justify-between p-8 relative overflow-hidden"
             >
-              <header className="flex items-start justify-between">
+              <header className="flex items-start justify-between relative z-10">
                 <div>
                   <p className="specimen-lot">FEATURED · {featuredProduct.loafNumber.toUpperCase()}</p>
                   <p className="specimen-lot mt-1 opacity-60">LOT {featuredProduct.lot}</p>
@@ -77,17 +78,14 @@ export default function Home() {
                 <Strikethrough variant="wheat" size={48} />
               </header>
 
-              {/* The "object" — a typographic plinth treatment of the product */}
-              <div className="flex flex-col items-center justify-center text-center my-8">
-                <div className="specimen-spec mb-4 opacity-60">EPICS</div>
-                <div className="font-serif-display text-[42px] leading-[44px] tracking-[-0.02em]">
-                  {featuredProduct.name}
+              {/* Hairline-art product package illustration */}
+              <div className="absolute inset-0 flex items-center justify-center px-12 py-20 pointer-events-none">
+                <div className="w-[65%] h-[75%]">
+                  <ProductIllustration product={featuredProduct} variant="hero" />
                 </div>
-                <div className="specimen-spec mt-4">{featuredProduct.weight} · GLUTEN-FREE</div>
-                <div className="specimen-lot mt-12 opacity-60">ISO 22000:2018</div>
               </div>
 
-              <footer className="flex items-baseline justify-between">
+              <footer className="flex items-baseline justify-between relative z-10">
                 <span className="specimen-spec">{featuredProduct.priceEgp} EGP</span>
                 <Link href={`/products/${featuredProduct.slug}`} className="specimen-spec underline underline-offset-4 decoration-[0.5px]">
                   SPECIMEN →

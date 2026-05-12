@@ -17,7 +17,7 @@ export default function GlutenFreePage() {
   const rest = items.filter((p) => !["european-baking-mix", "brownies-mix"].includes(p.slug));
 
   return (
-    <main className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))]">
+    <main id="main" className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))]">
       <Nav />
 
       {/* Editorial intro */}

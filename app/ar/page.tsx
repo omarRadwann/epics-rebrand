@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Nav } from "../_components/Nav";
 import { Footer } from "../_components/Footer";
+import { ProductIllustration } from "../_components/ProductIllustration";
 import { products } from "@/lib/catalog";
 
 const featured = products.find((p) => p.slug === "european-baking-mix")!;
@@ -17,7 +18,7 @@ export default function ArHome() {
     .filter(Boolean);
 
   return (
-    <main lang="ar" dir="rtl" className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))]">
+    <main id="main" lang="ar" dir="rtl" className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))]">
       <Nav locale="ar" />
 
       {/* HERO */}
@@ -53,22 +54,21 @@ export default function ArHome() {
           </div>
 
           <div className="col-span-12 lg:col-span-5 lg:pr-8">
-            <article className="bg-[rgb(var(--linen-mid)/0.45)] aspect-[3/4] flex flex-col justify-between p-8">
-              <header className="flex items-start justify-between">
+            <article className="bg-[rgb(var(--linen-mid)/0.45)] aspect-[3/4] flex flex-col justify-between p-8 relative overflow-hidden">
+              <header className="flex items-start justify-between relative z-10">
                 <div>
                   <p className="specimen-lot [direction:ltr] text-right">FEATURED · {featured.loafNumber.toUpperCase()}</p>
                   <p className="specimen-lot mt-1 opacity-60 [direction:ltr] text-right">LOT {featured.lot}</p>
                 </div>
               </header>
 
-              <div className="flex flex-col items-center justify-center text-center my-8">
-                <div className="specimen-spec mb-4 opacity-60">EPICS</div>
-                <div className="font-arabic font-bold text-[36px] leading-[42px]">{featured.arabicName}</div>
-                <div className="specimen-spec mt-4 [direction:ltr]">{featured.weight} · GLUTEN-FREE</div>
-                <div className="specimen-lot mt-12 opacity-60 [direction:ltr]">ISO 22000:2018</div>
+              <div className="absolute inset-0 flex items-center justify-center px-12 py-20 pointer-events-none" dir="ltr">
+                <div className="w-[65%] h-[75%]">
+                  <ProductIllustration product={featured} variant="hero" />
+                </div>
               </div>
 
-              <footer className="flex items-baseline justify-between">
+              <footer className="flex items-baseline justify-between relative z-10">
                 <span className="specimen-spec [direction:ltr]">{featured.priceEgp} EGP</span>
                 <Link href={`/products/${featured.slug}`} className="specimen-spec underline underline-offset-4 decoration-[0.5px]">
                   ← العيّنة

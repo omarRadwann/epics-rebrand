@@ -20,7 +20,7 @@ export default function PkuPage() {
   const pkuProducts = productsByCategory("pku");
 
   return (
-    <main className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))]">
+    <main id="main" className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))]">
       <Nav />
 
       {/* Lockup hero — Crystal-by-Epics as an endorsed sub-brand */}
