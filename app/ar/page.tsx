@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Nav } from "../_components/Nav";
 import { Footer } from "../_components/Footer";
 import { products } from "@/lib/catalog";
+import { asset } from "@/lib/asset";
 
 const featured = products.find((p) => p.slug === "euro")!;
 
@@ -54,33 +55,40 @@ export default function ArHome() {
           </div>
 
           <div className="col-span-12 lg:col-span-5 lg:pr-8">
-            <article className="bg-[rgb(var(--linen-mid)/0.45)] aspect-[3/4] flex flex-col justify-between p-8 relative overflow-hidden">
-              <header className="flex items-start justify-between relative z-10">
-                <div>
-                  <p className="specimen-lot [direction:ltr] text-right">FEATURED · {featured.loafNumber.toUpperCase()}</p>
-                  <p className="specimen-lot mt-1 opacity-60 [direction:ltr] text-right">LOT {featured.lot}</p>
+            <Link
+              href={`/products/${featured.slug}`}
+              className="group block no-underline focus-visible:outline-none"
+            >
+              <article className="bg-white aspect-[4/5] flex flex-col relative overflow-hidden shadow-[0_2px_0_rgba(26,24,23,0.1)] hover:shadow-[0_16px_40px_-16px_rgba(26,24,23,0.2)] transition-shadow duration-500">
+                <div className="absolute top-5 left-5 right-5 z-10 flex items-start justify-between" dir="ltr">
+                  <div>
+                    <p className="specimen-lot opacity-70 text-left">FEATURED · {featured.loafNumber.toUpperCase()}</p>
+                    <p className="specimen-lot mt-0.5 opacity-50 text-left">LOT {featured.lot}</p>
+                  </div>
                 </div>
-              </header>
-
-              <div className="absolute inset-0 flex items-center justify-center px-12 py-20 pointer-events-none" dir="ltr">
-                <Image
-                  src={featured.imageUrl}
-                  alt={`${featured.name} package`}
-                  width={600}
-                  height={750}
-                  unoptimized
-                  priority
-                  className="object-contain max-w-[78%] max-h-[78%] mix-blend-multiply"
-                />
-              </div>
-
-              <footer className="flex items-baseline justify-between relative z-10">
-                <span className="specimen-spec [direction:ltr]">{featured.priceEgp ?? "—"} EGP</span>
-                <Link href={`/products/${featured.slug}`} className="specimen-spec underline underline-offset-4 decoration-[0.5px]">
-                  ← العيّنة
-                </Link>
-              </footer>
-            </article>
+                <div className="flex-1 flex items-center justify-center p-8 pt-20" dir="ltr">
+                  <Image
+                    src={asset(featured.imageUrl)}
+                    alt={featured.name}
+                    width={600}
+                    height={750}
+                    unoptimized
+                    priority
+                    className="object-contain max-h-[88%] max-w-[78%] transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                  />
+                </div>
+                <div className="bg-[rgb(var(--cream-paper))] border-t border-[rgb(var(--ink-black)/0.6)] border-t-[0.5px] px-5 py-4 flex items-baseline justify-between gap-3" dir="rtl">
+                  <div className="min-w-0">
+                    <h3 className="font-arabic font-bold text-[20px] leading-[1.3] truncate">{featured.arabicName}</h3>
+                    <p className="specimen-lot opacity-60 mt-0.5 [direction:ltr] text-right">{featured.weight.toUpperCase()}</p>
+                  </div>
+                  <div className="flex flex-col items-start shrink-0" dir="ltr">
+                    <span className="specimen-spec tabular-nums">{featured.priceEgp ?? "—"} EGP</span>
+                    <span className="specimen-lot opacity-60 mt-0.5 group-hover:opacity-100">SPECIMEN →</span>
+                  </div>
+                </div>
+              </article>
+            </Link>
           </div>
         </div>
       </section>
@@ -205,34 +213,36 @@ function ArCategoryTile({ code, title, arName, count, summary, accent, href, end
 function ArSpecimenCard({ product }: { product: (typeof products)[number] }) {
   const isCrystal = product.subBrand === "crystal";
   return (
-    <Link href={`/products/${product.slug}`} className="block group no-underline">
-      <div className={`aspect-[3/4] flex flex-col justify-between p-5 relative overflow-hidden ${isCrystal ? "bg-[rgb(var(--pomegranate)/0.08)]" : "bg-[rgb(var(--linen-mid)/0.45)]"}`}>
-        <div className="absolute inset-0 flex items-center justify-center px-6 py-12 pointer-events-none" dir="ltr">
+    <Link href={`/products/${product.slug}`} className="group block no-underline">
+      <article className="bg-white aspect-[3/4] flex flex-col relative overflow-hidden shadow-[0_1px_0_rgba(26,24,23,0.08)] hover:shadow-[0_8px_30px_-12px_rgba(26,24,23,0.18)] transition-shadow duration-300">
+        <div className="absolute top-4 left-4 right-4 z-10 flex items-start justify-between" dir="ltr">
+          <div className="flex flex-col gap-0.5 text-left">
+            <p className="specimen-lot opacity-70">{product.loafNumber.toUpperCase()}</p>
+            {isCrystal && <p className="specimen-lot text-[rgb(var(--pomegranate))]">CRYSTAL · BY EPICS</p>}
+          </div>
+          <div className="flex gap-1.5">
+            {product.freeFrom.map((c) => (
+              <span key={c} className="specimen-lot bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))] px-1.5 py-0.5 rounded-[1px]">{c}</span>
+            ))}
+          </div>
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center p-6 pt-16 pb-20" dir="ltr">
           <Image
-            src={product.imageUrl}
+            src={asset(product.imageUrl)}
             alt={product.name}
             width={400}
             height={500}
             unoptimized
-            className="object-contain max-w-[70%] max-h-[68%] mix-blend-multiply"
+            className="object-contain max-h-[85%] max-w-[80%] transition-transform duration-500 ease-out group-hover:scale-[1.04]"
           />
         </div>
-        <header className="flex items-start justify-between relative z-10">
-          <div className="flex flex-col gap-0.5">
-            <p className="specimen-lot [direction:ltr] text-right">{product.loafNumber.toUpperCase()}</p>
-            {isCrystal && <p className="specimen-lot text-[rgb(var(--pomegranate))] [direction:ltr] text-right">CRYSTAL · BY EPICS</p>}
-          </div>
-          <div className="flex gap-1">
-            {product.freeFrom.map((c) => (<span key={c} className="specimen-lot opacity-60 [direction:ltr]">{c}</span>))}
-          </div>
-        </header>
-        <footer className="flex items-baseline justify-between text-[rgb(var(--ink-black))] relative z-10">
-          <span className="specimen-spec [direction:ltr]">
+        <div className="mt-auto relative z-10 bg-[rgb(var(--cream-paper))] border-t border-[rgb(var(--ink-black)/0.6)] border-t-[0.5px] px-4 py-3.5 flex items-baseline justify-between gap-3" dir="rtl">
+          <h3 className="font-arabic font-bold text-[16px] leading-[1.3] line-clamp-2">{product.arabicName}</h3>
+          <span className="specimen-spec tabular-nums shrink-0 [direction:ltr]">
             {product.priceEgp != null ? `${product.priceEgp} EGP` : "WHOLESALE"}
           </span>
-          <span className="specimen-spec group-hover:underline underline-offset-4 decoration-[0.5px]">← العيّنة</span>
-        </footer>
-      </div>
+        </div>
+      </article>
     </Link>
   );
 }

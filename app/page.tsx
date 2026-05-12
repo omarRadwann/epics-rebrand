@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Strikethrough } from "./_components/Strikethrough";
 import { ProductCard } from "./_components/ProductCard";
 import { products, recipes } from "@/lib/catalog";
+import { asset } from "@/lib/asset";
 
 const featuredProduct = products.find((p) => p.slug === "euro")!;
 const featuredRecipe = recipes.find((r) => r.slug === "european-loaf")!;
@@ -65,40 +66,50 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Specimen card column */}
+          {/* Specimen card column — clean white card, real product photo dominant */}
           <div className="col-span-12 lg:col-span-5 lg:pl-8">
-            <article
-              aria-label="Featured specimen"
-              className="bg-[rgb(var(--linen-mid)/0.45)] aspect-[3/4] flex flex-col justify-between p-8 relative overflow-hidden"
+            <Link
+              href={`/products/${featuredProduct.slug}`}
+              className="group block no-underline focus-visible:outline-none"
+              aria-label={`Featured: ${featuredProduct.name}`}
             >
-              <header className="flex items-start justify-between relative z-10">
-                <div>
-                  <p className="specimen-lot">FEATURED · {featuredProduct.loafNumber.toUpperCase()}</p>
-                  <p className="specimen-lot mt-1 opacity-60">LOT {featuredProduct.lot}</p>
+              <article className="bg-white aspect-[4/5] flex flex-col relative overflow-hidden shadow-[0_2px_0_rgba(26,24,23,0.1)] hover:shadow-[0_16px_40px_-16px_rgba(26,24,23,0.2)] transition-shadow duration-500">
+                <div className="absolute top-5 left-5 right-5 z-10 flex items-start justify-between">
+                  <div>
+                    <p className="specimen-lot opacity-70">FEATURED · {featuredProduct.loafNumber.toUpperCase()}</p>
+                    <p className="specimen-lot mt-0.5 opacity-50">LOT {featuredProduct.lot}</p>
+                  </div>
+                  <Strikethrough variant="wheat" size={40} />
                 </div>
-                <Strikethrough variant="wheat" size={48} />
-              </header>
 
-              {/* Real product photo — Epics catalogue */}
-              <div className="absolute inset-0 flex items-center justify-center px-12 py-20 pointer-events-none">
-                <Image
-                  src={featuredProduct.imageUrl}
-                  alt={`${featuredProduct.name} package`}
-                  width={600}
-                  height={750}
-                  unoptimized
-                  priority
-                  className="object-contain max-w-[78%] max-h-[78%] mix-blend-multiply"
-                />
-              </div>
+                <div className="flex-1 flex items-center justify-center p-8 pt-20">
+                  <Image
+                    src={asset(featuredProduct.imageUrl)}
+                    alt={featuredProduct.name}
+                    width={600}
+                    height={750}
+                    unoptimized
+                    priority
+                    className="object-contain max-h-[88%] max-w-[78%] transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                  />
+                </div>
 
-              <footer className="flex items-baseline justify-between relative z-10">
-                <span className="specimen-spec">{featuredProduct.priceEgp ?? "—"} EGP</span>
-                <Link href={`/products/${featuredProduct.slug}`} className="specimen-spec underline underline-offset-4 decoration-[0.5px]">
-                  SPECIMEN →
-                </Link>
-              </footer>
-            </article>
+                <div className="bg-[rgb(var(--cream-paper))] border-t border-[rgb(var(--ink-black)/0.6)] border-t-[0.5px] px-5 py-4 flex items-baseline justify-between gap-3">
+                  <div className="min-w-0">
+                    <h3 className="font-serif-display text-[20px] leading-[1.15] tracking-[-0.005em] truncate">
+                      {featuredProduct.name}
+                    </h3>
+                    <p className="specimen-lot opacity-60 mt-0.5">{featuredProduct.weight.toUpperCase()}</p>
+                  </div>
+                  <div className="flex flex-col items-end shrink-0">
+                    <span className="specimen-spec tabular-nums">{featuredProduct.priceEgp ?? "—"} EGP</span>
+                    <span className="specimen-lot opacity-60 mt-0.5 group-hover:opacity-100 group-hover:underline underline-offset-4 decoration-[0.5px]">
+                      SPECIMEN →
+                    </span>
+                  </div>
+                </div>
+              </article>
+            </Link>
           </div>
         </div>
       </section>

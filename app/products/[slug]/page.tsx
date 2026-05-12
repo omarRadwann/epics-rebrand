@@ -7,6 +7,7 @@ import { ProductCard } from "../../_components/ProductCard";
 import { Strikethrough } from "../../_components/Strikethrough";
 import { SpecimenHeader } from "../../_components/SpecimenHeader";
 import { AddToCartButton } from "../../_components/AddToCartButton";
+import { asset } from "@/lib/asset";
 import { products, productBySlug, productsByCategory } from "@/lib/catalog";
 
 export function generateStaticParams() {
@@ -58,33 +59,40 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       {/* Product hero — 2 columns */}
       <section className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]">
         <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-16 grid grid-cols-12 gap-x-12 gap-y-10">
-          {/* Photography column — hairline package illustration */}
+          {/* Product photography column — clean white card, no blend */}
           <div className="col-span-12 lg:col-span-6">
-            <div
-              className={`aspect-[4/5] flex flex-col justify-between p-12 relative overflow-hidden ${
-                isCrystal ? "bg-[rgb(var(--pomegranate)/0.10)]" : "bg-[rgb(var(--linen-mid)/0.5)]"
-              }`}
-            >
-              <div className="flex items-start justify-between relative z-10">
-                <p className="specimen-lot">LOT {p.lot}</p>
+            <div className="bg-white aspect-[4/5] flex flex-col relative overflow-hidden shadow-[0_2px_0_rgba(26,24,23,0.1)]">
+              {isCrystal && (
+                <div className="absolute top-0 left-0 right-0 h-1 bg-[rgb(var(--pomegranate))]" aria-hidden />
+              )}
+              <div className="flex items-start justify-between p-6 relative z-10">
+                <div>
+                  <p className="specimen-lot opacity-70">LOT {p.lot}</p>
+                  {isCrystal && (
+                    <p className="specimen-lot mt-0.5 text-[rgb(var(--pomegranate))]">CRYSTAL · BY EPICS</p>
+                  )}
+                </div>
                 <div className="flex gap-2">
-                  {p.freeFrom.includes("S-01") && <Strikethrough variant="wheat" size={40} />}
-                  {p.freeFrom.includes("S-02") && <Strikethrough variant="sugar" size={40} />}
-                  {p.freeFrom.includes("S-03") && <Strikethrough variant="protein" size={40} />}
+                  {p.freeFrom.includes("S-01") && <Strikethrough variant="wheat" size={36} />}
+                  {p.freeFrom.includes("S-02") && <Strikethrough variant="sugar" size={36} />}
+                  {p.freeFrom.includes("S-03") && <Strikethrough variant="protein" size={36} />}
                 </div>
               </div>
-              <div className="absolute inset-0 flex items-center justify-center px-12 py-20 pointer-events-none">
+              <div className="flex-1 flex items-center justify-center px-10 pb-16">
                 <Image
-                  src={p.imageUrl}
-                  alt={`${p.name} package`}
-                  width={800}
-                  height={1000}
+                  src={asset(p.imageUrl)}
+                  alt={p.name}
+                  width={900}
+                  height={1100}
                   unoptimized
                   priority
-                  className="object-contain max-w-[78%] max-h-[80%] mix-blend-multiply"
+                  className="object-contain max-w-[82%] max-h-[88%]"
                 />
               </div>
-              <p className="specimen-lot opacity-60 relative z-10">ISO {p.iso}:2018 · BUREAU VERITAS</p>
+              <div className="absolute bottom-4 left-6 right-6 flex items-baseline justify-between">
+                <p className="specimen-lot opacity-50">ISO {p.iso}:2018 · BUREAU VERITAS</p>
+                <p className="specimen-lot opacity-50">{p.weight.toUpperCase()}</p>
+              </div>
             </div>
           </div>
 
