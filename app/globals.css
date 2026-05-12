@@ -158,6 +158,18 @@
 
 /*
   =========================================================================
+  MARQUEE — continuous horizontal scroll used in the nav-strip ticker and
+  the editorial big-typography band. Items duplicate 4x in JSX; we shift
+  -25% so each loop lands on the next clone seamlessly.
+  =========================================================================
+*/
+@keyframes epicsMarquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-25%); }
+}
+
+/*
+  =========================================================================
   SELECTION
   =========================================================================
 */

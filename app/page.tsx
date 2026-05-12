@@ -4,6 +4,8 @@ import { Footer } from "./_components/Footer";
 import Image from "next/image";
 import { Strikethrough } from "./_components/Strikethrough";
 import { ProductCard } from "./_components/ProductCard";
+import { Marquee } from "./_components/Marquee";
+import { Reveal } from "./_components/Reveal";
 import { products, recipes } from "@/lib/catalog";
 import { asset } from "@/lib/asset";
 
@@ -20,22 +22,45 @@ export default function Home() {
       <Nav />
 
       {/* ============================================================ */}
+      {/* CERTIFICATIONS TICKER — continuous scroll under nav.          */}
+      {/* ============================================================ */}
+      <Marquee
+        speedSeconds={40}
+        bg="ink-black"
+        fg="cream-paper"
+        items={[
+          { key: "iso22000", content: "ISO 22000 : 2018" },
+          { key: "iso9001",  content: "ISO 9001 : 2015" },
+          { key: "halal",    content: "HALAL · EHA-2025-0061" },
+          { key: "est",      content: "ESTABLISHED 6 OCTOBER · GIZA" },
+          { key: "lot",      content: "ISSUE 26 · LOT 0001" },
+          { key: "ship",     content: "SHIPS WITHIN 24 HOURS ANYWHERE IN EGYPT" },
+          { key: "rcd",      content: "30 SPECIMENS ACROSS THREE SHELVES" },
+        ]}
+      />
+
+      {/* ============================================================ */}
       {/* HERO — asymmetric specimen, NOT a centered gradient.         */}
       {/* ============================================================ */}
       <section
         aria-labelledby="hero-headline"
-        className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]"
+        className="relative border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px] overflow-hidden"
       >
-        <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 pt-20 pb-24 grid grid-cols-12 gap-x-8 gap-y-12">
+        {/* Decorative oversized strikethrough behind the headline */}
+        <div className="absolute -left-12 top-32 opacity-[0.04] text-[rgb(var(--ink-black))] pointer-events-none hidden md:block">
+          <Strikethrough variant="wheat" size={520} />
+        </div>
+
+        <div className="relative mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 pt-20 pb-24 grid grid-cols-12 gap-x-8 gap-y-12">
           {/* Headline column */}
           <div className="col-span-12 lg:col-span-7 flex flex-col justify-between">
             <div>
               <p className="specimen-lot mb-8">
-                ISSUE NO. 26 · 0001 · EST. 6 OCTOBER · ISO 22000:2018
+                ISSUE NO. 26 · 0001 · EST. 6 OCTOBER · ISO 22000 : 2018
               </p>
               <h1
                 id="hero-headline"
-                className="font-serif-display text-[64px] sm:text-[88px] lg:text-[104px] leading-[1.02] tracking-[-0.025em] text-[rgb(var(--ink-black))]"
+                className="font-serif-display text-[72px] sm:text-[112px] lg:text-[152px] leading-[0.95] tracking-[-0.035em] text-[rgb(var(--ink-black))]"
               >
                 Bread that
                 <br />
@@ -43,9 +68,9 @@ export default function Home() {
                 <br />
                 <span className="italic">apologise.</span>
               </h1>
-              <p className="font-sans-text text-[18px] leading-[1.5] mt-10 max-w-[480px] text-[rgb(var(--charcoal-sub))]">
-                Wheat-free, sugar-free, PKU-safe — engineered in 6th of October, certified to ISO 22000 and ISO 9001,
-                catalogued like a museum specimen.
+              <p className="font-sans-text text-[18px] sm:text-[20px] leading-[1.5] mt-10 max-w-[520px] text-[rgb(var(--charcoal-sub))]">
+                Wheat-free, sugar-free, PKU-safe — engineered in 6th of October City, certified to ISO 22000 and ISO 9001,
+                catalogued like a museum specimen. 30 SKUs. Three shelves. Made for bodies that don&rsquo;t negotiate.
               </p>
             </div>
 
@@ -115,14 +140,28 @@ export default function Home() {
       </section>
 
       {/* ============================================================ */}
+      {/* STATS BAND — huge serif numerals, by the numbers              */}
+      {/* ============================================================ */}
+      <Reveal as="section" className="bg-[rgb(var(--ink-black))] text-[rgb(var(--cream-paper))]">
+        <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-16 sm:py-20">
+          <p className="specimen-lot opacity-60 mb-8">B-01 · BY THE NUMBERS</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+            <StatTile big="30" mono="SPECIMENS" detail="Across three shelves" />
+            <StatTile big="2018" mono="ESTABLISHED" detail="In 6th of October City" />
+            <StatTile big="ISO" mono="22000:2018" detail="Bureau Veritas Egypt" />
+            <StatTile big="24h" mono="DELIVERY" detail="Anywhere in Egypt" highlight />
+          </div>
+        </div>
+      </Reveal>
+
+      {/* ============================================================ */}
       {/* MANIFESTO — the 60-word anchoring document, ruled in.         */}
       {/* ============================================================ */}
-      <section
-        id="manifesto"
-        aria-labelledby="manifesto-title"
+      <Reveal
+        as="section"
         className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]"
       >
-        <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-24 grid grid-cols-12 gap-x-8">
+        <div id="manifesto" aria-labelledby="manifesto-title" className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-24 grid grid-cols-12 gap-x-8">
           <div className="col-span-12 md:col-span-3">
             <p className="specimen-lot">M-01 · MANIFESTO</p>
             <h2 id="manifesto-title" className="font-serif-display text-[32px] leading-[36px] tracking-[-0.01em] mt-2">
@@ -141,14 +180,35 @@ export default function Home() {
             </p>
           </div>
         </div>
-      </section>
+      </Reveal>
+
+      {/* ============================================================ */}
+      {/* GIANT PRODUCT-NAME MARQUEE — italic serif, continuous scroll. */}
+      {/* ============================================================ */}
+      <Marquee
+        speedSeconds={45}
+        bg="cream-paper"
+        fg="ink-black"
+        variant="huge"
+        separator="·"
+        className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]"
+        items={[
+          { key: "european", content: "European Loaf" },
+          { key: "brownies", content: "Brownies" },
+          { key: "basbousa", content: "Basbousa" },
+          { key: "crystal", content: "Crystal · PKU" },
+          { key: "multi-grain", content: "Multi Grain" },
+          { key: "cocoa", content: "Cocoa P-04" },
+          { key: "vanilla", content: "Vanilla Cake" },
+          { key: "ice-cream", content: "Ice Cream — Triple Free" },
+        ]}
+      />
 
       {/* ============================================================ */}
       {/* CATEGORY GATEWAY — three typographic tiles, not three icons.  */}
       {/* ============================================================ */}
-      <section
-        id="pantry"
-        aria-labelledby="categories-title"
+      <Reveal
+        as="section"
         className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]"
       >
         <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-24">
@@ -186,7 +246,7 @@ export default function Home() {
             <CategoryTile
               code="03"
               monogram="protein"
-              title="Crystal · PKU"
+              title="Crystal &middot; PKU"
               count={`${products.filter((p) => p.category === "pku").length} specimens`}
               summary="Low-protein, phenylalanine-measured. Endorsed sub-brand for families who count milligrams."
               accent="pomegranate"
@@ -195,13 +255,13 @@ export default function Home() {
             />
           </div>
         </div>
-      </section>
+      </Reveal>
 
       {/* ============================================================ */}
       {/* MOST POPULAR — horizontal rail of specimen cards.             */}
       {/* ============================================================ */}
-      <section
-        aria-labelledby="popular-title"
+      <Reveal
+        as="section"
         className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]"
       >
         <div className="mx-auto max-w-[1440px] pl-6 sm:pl-12 lg:pl-24 py-24">
@@ -225,13 +285,13 @@ export default function Home() {
             ))}
           </ol>
         </div>
-      </section>
+      </Reveal>
 
       {/* ============================================================ */}
       {/* CERTIFICATIONS — typographic, not a logo strip.               */}
       {/* ============================================================ */}
-      <section
-        aria-labelledby="certs-title"
+      <Reveal
+        as="section"
         className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]"
       >
         <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-20">
@@ -269,13 +329,54 @@ export default function Home() {
             />
           </div>
         </div>
-      </section>
+      </Reveal>
+
+      {/* ============================================================ */}
+      {/* FULL-BLEED SAFFRON CTA — break the cream uniformity.          */}
+      {/* ============================================================ */}
+      <Reveal
+        as="section"
+        className="relative bg-[rgb(var(--saffron))] text-[rgb(var(--ink-black))] overflow-hidden border-b border-[rgb(var(--ink-black))] border-b-[0.5px]"
+      >
+        <div className="absolute -right-16 -bottom-16 opacity-20 pointer-events-none hidden md:block">
+          <Strikethrough variant="protein" size={420} />
+        </div>
+        <div className="relative mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-24 grid grid-cols-12 gap-x-8 gap-y-8 items-end">
+          <div className="col-span-12 md:col-span-7">
+            <p className="specimen-lot opacity-70">CTA · S-01</p>
+            <h2 className="font-serif-display text-[48px] sm:text-[80px] lg:text-[104px] leading-[0.98] tracking-[-0.03em] mt-4">
+              Browse the
+              <br />
+              <span className="italic">whole pantry.</span>
+            </h2>
+            <p className="font-sans-text text-[18px] sm:text-[20px] leading-[1.5] mt-8 max-w-[520px]">
+              30 specimens, all shelves. Filter by the strikethrough that matters to your body —
+              gluten, sugar, protein — and we&rsquo;ll pack the slip within four hours.
+            </p>
+          </div>
+          <div className="col-span-12 md:col-span-5 flex flex-col gap-3 md:items-end">
+            <Link
+              href="/shop"
+              className="inline-flex items-center gap-3 bg-[rgb(var(--ink-black))] text-[rgb(var(--cream-paper))] px-8 py-5 specimen-spec hover:bg-[rgb(var(--cream-paper))] hover:text-[rgb(var(--ink-black))] transition-colors"
+            >
+              ENTER THE PANTRY
+              <span aria-hidden>→</span>
+            </Link>
+            <Link
+              href="/pku"
+              className="specimen-spec underline underline-offset-[6px] decoration-[1px] hover:decoration-[2px]"
+            >
+              OR JUMP STRAIGHT TO CRYSTAL · PKU →
+            </Link>
+          </div>
+        </div>
+      </Reveal>
 
       {/* ============================================================ */}
       {/* RECIPE FEATURE — editorial, magazine spread.                  */}
       {/* ============================================================ */}
-      <section
-        aria-labelledby="recipe-title"
+      <Reveal
+        as="section"
         className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]"
       >
         <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-24 grid grid-cols-12 gap-x-8 gap-y-10">
@@ -328,13 +429,13 @@ export default function Home() {
             </Link>
           </div>
         </div>
-      </section>
+      </Reveal>
 
       {/* ============================================================ */}
       {/* JOURNAL TEASER — manifesto extension                          */}
       {/* ============================================================ */}
-      <section
-        aria-labelledby="journal-title"
+      <Reveal
+        as="section"
         className="bg-[rgb(var(--linen-mid)/0.35)] border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]"
       >
         <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-24 grid grid-cols-12 gap-x-8 gap-y-12">
@@ -375,7 +476,7 @@ export default function Home() {
             ))}
           </ol>
         </div>
-      </section>
+      </Reveal>
 
       <Footer />
     </main>
@@ -435,6 +536,24 @@ function CategoryTile({
         </p>
       </div>
     </Link>
+  );
+}
+
+function StatTile({ big, mono, detail, highlight }: { big: string; mono: string; detail: string; highlight?: boolean }) {
+  return (
+    <div className={`flex flex-col gap-2 border-t border-[rgb(var(--cream-paper)/0.25)] border-t-[0.5px] pt-5`}>
+      <p
+        className={`font-serif-display tracking-[-0.03em] leading-[0.95] ${
+          highlight ? "text-[rgb(var(--saffron))]" : "text-[rgb(var(--cream-paper))]"
+        } text-[56px] sm:text-[80px] lg:text-[96px]`}
+      >
+        {big}
+      </p>
+      <p className="specimen-lot opacity-80 mt-2">{mono}</p>
+      <p className="font-sans-text text-[14px] leading-[1.45] text-[rgb(var(--cream-paper)/0.7)] max-w-[180px]">
+        {detail}
+      </p>
+    </div>
   );
 }
 
