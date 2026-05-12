@@ -79,9 +79,9 @@ export function Nav({ locale = "en" }: { locale?: NavLocale }) {
             {t.shop}
           </Link>
           <Link
-            href={locale === "ar" ? "/ar" : "/journal"}
-            aria-current={isActive("/journal") || isActive("/recipes") ? "page" : undefined}
-            className={`${navLinkClass("/journal")} hidden sm:inline`}
+            href={locale === "ar" ? "/ar" : "/recipes"}
+            aria-current={isActive("/recipes") || isActive("/journal") ? "page" : undefined}
+            className={`${navLinkClass("/recipes")} hidden sm:inline`}
           >
             {t.recipes}
           </Link>

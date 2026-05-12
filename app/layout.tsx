@@ -4,6 +4,8 @@ import { CartProvider } from "./_components/CartProvider";
 import { ScrollProgress } from "./_components/ScrollProgress";
 import { CustomCursor } from "./_components/CustomCursor";
 import { PaperTexture } from "./_components/PaperTexture";
+import { PageTransition } from "./_components/PageTransition";
+import { SearchOverlay } from "./_components/SearchOverlay";
 import "./globals.css";
 
 const serif = Newsreader({
@@ -71,7 +73,10 @@ export default function RootLayout({
           Skip to content
         </a>
         <CartProvider>
-          <div className="relative z-[1]">{children}</div>
+          <div className="relative z-[1]">
+            <PageTransition>{children}</PageTransition>
+          </div>
+          <SearchOverlay />
         </CartProvider>
       </body>
     </html>

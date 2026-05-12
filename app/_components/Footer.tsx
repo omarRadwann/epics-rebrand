@@ -101,7 +101,7 @@ export function Footer({ locale = "en" }: { locale?: "en" | "ar" }) {
           <div className="md:col-span-2">
             <div className="specimen-lot text-[rgb(var(--cream-paper)/0.5)] mb-4">F-04 · {t.read}</div>
             <ul className="space-y-2 font-sans-text text-[14px] text-[rgb(var(--cream-paper)/0.85)] list-none p-0">
-              <li><Link href="/recipes/european-loaf" className="hover:underline underline-offset-4">{t.recipes}</Link></li>
+              <li><Link href="/recipes" className="hover:underline underline-offset-4">{t.recipes}</Link></li>
               <li><Link href={locale === "ar" ? "/ar/about" : "/about"} className="hover:underline underline-offset-4">{t.about}</Link></li>
               <li><Link href={locale === "ar" ? "/ar/pku" : "/pku"} className="hover:underline underline-offset-4">{t.pkuExplainer}</Link></li>
               <li><Link href="/journal" className="hover:underline underline-offset-4">{t.journal}</Link></li>
