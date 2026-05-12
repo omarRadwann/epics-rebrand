@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Newsreader, Inter, JetBrains_Mono, Tajawal } from "next/font/google";
 import { CartProvider } from "./_components/CartProvider";
+import { ScrollProgress } from "./_components/ScrollProgress";
 import "./globals.css";
 
 const serif = Newsreader({
@@ -58,6 +59,7 @@ export default function RootLayout({
       className={`${serif.variable} ${sans.variable} ${mono.variable} ${arabic.variable}`}
     >
       <body>
+        <ScrollProgress />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-[rgb(var(--ink-black))] focus:text-[rgb(var(--cream-paper))] focus:px-4 focus:py-2 focus:specimen-spec"

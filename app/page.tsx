@@ -6,6 +6,10 @@ import { Strikethrough } from "./_components/Strikethrough";
 import { ProductCard } from "./_components/ProductCard";
 import { Marquee } from "./_components/Marquee";
 import { Reveal } from "./_components/Reveal";
+import { AnimatedCounter } from "./_components/AnimatedCounter";
+import { TiltCard } from "./_components/TiltCard";
+import { MagneticButton } from "./_components/MagneticButton";
+import { TextReveal } from "./_components/TextReveal";
 import { products, recipes } from "@/lib/catalog";
 import { asset } from "@/lib/asset";
 
@@ -58,16 +62,15 @@ export default function Home() {
               <p className="specimen-lot mb-8">
                 ISSUE NO. 26 · 0001 · EST. 6 OCTOBER · ISO 22000 : 2018
               </p>
-              <h1
-                id="hero-headline"
+              <TextReveal
+                as="h1"
+                lines={[
+                  "Bread that",
+                  "doesn’t",
+                  { text: "apologise.", className: "italic" },
+                ]}
                 className="font-serif-display text-[72px] sm:text-[112px] lg:text-[152px] leading-[0.95] tracking-[-0.035em] text-[rgb(var(--ink-black))]"
-              >
-                Bread that
-                <br />
-                doesn&rsquo;t
-                <br />
-                <span className="italic">apologise.</span>
-              </h1>
+              />
               <p className="font-sans-text text-[18px] sm:text-[20px] leading-[1.5] mt-10 max-w-[520px] text-[rgb(var(--charcoal-sub))]">
                 Wheat-free, sugar-free, PKU-safe — engineered in 6th of October City, certified to ISO 22000 and ISO 9001,
                 catalogued like a museum specimen. 30 SKUs. Three shelves. Made for bodies that don&rsquo;t negotiate.
@@ -75,13 +78,13 @@ export default function Home() {
             </div>
 
             <div className="flex flex-wrap items-center gap-x-8 gap-y-4 mt-12">
-              <Link
-                href="#pantry"
-                className="inline-flex items-center gap-3 bg-[rgb(var(--ink-black))] text-[rgb(var(--cream-paper))] px-6 py-4 specimen-spec hover:bg-[rgb(var(--saffron))] hover:text-[rgb(var(--ink-black))] transition-colors"
+              <MagneticButton
+                href="/shop"
+                className="inline-flex bg-[rgb(var(--ink-black))] text-[rgb(var(--cream-paper))] px-6 py-4 specimen-spec hover:bg-[rgb(var(--saffron))] hover:text-[rgb(var(--ink-black))] transition-colors"
               >
                 Browse the Pantry
                 <span aria-hidden>→</span>
-              </Link>
+              </MagneticButton>
               <Link
                 href="#manifesto"
                 className="font-sans-text text-[15px] underline underline-offset-[6px] decoration-[0.5px] hover:decoration-[1.5px]"
@@ -93,12 +96,13 @@ export default function Home() {
 
           {/* Specimen card column — clean white card, real product photo dominant */}
           <div className="col-span-12 lg:col-span-5 lg:pl-8">
+            <TiltCard maxDeg={5}>
             <Link
               href={`/products/${featuredProduct.slug}`}
               className="group block no-underline focus-visible:outline-none"
               aria-label={`Featured: ${featuredProduct.name}`}
             >
-              <article className="bg-white aspect-[4/5] flex flex-col relative overflow-hidden shadow-[0_2px_0_rgba(26,24,23,0.1)] hover:shadow-[0_16px_40px_-16px_rgba(26,24,23,0.2)] transition-shadow duration-500">
+              <article className="bg-white aspect-[4/5] flex flex-col relative overflow-hidden shadow-[0_2px_0_rgba(26,24,23,0.1)] hover:shadow-[0_24px_60px_-20px_rgba(26,24,23,0.28)] transition-shadow duration-500">
                 <div className="absolute top-5 left-5 right-5 z-10 flex items-start justify-between">
                   <div>
                     <p className="specimen-lot opacity-70">FEATURED · {featuredProduct.loafNumber.toUpperCase()}</p>
@@ -107,7 +111,20 @@ export default function Home() {
                   <Strikethrough variant="wheat" size={40} />
                 </div>
 
-                <div className="flex-1 flex items-center justify-center p-8 pt-20">
+                {/* Saffron halo behind the product */}
+                <div
+                  className="epics-halo"
+                  style={{
+                    width: "70%",
+                    height: "55%",
+                    top: "20%",
+                    left: "15%",
+                    background: "radial-gradient(circle, rgb(var(--saffron)/0.55) 0%, rgb(var(--saffron)/0) 70%)",
+                  }}
+                  aria-hidden
+                />
+
+                <div className="flex-1 flex items-center justify-center p-8 pt-20 relative">
                   <Image
                     src={asset(featuredProduct.imageUrl)}
                     alt={featuredProduct.name}
@@ -115,7 +132,7 @@ export default function Home() {
                     height={750}
                     unoptimized
                     priority
-                    className="object-contain max-h-[88%] max-w-[78%] transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                    className="epics-float object-contain max-h-[88%] max-w-[78%] drop-shadow-[0_30px_20px_rgba(26,24,23,0.18)]"
                   />
                 </div>
 
@@ -135,6 +152,7 @@ export default function Home() {
                 </div>
               </article>
             </Link>
+            </TiltCard>
           </div>
         </div>
       </section>
@@ -146,10 +164,10 @@ export default function Home() {
         <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-16 sm:py-20">
           <p className="specimen-lot opacity-60 mb-8">B-01 · BY THE NUMBERS</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
-            <StatTile big="30" mono="SPECIMENS" detail="Across three shelves" />
-            <StatTile big="2018" mono="ESTABLISHED" detail="In 6th of October City" />
+            <StatTile big={<AnimatedCounter to={30} duration={1600} />} mono="SPECIMENS" detail="Across three shelves" />
+            <StatTile big={<AnimatedCounter from={2010} to={2018} duration={1800} />} mono="ESTABLISHED" detail="In 6th of October City" />
             <StatTile big="ISO" mono="22000:2018" detail="Bureau Veritas Egypt" />
-            <StatTile big="24h" mono="DELIVERY" detail="Anywhere in Egypt" highlight />
+            <StatTile big={<><AnimatedCounter to={24} duration={1400} />h</>} mono="DELIVERY" detail="Anywhere in Egypt" highlight />
           </div>
         </div>
       </Reveal>
@@ -344,24 +362,28 @@ export default function Home() {
         <div className="relative mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-24 grid grid-cols-12 gap-x-8 gap-y-8 items-end">
           <div className="col-span-12 md:col-span-7">
             <p className="specimen-lot opacity-70">CTA · S-01</p>
-            <h2 className="font-serif-display text-[48px] sm:text-[80px] lg:text-[104px] leading-[0.98] tracking-[-0.03em] mt-4">
-              Browse the
-              <br />
-              <span className="italic">whole pantry.</span>
-            </h2>
+            <TextReveal
+              as="h2"
+              lines={[
+                "Browse the",
+                { text: "whole pantry.", className: "italic" },
+              ]}
+              className="font-serif-display text-[48px] sm:text-[80px] lg:text-[104px] leading-[0.98] tracking-[-0.03em] mt-4"
+            />
             <p className="font-sans-text text-[18px] sm:text-[20px] leading-[1.5] mt-8 max-w-[520px]">
               30 specimens, all shelves. Filter by the strikethrough that matters to your body —
               gluten, sugar, protein — and we&rsquo;ll pack the slip within four hours.
             </p>
           </div>
           <div className="col-span-12 md:col-span-5 flex flex-col gap-3 md:items-end">
-            <Link
+            <MagneticButton
               href="/shop"
-              className="inline-flex items-center gap-3 bg-[rgb(var(--ink-black))] text-[rgb(var(--cream-paper))] px-8 py-5 specimen-spec hover:bg-[rgb(var(--cream-paper))] hover:text-[rgb(var(--ink-black))] transition-colors"
+              className="inline-flex bg-[rgb(var(--ink-black))] text-[rgb(var(--cream-paper))] px-8 py-5 specimen-spec hover:bg-[rgb(var(--cream-paper))] hover:text-[rgb(var(--ink-black))] transition-colors"
+              strength={18}
             >
               ENTER THE PANTRY
               <span aria-hidden>→</span>
-            </Link>
+            </MagneticButton>
             <Link
               href="/pku"
               className="specimen-spec underline underline-offset-[6px] decoration-[1px] hover:decoration-[2px]"
@@ -539,7 +561,7 @@ function CategoryTile({
   );
 }
 
-function StatTile({ big, mono, detail, highlight }: { big: string; mono: string; detail: string; highlight?: boolean }) {
+function StatTile({ big, mono, detail, highlight }: { big: React.ReactNode; mono: string; detail: string; highlight?: boolean }) {
   return (
     <div className={`flex flex-col gap-2 border-t border-[rgb(var(--cream-paper)/0.25)] border-t-[0.5px] pt-5`}>
       <p

@@ -21,12 +21,16 @@
 
 @layer base {
   :root {
-    --cream-paper: 245 239 226;       /* #F5EFE2 */
-    --ink-black: 26 24 23;            /* #1A1817 */
-    --saffron: 212 128 27;            /* #D4801B */
-    --pomegranate: 142 42 42;         /* #8E2A2A */
-    --linen-mid: 220 210 189;         /* #DCD2BD */
-    --charcoal-sub: 74 70 65;         /* #4A4641 */
+    /* Specimen Pantry · MMXXVI Refresh — warmer cream, bolder saffron,
+       deeper ink, new clay terracotta as secondary accent. */
+    --cream-paper: 250 245 232;       /* #FAF5E8  — warmer, more golden */
+    --ink-black: 20 17 15;            /* #14110F  — deeper warm black */
+    --saffron: 224 122 27;            /* #E07A1B  — bolder orange */
+    --clay: 184 86 54;                /* #B85636  — warm terracotta, NEW */
+    --pomegranate: 142 42 42;         /* #8E2A2A  — kept for PKU only */
+    --linen-mid: 228 217 192;         /* #E4D9C0  — warmer */
+    --charcoal-sub: 43 40 37;         /* #2B2825  — deeper */
+    --sage: 90 110 88;                /* #5A6E58  — calm editorial green, sparingly */
   }
 
   html {
@@ -166,6 +170,56 @@
 @keyframes epicsMarquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-25%); }
+}
+
+/*
+  =========================================================================
+  FLOAT — used on the hero product image. Subtle up/down + slow rotation
+  so the product feels alive rather than pasted on a card.
+  =========================================================================
+*/
+@keyframes epicsFloat {
+  0%   { transform: translateY(0)     rotate(-0.6deg); }
+  50%  { transform: translateY(-14px) rotate(0.6deg); }
+  100% { transform: translateY(0)     rotate(-0.6deg); }
+}
+.epics-float {
+  animation: epicsFloat 6.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/*
+  =========================================================================
+  STROKE DRAW — used on decorative SVG monograms that animate in when
+  scrolled into view. The element gets data-draw="in" via IntersectionObserver
+  styling; we toggle the dashoffset.
+  =========================================================================
+*/
+@keyframes epicsDraw {
+  from { stroke-dashoffset: 1200; }
+  to   { stroke-dashoffset: 0; }
+}
+.epics-draw-line {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  animation: epicsDraw 3.2s cubic-bezier(0.16,1,0.3,1) 0.4s forwards;
+}
+
+/*
+  =========================================================================
+  HALO — soft saffron pulse behind the hero product, suggesting depth
+  =========================================================================
+*/
+@keyframes epicsHalo {
+  0%, 100% { opacity: 0.45; transform: scale(0.92); }
+  50%      { opacity: 0.85; transform: scale(1.08); }
+}
+.epics-halo {
+  animation: epicsHalo 7s ease-in-out infinite;
+  filter: blur(48px);
+  border-radius: 50%;
+  position: absolute;
+  pointer-events: none;
 }
 
 /*

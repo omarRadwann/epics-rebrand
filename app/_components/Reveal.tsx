@@ -1,14 +1,23 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { motion, type Variants } from "framer-motion";
 
 /**
- * Scroll-triggered fade + slide. Uses IntersectionObserver so it's free —
- * no animation library, no scroll listener.
- *
- * Respects prefers-reduced-motion via the global guard in globals.css that
- * forces animations to 0.001ms.
+ * Scroll-triggered reveal — Framer Motion replaces my hand-rolled
+ * IntersectionObserver. Each child gets a fade + 28px slide up the
+ * first time it enters the viewport. Variants make staggering trivial
+ * later (e.g. wrapping multiple <Reveal> in a parent stagger container).
  */
+
+const variants: Variants = {
+  hidden: { opacity: 0, y: 32 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
+  },
+};
+
 export function Reveal({
   children,
   delay = 0,
@@ -20,46 +29,17 @@ export function Reveal({
   className?: string;
   as?: keyof JSX.IntrinsicElements;
 }) {
-  const ref = useRef<HTMLElement | null>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    // Already in view? (e.g. above-the-fold content on first paint)
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight && rect.bottom > 0) {
-      setVisible(true);
-      return;
-    }
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            setVisible(true);
-            io.disconnect();
-            return;
-          }
-        }
-      },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.05 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  const TagAny = Tag as React.ElementType;
+  const MotionTag = motion(Tag as React.ElementType);
   return (
-    <TagAny
-      ref={ref as React.RefObject<HTMLElement>}
-      style={{
-        transition: `opacity 700ms cubic-bezier(0.16,1,0.3,1) ${delay}ms, transform 900ms cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(28px)",
-      }}
+    <MotionTag
       className={className}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: "0px 0px -8% 0px", amount: 0.05 }}
+      variants={variants}
+      transition={{ delay }}
     >
       {children}
-    </TagAny>
+    </MotionTag>
   );
 }

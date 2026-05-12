@@ -5,16 +5,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        "cream-paper": "#F5EFE2",
-        "ink-black": "#1A1817",
-        "saffron": "#D4801B",
-        "saffron-dim": "#C97719",
+        "cream-paper": "#FAF5E8",
+        "ink-black": "#14110F",
+        "saffron": "#E07A1B",
+        "saffron-dim": "#C76814",
+        "clay": "#B85636",
+        "clay-dim": "#9C4528",
         "pomegranate": "#8E2A2A",
         "pomegranate-dim": "#7E2424",
-        "linen-mid": "#DCD2BD",
+        "linen-mid": "#E4D9C0",
         "linen-deep": "#3A3631",
-        "charcoal-sub": "#4A4641",
+        "charcoal-sub": "#2B2825",
         "charcoal-soft": "#B6B0A6",
+        "sage": "#5A6E58",
       },
       fontFamily: {
         "serif-display": ["'Untitled Serif'", "Georgia", "serif"],

@@ -2,37 +2,47 @@
   "$schema": "https://design-tokens.github.io/community-group/format/",
   "brand": "Epics Group",
   "territory": "Specimen Pantry",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "color": {
     "cream-paper": {
-      "value": "#F5EFE2",
-      "darkValue": "#1A1817",
-      "description": "Primary surface — warm white, lightly toothed. Dark mode inverts with ink-black."
+      "value": "#FAF5E8",
+      "darkValue": "#14110F",
+      "description": "Primary surface — warmer, more golden cream. Dark mode inverts with ink-black."
     },
     "ink-black": {
-      "value": "#1A1817",
-      "darkValue": "#F5EFE2",
-      "description": "Display + headline. Dark mode inverts with cream-paper."
+      "value": "#14110F",
+      "darkValue": "#FAF5E8",
+      "description": "Display + headline. Slightly warm deep black."
     },
     "saffron": {
-      "value": "#D4801B",
-      "darkValue": "#C97719",
-      "description": "Sole saturated accent — buttons, callouts. Desaturated in dark mode for ambient contrast."
+      "value": "#E07A1B",
+      "darkValue": "#C76814",
+      "description": "Bolder primary accent — buttons, CTAs, hover, the scroll-progress bar."
+    },
+    "clay": {
+      "value": "#B85636",
+      "darkValue": "#9C4528",
+      "description": "Warm terracotta — secondary accent for editorial pull-quotes and stat highlights."
     },
     "pomegranate": {
       "value": "#8E2A2A",
       "darkValue": "#7E2424",
-      "description": "Secondary deep accent — PKU / Crystal-by-Epics range only. Gravity color."
+      "description": "Gravity color — reserved for Crystal · PKU range only."
     },
     "linen-mid": {
-      "value": "#DCD2BD",
+      "value": "#E4D9C0",
       "darkValue": "#3A3631",
-      "description": "Quiet ground / table fills."
+      "description": "Quiet ground / specimen tile backgrounds."
     },
     "charcoal-sub": {
-      "value": "#4A4641",
+      "value": "#2B2825",
       "darkValue": "#B6B0A6",
       "description": "Body text, secondary nav."
+    },
+    "sage": {
+      "value": "#5A6E58",
+      "darkValue": "#3F4F3E",
+      "description": "Calm editorial green — sparingly used for journal accent."
     }
   }
 }
