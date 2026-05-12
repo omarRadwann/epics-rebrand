@@ -7,14 +7,14 @@ import { ProductCard } from "./_components/ProductCard";
 import { Marquee } from "./_components/Marquee";
 import { Reveal } from "./_components/Reveal";
 import { AnimatedCounter } from "./_components/AnimatedCounter";
-import { TiltCard } from "./_components/TiltCard";
-import { MagneticButton } from "./_components/MagneticButton";
 import { TextReveal } from "./_components/TextReveal";
+import { MagneticButton } from "./_components/MagneticButton";
+import { HeroCarousel } from "./_components/HeroCarousel";
 import { products, recipes } from "@/lib/catalog";
 import { asset } from "@/lib/asset";
 
 const featuredProduct = products.find((p) => p.slug === "euro")!;
-const featuredRecipe = recipes.find((r) => r.slug === "european-loaf")!;
+const featuredRecipe = recipes.find((r) => r.slug === "italian-pizza-using-flat-bread-mixture") ?? recipes[0]!;
 
 export default function Home() {
   const popular = ["flat", "brownies", "soft", "basbousa", "cocoa-powder", "multi-grain"]
@@ -44,118 +44,9 @@ export default function Home() {
       />
 
       {/* ============================================================ */}
-      {/* HERO — asymmetric specimen, NOT a centered gradient.         */}
+      {/* HERO — cinematic 4-slide carousel via Framer Motion.         */}
       {/* ============================================================ */}
-      <section
-        aria-labelledby="hero-headline"
-        className="relative border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px] overflow-hidden"
-      >
-        {/* Decorative oversized strikethrough behind the headline */}
-        <div className="absolute -left-12 top-32 opacity-[0.04] text-[rgb(var(--ink-black))] pointer-events-none hidden md:block">
-          <Strikethrough variant="wheat" size={520} />
-        </div>
-
-        <div className="relative mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 pt-20 pb-24 grid grid-cols-12 gap-x-8 gap-y-12">
-          {/* Headline column */}
-          <div className="col-span-12 lg:col-span-7 flex flex-col justify-between">
-            <div>
-              <p className="specimen-lot mb-8">
-                ISSUE NO. 26 · 0001 · EST. 6 OCTOBER · ISO 22000 : 2018
-              </p>
-              <TextReveal
-                as="h1"
-                lines={[
-                  "Bread that",
-                  "doesn’t",
-                  { text: "apologise.", className: "italic" },
-                ]}
-                className="font-serif-display text-[72px] sm:text-[112px] lg:text-[152px] leading-[0.95] tracking-[-0.035em] text-[rgb(var(--ink-black))]"
-              />
-              <p className="font-sans-text text-[18px] sm:text-[20px] leading-[1.5] mt-10 max-w-[520px] text-[rgb(var(--charcoal-sub))]">
-                Wheat-free, sugar-free, PKU-safe — engineered in 6th of October City, certified to ISO 22000 and ISO 9001,
-                catalogued like a museum specimen. 30 SKUs. Three shelves. Made for bodies that don&rsquo;t negotiate.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-x-8 gap-y-4 mt-12">
-              <MagneticButton
-                href="/shop"
-                className="inline-flex bg-[rgb(var(--ink-black))] text-[rgb(var(--cream-paper))] px-6 py-4 specimen-spec hover:bg-[rgb(var(--saffron))] hover:text-[rgb(var(--ink-black))] transition-colors"
-              >
-                Browse the Pantry
-                <span aria-hidden>→</span>
-              </MagneticButton>
-              <Link
-                href="#manifesto"
-                className="font-sans-text text-[15px] underline underline-offset-[6px] decoration-[0.5px] hover:decoration-[1.5px]"
-              >
-                Read the manifesto
-              </Link>
-            </div>
-          </div>
-
-          {/* Specimen card column — clean white card, real product photo dominant */}
-          <div className="col-span-12 lg:col-span-5 lg:pl-8">
-            <TiltCard maxDeg={5}>
-            <Link
-              href={`/products/${featuredProduct.slug}`}
-              className="group block no-underline focus-visible:outline-none"
-              aria-label={`Featured: ${featuredProduct.name}`}
-            >
-              <article className="bg-white aspect-[4/5] flex flex-col relative overflow-hidden shadow-[0_2px_0_rgba(26,24,23,0.1)] hover:shadow-[0_24px_60px_-20px_rgba(26,24,23,0.28)] transition-shadow duration-500">
-                <div className="absolute top-5 left-5 right-5 z-10 flex items-start justify-between">
-                  <div>
-                    <p className="specimen-lot opacity-70">FEATURED · {featuredProduct.loafNumber.toUpperCase()}</p>
-                    <p className="specimen-lot mt-0.5 opacity-50">LOT {featuredProduct.lot}</p>
-                  </div>
-                  <Strikethrough variant="wheat" size={40} />
-                </div>
-
-                {/* Saffron halo behind the product */}
-                <div
-                  className="epics-halo"
-                  style={{
-                    width: "70%",
-                    height: "55%",
-                    top: "20%",
-                    left: "15%",
-                    background: "radial-gradient(circle, rgb(var(--saffron)/0.55) 0%, rgb(var(--saffron)/0) 70%)",
-                  }}
-                  aria-hidden
-                />
-
-                <div className="flex-1 flex items-center justify-center p-8 pt-20 relative">
-                  <Image
-                    src={asset(featuredProduct.imageUrl)}
-                    alt={featuredProduct.name}
-                    width={600}
-                    height={750}
-                    unoptimized
-                    priority
-                    className="epics-float object-contain max-h-[88%] max-w-[78%] drop-shadow-[0_30px_20px_rgba(26,24,23,0.18)]"
-                  />
-                </div>
-
-                <div className="bg-[rgb(var(--cream-paper))] border-t border-[rgb(var(--ink-black)/0.6)] border-t-[0.5px] px-5 py-4 flex items-baseline justify-between gap-3">
-                  <div className="min-w-0">
-                    <h3 className="font-serif-display text-[20px] leading-[1.15] tracking-[-0.005em] truncate">
-                      {featuredProduct.name}
-                    </h3>
-                    <p className="specimen-lot opacity-60 mt-0.5">{featuredProduct.weight.toUpperCase()}</p>
-                  </div>
-                  <div className="flex flex-col items-end shrink-0">
-                    <span className="specimen-spec tabular-nums">{featuredProduct.priceEgp ?? "—"} EGP</span>
-                    <span className="specimen-lot opacity-60 mt-0.5 group-hover:opacity-100 group-hover:underline underline-offset-4 decoration-[0.5px]">
-                      SPECIMEN →
-                    </span>
-                  </div>
-                </div>
-              </article>
-            </Link>
-            </TiltCard>
-          </div>
-        </div>
-      </section>
+      <HeroCarousel />
 
       {/* ============================================================ */}
       {/* STATS BAND — huge serif numerals, by the numbers              */}

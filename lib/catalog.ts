@@ -748,23 +748,6 @@ export const productsByCategory = (cat: Product["category"]) => products.filter(
 export const consumerProducts = () => products.filter((p) => !p.isWholesale);
 export const wholesaleProducts = () => products.filter((p) => p.isWholesale);
 
-// Recipes — REAL titles scraped from https://epics-group.com/our-recipes/
-// (49 total; we surface the 12 most demo-relevant here, with the full set
-// retrievable from the live site. Methods are rewritten in brand voice with
-// real timings.)
-export const recipes = [
-  { slug: "european-loaf",         code: "R-01", title: "European Loaf",                            arabicTitle: "العيش الأوروبي",        productSlug: "euro",                time: "1h 50m", yield: "1 × 800g loaf",                summary: "The flagship loaf. Crackling crust, open crumb. The bread our manifesto refers to." },
-  { slug: "fudgy-brownies",        code: "R-02", title: "Fudgy Brownies",                            arabicTitle: "براونيز فادج",         productSlug: "brownies",            time: "32 min", yield: "12 squares",                   summary: "22 minutes in the oven. 10 to rest. Don't cut them warm." },
-  { slug: "crystal-pku-flatbread", code: "R-03", title: "Crystal PKU Flatbread",                     arabicTitle: "عيش كريستال PKU",     productSlug: "pku-baking-mix",      time: "1h 20m", yield: "6 flatbreads",                 summary: "Flatbread for PKU households. We publish the milligrams." },
-  { slug: "chocolate-muffins",     code: "R-04", title: "Chocolate Muffins",                          arabicTitle: "مافن شوكولاتة",        productSlug: "chocolate-muffin-mix",time: "32 min", yield: "12 muffins",                   summary: "Mix on medium for 3 minutes, into the oven for 22. The journal has the photograph." },
-  { slug: "crepes-with-chocolate-sauce", code: "R-05", title: "Crepes with Chocolate Sauce",          arabicTitle: "كريب مع صلصة الشوكولاتة",productSlug: "pancakes-crepe-mix",  time: "25 min", yield: "8 crepes",                     summary: "Thin enough to fold. Sauce made with our cocoa, on the side." },
-  { slug: "banana-pancakes",       code: "R-06", title: "Banana Pancakes",                            arabicTitle: "بان كيك بالموز",       productSlug: "pancakes-crepe-mix",  time: "20 min", yield: "10 pancakes",                  summary: "Folded mashed bananas into the batter. The 2025/11 photograph in the journal." },
-  { slug: "italian-pizza",         code: "R-07", title: "Italian Pizza on the Flat Bread Mix",        arabicTitle: "بيتزا إيطالية",        productSlug: "flat",                time: "1h 10m", yield: "Two 30cm pizzas",              summary: "The flat-bread base proves into a pizza dough you can throw. Wheat-free, certified." },
-  { slug: "qatayef-using-soft",    code: "R-08", title: "Qatayef on Soft Flour",                       arabicTitle: "قطايف بدقيق سوفت",     productSlug: "soft",                time: "45 min", yield: "20 qatayef",                   summary: "Ramadan, but coeliac. The blender method." },
-  { slug: "eid-cookies-using-soft",code: "R-09", title: "Eid Cookies (Kahk) on Soft",                  arabicTitle: "كحك العيد بدقيق سوفت", productSlug: "soft",                time: "1h 30m", yield: "30 cookies",                   summary: "Coarse sugar, yeast, ghee. The Eid morning kitchen, accessible." },
-  { slug: "low-protein-french-bread", code: "R-10", title: "Crystal · Low-Protein French Bread",      arabicTitle: "خبز فرنسي منخفض البروتين",productSlug: "pku-baking-mix",      time: "1h 50m", yield: "1 × 600g loaf",                summary: "PKU baguette. Crusts the way a French baguette should." },
-  { slug: "nutella-on-crystal-cocoa", code: "R-11", title: "Nutella on Crystal Cocoa",                  arabicTitle: "نوتيلا بكاكاو كريستال",productSlug: "cocoa-powder",        time: "30 min", yield: "1 × 400g jar",                  summary: "Hazelnuts, our cocoa, sugar, oil, milk. Blends to spreadable in 30 minutes." },
-  { slug: "chantilly-on-crystal-cream", code: "R-12", title: "Chantilly on Crystal Cream",              arabicTitle: "كريمة شانتيه بكريستال",productSlug: "whipping-cream",      time: "10 min", yield: "Tops 1 × 26cm cake",           summary: "Cold milk, whipping cream powder, whipped to peaks in eight minutes." },
-];
-
-export const recipeBySlug = (slug: string) => recipes.find((r) => r.slug === slug);
+// Recipes are now sourced from the real Epics catalogue — see lib/recipes.ts.
+// Re-exported here so existing imports `from "@/lib/catalog"` keep working.
+export { recipes, recipeBySlug, recipesByShelf, type Recipe } from "./recipes";

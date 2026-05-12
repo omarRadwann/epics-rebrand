@@ -1,8 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Nav } from "../../_components/Nav";
 import { Footer } from "../../_components/Footer";
 import { recipes, productBySlug } from "@/lib/catalog";
+import { asset } from "@/lib/asset";
 
 const detail: Record<string, {
   ingredients: { qty: string; item: string; note?: string }[];
@@ -103,26 +105,40 @@ export default function RecipePage({ params }: { params: { slug: string } }) {
     <main id="main" className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))]">
       <Nav />
 
-      {/* Editorial hero — magazine spread, not a blog post */}
+      {/* Editorial hero — magazine spread with the real recipe photo */}
       <section className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]">
-        <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 pt-12 pb-20 grid grid-cols-12 gap-x-8 gap-y-10">
+        <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 pt-12 pb-16 grid grid-cols-12 gap-x-8 gap-y-10">
           <div className="col-span-12 md:col-span-3 flex flex-col gap-3">
             <p className="specimen-lot opacity-60">{r.code} · METHOD</p>
             {d && <p className="specimen-spec opacity-60">{d.date}</p>}
+            <p className="specimen-spec opacity-60">{r.shelf === "pku" ? "CRYSTAL · PKU" : r.shelf.toUpperCase()}</p>
           </div>
           <div className="col-span-12 md:col-span-9">
-            <h1 className="font-serif-display text-[80px] sm:text-[112px] leading-[0.95] tracking-[-0.03em]">
+            <h1 className="font-serif-display text-[64px] sm:text-[96px] leading-[0.95] tracking-[-0.03em]">
               {r.title.split(" ").map((word, i, arr) => (
                 <span key={i} className={i === arr.length - 1 ? "italic" : ""}>
                   {word}{i < arr.length - 1 ? " " : "."}
                 </span>
               ))}
             </h1>
-            <p className="font-serif-display italic text-[26px] leading-[1.3] tracking-[-0.005em] mt-10 max-w-[680px]">
+            <p className="font-serif-display italic text-[24px] leading-[1.3] tracking-[-0.005em] mt-8 max-w-[680px]">
               {r.summary}
             </p>
           </div>
         </div>
+        {r.imageUrl && (
+          <div className="relative w-full aspect-[2/1] sm:aspect-[5/2] overflow-hidden border-t border-[rgb(var(--ink-black)/0.6)] border-t-[0.5px]">
+            <Image
+              src={asset(r.imageUrl)}
+              alt={r.title}
+              fill
+              unoptimized
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+          </div>
+        )}
       </section>
 
       {/* Stat band */}
