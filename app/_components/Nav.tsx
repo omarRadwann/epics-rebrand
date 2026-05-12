@@ -70,31 +70,31 @@ export function Nav({ locale = "en" }: { locale?: NavLocale }) {
         {/* Right: links + locale + cart */}
         <div className="flex items-center gap-6 sm:gap-8">
           <Link
-            href={locale === "ar" ? "/ar" : "/gluten-free"}
-            aria-current={isActive("/gluten-free") || isActive("/sugar-free") ? "page" : undefined}
-            className={navLinkClass("/gluten-free")}
+            href={locale === "ar" ? "/ar" : "/shop"}
+            aria-current={isActive("/shop") || isActive("/gluten-free") || isActive("/sugar-free") ? "page" : undefined}
+            className={navLinkClass("/shop")}
           >
             {t.shop}
           </Link>
           <Link
-            href={locale === "ar" ? "/ar" : "/recipes/european-loaf"}
-            aria-current={isActive("/recipes") ? "page" : undefined}
-            className={`${navLinkClass("/recipes")} hidden sm:inline`}
+            href={locale === "ar" ? "/ar" : "/journal"}
+            aria-current={isActive("/journal") || isActive("/recipes") ? "page" : undefined}
+            className={`${navLinkClass("/journal")} hidden sm:inline`}
           >
             {t.recipes}
           </Link>
           <Link
-            href={locale === "ar" ? "/ar" : "/about"}
-            aria-current={isActive("/about") ? "page" : undefined}
+            href={locale === "ar" ? "/ar/about" : "/about"}
+            aria-current={isActive("/about") || isActive("/ar/about") ? "page" : undefined}
             className={`${navLinkClass("/about")} hidden md:inline`}
           >
             {t.about}
           </Link>
           <Link
-            href={locale === "ar" ? "/ar" : "/pku"}
-            aria-current={isActive("/pku") ? "page" : undefined}
+            href={locale === "ar" ? "/ar/pku" : "/pku"}
+            aria-current={isActive("/pku") || isActive("/ar/pku") ? "page" : undefined}
             className={`specimen-spec text-[rgb(var(--pomegranate))] underline-offset-4 decoration-[0.5px] hidden md:inline transition-colors ${
-              isActive("/pku")
+              isActive("/pku") || isActive("/ar/pku")
                 ? "underline decoration-[rgb(var(--pomegranate))] decoration-[1.5px]"
                 : "hover:underline"
             }`}

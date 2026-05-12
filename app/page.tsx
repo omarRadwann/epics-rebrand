@@ -194,7 +194,7 @@ export default function Home() {
                 Selling fastest, by lot.
               </h2>
             </div>
-            <Link href="#" className="font-sans-text text-[14px] underline underline-offset-4 decoration-[0.5px] hidden md:inline">
+            <Link href="/shop" className="font-sans-text text-[14px] underline underline-offset-4 decoration-[0.5px] hidden md:inline">
               Full catalogue →
             </Link>
           </header>
@@ -329,23 +329,23 @@ export default function Home() {
               <br />
               our limits.
             </h2>
-            <Link href="#" className="inline-block mt-8 specimen-spec underline underline-offset-[6px] decoration-[0.5px]">
+            <Link href="/journal" className="inline-block mt-8 specimen-spec underline underline-offset-[6px] decoration-[0.5px]">
               READ THE JOURNAL →
             </Link>
           </div>
 
           <ol className="col-span-12 md:col-span-8 md:col-start-5 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10 list-none p-0">
             {[
-              { code: "J-001", title: "Why we list phenylalanine in milligrams.", date: "12 OCT 2026", read: "4 min" },
-              { code: "J-002", title: "The lot number is the warranty.", date: "28 SEP 2026", read: "3 min" },
-              { code: "J-003", title: "What the ISO audit actually involves.", date: "14 SEP 2026", read: "6 min" },
-              { code: "J-004", title: "On not photographing food on wooden boards.", date: "01 SEP 2026", read: "2 min" },
+              { code: "J-001", slug: "phenylalanine-in-milligrams", title: "Why we list phenylalanine in milligrams.", date: "12 OCT 2026", read: "4 min" },
+              { code: "J-002", slug: "the-lot-number-is-the-warranty", title: "The lot number is the warranty.", date: "28 SEP 2026", read: "3 min" },
+              { code: "J-003", slug: "what-the-iso-audit-involves", title: "What the ISO audit actually involves.", date: "14 SEP 2026", read: "6 min" },
+              { code: "J-004", slug: "no-wooden-boards", title: "On not photographing food on wooden boards.", date: "01 SEP 2026", read: "2 min" },
             ].map((item) => (
               <li key={item.code}>
                 <article>
                   <p className="specimen-lot">{item.code}</p>
                   <h3 className="font-serif-display text-[24px] leading-[1.2] tracking-[-0.01em] mt-2">
-                    <Link href="#" className="hover:text-[rgb(var(--saffron))] transition-colors no-underline">
+                    <Link href={`/journal/${item.slug}`} className="hover:text-[rgb(var(--saffron))] transition-colors no-underline">
                       {item.title}
                     </Link>
                   </h3>

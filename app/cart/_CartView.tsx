@@ -141,9 +141,12 @@ export function CartView() {
                     {total} <span className="specimen-spec text-[14px] opacity-60 ml-1">EGP</span>
                   </dd>
                 </div>
-                <button className="w-full bg-[rgb(var(--ink-black))] text-[rgb(var(--cream-paper))] py-4 specimen-spec hover:bg-[rgb(var(--saffron))] hover:text-[rgb(var(--ink-black))] transition-colors">
+                <Link
+                  href="/checkout"
+                  className="block w-full text-center bg-[rgb(var(--ink-black))] text-[rgb(var(--cream-paper))] py-4 specimen-spec hover:bg-[rgb(var(--saffron))] hover:text-[rgb(var(--ink-black))] transition-colors no-underline"
+                >
                   PROCEED TO CHECKOUT →
-                </button>
+                </Link>
                 <p className="specimen-lot opacity-60 mt-4 leading-[1.5]">
                   Cash on delivery available · Card or wallet at checkout · Free returns within 7 days if a lot is faulty.
                 </p>

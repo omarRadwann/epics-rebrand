@@ -88,20 +88,20 @@ export function Footer({ locale = "en" }: { locale?: "en" | "ar" }) {
           <div className="md:col-span-2">
             <div className="specimen-lot text-[rgb(var(--cream-paper)/0.5)] mb-4">F-03 · {t.shop}</div>
             <ul className="space-y-2 font-sans-text text-[14px] text-[rgb(var(--cream-paper)/0.85)] list-none p-0">
-              <li><Link href="#" className="hover:underline underline-offset-4">{t.shopAll}</Link></li>
-              <li><Link href="#" className="hover:underline underline-offset-4">{t.gluten}</Link></li>
-              <li><Link href="#" className="hover:underline underline-offset-4">{t.sugar}</Link></li>
-              <li><Link href="#" className="hover:underline underline-offset-4 text-[rgb(var(--pomegranate))] brightness-150">{t.pku}</Link></li>
+              <li><Link href={locale === "ar" ? "/ar" : "/shop"} className="hover:underline underline-offset-4">{t.shopAll}</Link></li>
+              <li><Link href={locale === "ar" ? "/ar" : "/gluten-free"} className="hover:underline underline-offset-4">{t.gluten}</Link></li>
+              <li><Link href={locale === "ar" ? "/ar" : "/sugar-free"} className="hover:underline underline-offset-4">{t.sugar}</Link></li>
+              <li><Link href={locale === "ar" ? "/ar/pku" : "/pku"} className="hover:underline underline-offset-4 text-[rgb(var(--pomegranate))] brightness-150">{t.pku}</Link></li>
             </ul>
           </div>
 
           <div className="md:col-span-2">
             <div className="specimen-lot text-[rgb(var(--cream-paper)/0.5)] mb-4">F-04 · {t.read}</div>
             <ul className="space-y-2 font-sans-text text-[14px] text-[rgb(var(--cream-paper)/0.85)] list-none p-0">
-              <li><Link href="#" className="hover:underline underline-offset-4">{t.recipes}</Link></li>
-              <li><Link href="#" className="hover:underline underline-offset-4">{t.about}</Link></li>
-              <li><Link href="#" className="hover:underline underline-offset-4">{t.pkuExplainer}</Link></li>
-              <li><Link href="#" className="hover:underline underline-offset-4">{t.journal}</Link></li>
+              <li><Link href="/recipes/european-loaf" className="hover:underline underline-offset-4">{t.recipes}</Link></li>
+              <li><Link href={locale === "ar" ? "/ar/about" : "/about"} className="hover:underline underline-offset-4">{t.about}</Link></li>
+              <li><Link href={locale === "ar" ? "/ar/pku" : "/pku"} className="hover:underline underline-offset-4">{t.pkuExplainer}</Link></li>
+              <li><Link href="/journal" className="hover:underline underline-offset-4">{t.journal}</Link></li>
             </ul>
           </div>
         </div>
