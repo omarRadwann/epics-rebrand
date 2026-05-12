@@ -35,4 +35,4 @@ pnpm-debug.log*
 next-env.d.ts
 
 # logs
-install.log
+*.log
