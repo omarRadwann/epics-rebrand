@@ -156,7 +156,7 @@ export default function Home() {
               count={`${products.filter((p) => p.category === "gluten-free").length} specimens`}
               summary="Bread, baking mixes, cereal, brownies. For coeliac kitchens that want to behave like every other kitchen."
               accent="saffron"
-              href="#"
+              href="/gluten-free"
             />
             <CategoryTile
               code="02"
@@ -165,7 +165,7 @@ export default function Home() {
               count={`${products.filter((p) => p.category === "sugar-free").length} specimens`}
               summary="Cake mix, whipping cream, ice cream. For diabetic households who still want birthdays."
               accent="saffron"
-              href="#"
+              href="/sugar-free"
             />
             <CategoryTile
               code="03"

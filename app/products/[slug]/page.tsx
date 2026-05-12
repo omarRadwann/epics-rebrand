@@ -4,6 +4,7 @@ import { Nav } from "../../_components/Nav";
 import { Footer } from "../../_components/Footer";
 import { ProductCard } from "../../_components/ProductCard";
 import { Strikethrough } from "../../_components/Strikethrough";
+import { SpecimenHeader } from "../../_components/SpecimenHeader";
 import { products, productBySlug, productsByCategory } from "@/lib/catalog";
 
 export function generateStaticParams() {
@@ -39,14 +40,16 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
               / <span className="text-[rgb(var(--ink-black))]">{p.loafNumber.toUpperCase()}</span>
             </p>
           </nav>
-          <ol className="specimen-header flex flex-wrap items-baseline gap-x-3 gap-y-1 list-none m-0 p-0">
-            <SpecField label="UNIT" value={p.loafNumber} />
-            <SpecField label="NAME" value={p.name} />
-            <SpecField label="WEIGHT" value={p.weight} />
-            <SpecField label="FREE FROM" value={p.freeFrom.join(" + ")} />
-            <SpecField label="LOT" value={p.lot} />
-            <SpecField label="ISO" value={p.iso} />
-          </ol>
+          <SpecimenHeader
+            fields={[
+              { label: "UNIT", value: p.loafNumber },
+              { label: "NAME", value: p.name },
+              { label: "WEIGHT", value: p.weight },
+              { label: "FREE FROM", value: p.freeFrom.join(" + ") },
+              { label: "LOT", value: p.lot },
+              { label: "ISO", value: p.iso },
+            ]}
+          />
         </div>
       </section>
 
@@ -205,12 +208,3 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   );
 }
 
-function SpecField({ label, value }: { label: string; value: string }) {
-  return (
-    <li className="flex items-baseline gap-2">
-      <span className="specimen-lot opacity-60">{label}</span>
-      <span className="specimen-spec">{value.toUpperCase()}</span>
-      <span aria-hidden className="specimen-spec opacity-30 ml-3">·</span>
-    </li>
-  );
-}
