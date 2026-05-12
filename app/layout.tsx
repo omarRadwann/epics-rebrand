@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Newsreader, Inter, JetBrains_Mono, Tajawal } from "next/font/google";
 import { CartProvider } from "./_components/CartProvider";
 import { ScrollProgress } from "./_components/ScrollProgress";
+import { CustomCursor } from "./_components/CustomCursor";
+import { PaperTexture } from "./_components/PaperTexture";
 import "./globals.css";
 
 const serif = Newsreader({
@@ -58,15 +60,19 @@ export default function RootLayout({
       lang="en"
       className={`${serif.variable} ${sans.variable} ${mono.variable} ${arabic.variable}`}
     >
-      <body>
+      <body className="relative">
+        <PaperTexture />
         <ScrollProgress />
+        <CustomCursor />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-[rgb(var(--ink-black))] focus:text-[rgb(var(--cream-paper))] focus:px-4 focus:py-2 focus:specimen-spec"
         >
           Skip to content
         </a>
-        <CartProvider>{children}</CartProvider>
+        <CartProvider>
+          <div className="relative z-[1]">{children}</div>
+        </CartProvider>
       </body>
     </html>
   );

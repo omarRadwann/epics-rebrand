@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CartCount } from "./CartCount";
+import { Logo } from "./Logo";
 
 /**
  * Top navigation. Cream-paper surface with a hairline-bottom rule.
@@ -56,13 +57,14 @@ export function Nav({ locale = "en" }: { locale?: NavLocale }) {
       aria-label={locale === "ar" ? "التنقل الرئيسي" : "Primary"}
     >
       <div className="mx-auto max-w-[1440px] flex items-center justify-between px-6 sm:px-12 lg:px-24 py-5">
-        {/* Left: wordmark + lot */}
+        {/* Left: bespoke Quiver-drawn wordmark + lot */}
         <div className="flex items-baseline gap-4">
           <Link
             href={t.home}
-            className="font-serif-display text-[28px] leading-none text-[rgb(var(--ink-black))] no-underline tracking-tight"
+            className="block text-[rgb(var(--ink-black))] no-underline"
+            aria-label="Epics — home"
           >
-            {locale === "ar" ? "Epics" : "Epics"}
+            <Logo size={92} monochrome="currentColor" />
           </Link>
           <span className="specimen-lot hidden sm:inline">EST · 6 OCT · LOT 26-0001</span>
         </div>

@@ -36,3 +36,7 @@ next-env.d.ts
 
 # logs
 *.log
+
+# scratch — Quiver.ai generation outputs (chosen logos are in public/logo/)
+/quiver-logos
+

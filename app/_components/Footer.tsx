@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "./Logo";
 
 /**
  * Footer. Uses real Epics Group contact info from epics-group.com (audited live).
@@ -60,7 +61,9 @@ export function Footer({ locale = "en" }: { locale?: "en" | "ar" }) {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16 border-b border-[rgb(var(--cream-paper)/0.2)] border-b-[0.5px]">
           <div className="md:col-span-5">
             <div className="specimen-lot text-[rgb(var(--cream-paper)/0.5)] mb-4">F-01 · COLOPHON</div>
-            <div className="font-serif-display text-[40px] leading-[44px] tracking-[-0.015em] mb-4">Epics</div>
+            <div className="mb-4 text-[rgb(var(--cream-paper))]">
+              <Logo size={180} monochrome="currentColor" />
+            </div>
             <p className="font-sans-text text-[15px] leading-[1.55] text-[rgb(var(--cream-paper)/0.85)] max-w-md">
               {t.made}
             </p>
