@@ -279,11 +279,11 @@ export function Logo({
         EPICS
       </text>
 
-      {/* Hairline rules flanking the infra label */}
-      <line x1="40" y1="96" x2="68" y2="96" strokeWidth="0.6" opacity="0.85" />
-      <line x1="132" y1="96" x2="160" y2="96" strokeWidth="0.6" opacity="0.85" />
-
-      {/* Infra label */}
+      {/* Infra label — flanking rules removed because the text width with
+          wide tracking exceeded our SVG-space estimate and the rules
+          ended up crossing through 'EST' and 'CAIRO' as accidental
+          strikethroughs. The composition still reads with the arch above
+          + diamond + wordmark + circular stamp providing rhythm. */}
       <text
         x={fullW / 2}
         y={98.5}
