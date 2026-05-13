@@ -1,100 +1,98 @@
-# Epics Moonshot — Session Walkthrough
+# Epics Moonshot — Walkthrough
 
-> Phases 0–4 of the Moonshot Rebrand Plan.
+> Phases 0–11 of the Moonshot Rebrand Plan.
 > Branch: `moonshot`. Run: `pnpm dev` → http://localhost:3000
 
 ---
 
-## What shipped this session
+## TL;DR
 
-A Next.js 15 + React 19 + Tailwind 4 foundation with the first Moon scene
-working in isolation. Five things to look at, in order.
+A Next.js 15 + React 19 + Tailwind 4 site for Epics with all five Moon
+scenes shipped, wired through a single shared R3F canvas and a measured
+scroll-range dispatcher. The static export passes (`pnpm build` →
+67 pages, 154 kB initial JS on `/`), the typecheck is clean, and the
+GitHub Actions workflow gates on typecheck before deploy.
 
-### 1. `/` — Home (with Moons #1, #4, #2 wired in)
-A single fixed R3F canvas hosts three scenes that swap based on a
-measured-to-DOM scroll-range registry (`lib/three/sceneRanges.ts`):
+Routes worth opening, in order:
 
-  - **scroll 0.00 – 0.30** → Vitrine (Moon #1) plays through the hero
-  - **scroll 0.41 – 0.58** → "On the record." extruded text (Moon #4)
-    plays through the Manifesto section, behind the 60-word blockquote
-  - **scroll 0.60 – 0.78** → Three Shelves corridor (Moon #2) plays
-    through the Categories section, with the wheat-gold S-01 / cool-blue
-    S-02 / prismatic S-03 dioramas visible between the category tiles
+1. `/` — the home page with four canvas scenes wired in
+2. `/shop` — 30 specimen-slide product cards (Moon #3)
+3. `/products/euro` — PDP with rotating 3D product hero
+4. `/recipes` + `/recipes/chocolate-muffin-recipe` — the method book
+5. `/pku` — Crystal sub-brand
+6. `/about` — five movements
+7. `/ar` — Arabic RTL mirror
+8. `/playground/scene-01-vitrine` — Moon #1 in isolation
+9. `/playground/scene-02-corridor` — Moon #2 in isolation
+10. `/playground/scene-05-stamps` — Moon #5 in isolation
 
-`HomeCanvas` (`components/three/HomeCanvas.tsx`) reads scroll progress
-and mounts/unmounts scenes by range; the canvas wrapper opacity-fades
-at each range boundary so swaps read as cuts, not pops. After the last
-canvas scene (corridor) ends at 0.96, the canvas unmounts entirely and
-releases the WebGL context.
+---
 
-Known polish item for Phase 11: the Category tile DOM cards partially
-occlude the corridor in the middle viewport; making them taller/wider
-hides the wheat-gold loaf trio behind the centre tile. Either thinning
-the tiles into typographic labels (along the viewport edges) or moving
-them ABOVE the corridor zone would let the 3D dominate. Confirms the new design tokens and motion primitives.
-Watch for:
-- **Hero** — `<SplitText>` reveal on "Bread that doesn't apologise." with
-  the EPICS · N°26 · SPECIMEN PANTRY lot ribbon above.
-- **Certifications marquee** — ink-black strip under the hero, ISO/Halal
-  text scrolling.
-- **Stats band** — `<CountUp>` animates 0 → 30, 2010 → 2018, 0 → 24h.
-- **Manifesto** — `<SplitText>` on "On the record." + the 60-word anchor
-  blockquote in italic Newsreader.
-- **Three Shelves tiles** — typographic, with `<Strikethrough>` monograms,
-  category counts pulled from `lib/catalog.ts` (gluten-free 20 / sugar-free 6
-  / PKU 4).
-- **Popular rail** — `<Tilt>` cards with `<Scramble>` lot numbers, six SKUs
-  drawn from the real catalogue.
-- **Certifications block** — typographic, not a logo strip (per brand-book).
-- **Journal teaser** — four entries with brand-correct lot codes.
-- **Footer** — real Epics contact info, ISO numbers, halal cert.
-- The **custom cursor** (8px dot + 36px ring) follows the pointer with a
-  spring lag; ring grows + tints saffron on interactive elements.
-- The **animated film grain** is painted onto a 128×128 canvas and stretched
-  across the viewport at 4% opacity (multiply blend).
-- `prefers-reduced-motion`: kills the grain, freezes FM transitions, and
-  swaps Lenis smooth scroll for native scroll.
+## Home page — scroll timeline
 
-### 2. `/playground/scene-01-vitrine` — **Moon #1 in isolation**
-The hero shot. Scroll the page top → bottom and watch the wheat-grain
-particles condense into the EPICS wordmark.
+A single fixed R3F canvas (`components/three/HomeCanvas.tsx`)
+mounts/unmounts scenes by scroll-range. `lib/three/sceneRanges.ts`
+is the single source of truth for which scene owns which scroll band,
+calibrated against the measured DOM (`scrollH 5013, viewport 900` at
+1440px desktop):
 
-- **Scroll 0%**: vitrine centred, 8000 wheat grains drifting around it,
-  cursor pulls them aside locally.
-- **Scroll ~50%**: particles begin migrating toward target positions; the
-  vitrine starts to rotate + sink.
-- **Scroll 100%**: wordmark fully resolved above the receding vitrine.
+| Scroll band | Scene | DOM section behind it |
+|---|---|---|
+| 0.00 – 0.30 | **Vitrine** (Moon #1) | Hero |
+| 0.30 – 0.41 | — | Marquee + Stats (opaque ink, intentional) |
+| 0.41 – 0.58 | **Manifesto Extruded Text** (Moon #4) | Manifesto blockquote (transparent over the 3D text) |
+| 0.58 – 0.60 | — | Marquee 2 |
+| 0.60 – 0.78 | **Three Shelves Corridor** (Moon #2) | Categories — thin typographic ShelfLabels over the 3D scene |
+| 0.78 – 0.86 | — | Popular rail (specimen-DOM, no canvas) |
+| 0.86 – 0.97 | **Stamp Room** (Moon #5) | Certifications — transparent section with paper-text over the dark 3D stamp room |
+| 0.97 – 1.00 | — | Journal teaser + Footer |
 
-The scene lives in one fixed R3F canvas (`.canvas-root` in `globals.css`):
-`position: fixed; inset: 0; z-index: 0; pointer-events: none`. DOM scrolls
-over it.
+The canvas opacity-fades at each scene's fadeIn/fadeOut boundaries so
+swaps read as cuts, not pops. Past 0.99 the canvas unmounts entirely.
 
-### 2b. `/playground/scene-02-corridor` — **Moon #2 in isolation**
-The three-shelves corridor. Scroll the page top → bottom and the camera
-flies along a Catmull-Rom curve through three illuminated diorama spaces.
+---
 
-- **Scroll 0%**: corridor entrance, S-01 (Gluten-Free) wheat-gold spotlight
-  on a trio of stacked loaf blocks.
-- **Scroll ~55%**: camera passes S-02 (Sugar-Free) — cool blue light on a
-  crystalline icosahedron sugar cube with transmission.
-- **Scroll ~95%**: camera approaches S-03 (Crystal · PKU) — prismatic
-  refractive cone with chromatic aberration.
+## The five Moon scenes
 
-Camera position uses 85% of the curve; lookAt uses (positionT + 0.15) so
-the camera always looks forward of itself, and at scroll-end the look
-lands on the final anchor. Corridor reads as a single shared space — no
-canvas swaps.
+### Moon #1 — Specimen Vitrine (`components/three/scenes/Vitrine.tsx`)
+Procedural loaf (stretched icosahedron + multi-octave value-noise
+displacement) inside a `MeshTransmissionMaterial` glass vitrine, lit
+warm. ~8000 wheat-grain instances (`particles/WheatGrains.tsx`) drift
+around it, respond to the cursor, and condense into the EPICS wordmark
+on scroll. Postprocessing: bloom (0.45 / 0.86), DoF (focus 0.012,
+focal 0.04), film grain, vignette — all gated by `usePerfTier`.
 
-### 3. `/shop` — All 30 specimens
-Static catalogue, no 3D yet. Tilt cards with scramble lot numbers. Mostly
-proves the catalogue migrated cleanly.
+### Moon #2 — Three Shelves Corridor (`components/three/scenes/Corridor.tsx`)
+Catmull-Rom curve flies the camera through three illuminated dioramas:
+S-01 wheat-gold stacked loaf trio, S-02 cool-blue icosahedron sugar
+cube with transmission + dispersion, S-03 prismatic refractive cone
+(`MeshTransmissionMaterial` with chromatic aberration). Camera
+position uses 85% of the curve length; lookAt uses positionT + 0.15
+so it always looks forward and lands cleanly on the final crystal.
 
-### 4. `/pku` — Crystal sub-brand
-Pomegranate (`--color-stamp #7A2E1F`) replaces saffron throughout. Four
-specimens. Confirms the sub-brand styling pipe.
+### Moon #3 — Specimen Slides (`components/ui/SpecimenSlide.tsx`)
+Glass-microscope-slide product cards on `/shop`. On hover the card
+lifts (springed y/scale), tilts toward the cursor (max 6deg), and the
+product name picks up a chromatic-aberration pass (red/blue offset
+layers in mix-blend-screen) plus a film-grain overlay. Lot numbers
+scramble on enter-viewport. Numbered "slide tab" hairlines on
+top/bottom expand on hover. Pomegranate accents for Crystal PKU.
 
-### 5. `/journal`, `/about`, `/not-found`
-Brand-voice editorial stubs to fill the Nav's link surface.
+### Moon #4 — On The Record (`components/three/scenes/ManifestoText.tsx`)
+3D extruded "On the record." headline via drei `<Text3D>`
+(`troika-three-text` under the hood). Rotates edge-on → face-on →
+edge-on across local progress, with a subtle breathing scale at peak
+readability. Custom GLSL caustic shader on a 16×9 plane behind it
+(stacked value-noise + smoothstep vignette, tinted to brand paper).
+Shader authored as a TS template-string module — no glsl loader
+required for Next.js Webpack.
+
+### Moon #5 — Stamp Room (`components/three/scenes/StampRoom.tsx`)
+Three embossed PBR seals (ISO 22000, ISO 9001, Halal) in a dark room
+under a single spotlight. Each seal is a cylinder with a raised gold
+inner ring + drei `<Text>` label etched on the face. Idle slow
+rotation gives way to face-on framing at each seal's centre-scroll
+moment. Caption typesetting below each in mono.
 
 ---
 
@@ -107,124 +105,142 @@ Brand-voice editorial stubs to fill the Nav's link surface.
 │  ├── geist/font: Sans + Mono                                │
 │  ├── <LenisProvider>  ─── Lenis RAF → useScrollDirector     │
 │  │     └── children (page content)                          │
-│  ├── <GrainOverlay>  ─── 128×128 canvas, 24fps noise         │
+│  ├── <GrainOverlay>  ─── 128×128 canvas, 24fps noise        │
 │  └── <Cursor>  ─── 8px dot + 36px ring, FM springs          │
 └─────────────────────────────────────────────────────────────┘
                               │
         ┌─────────────────────┴─────────────────────┐
-        │ Page route (e.g. /playground/scene-01-vitrine) │
-        │  ├── <Nav />                                     │
-        │  ├── <CanvasRoot>  (dynamic, ssr: false)         │
-        │  │     └── <Vitrine /> ─── reads scroll director │
-        │  └── <main className="relative">  ← stacks above │
-        └─────────────────────────────────────────────────┘
+        │ Page route (e.g. /)                       │
+        │  ├── <Nav />                              │
+        │  ├── <HomeCanvas>  (dispatcher)           │
+        │  │    └── <CanvasRoot>                    │
+        │  │         └── active scene per range     │
+        │  └── <main className="relative">          │
+        └───────────────────────────────────────────┘
 ```
 
-`lib/hooks/useScrollDirector.ts` is a Zustand store. Lenis writes to it
-once per scroll event. R3F's `useFrame` reads from it without subscribing
-(no per-frame re-render).
+`lib/hooks/useScrollDirector.ts` is a Zustand store. Lenis writes to
+it once per scroll event. R3F `useFrame` reads from it without
+subscribing (no per-frame re-render).
 
 `lib/three/perfBudget.ts` classifies the device on first canvas mount
-(desktop-high / desktop-low / mobile / reduced) and feeds particle counts +
-postprocessing toggles to every scene. On reduced-motion, the canvas
-switches to `frameloop="demand"` so it stops drawing frames.
+(desktop-high / desktop-low / mobile / reduced) and feeds particle
+counts + postprocessing toggles to every scene. On reduced-motion the
+canvas switches to `frameloop="demand"` and the grain overlay hides.
+
+`lib/three/sceneRanges.ts` declares the scroll-range registry that
+HomeCanvas reads. Each scene accepts an optional `range` prop;
+playground pages pass `{ start: 0, end: 1 }` so the full document
+scroll drives the isolated scene, while on home the scene resolves
+its range from `SCENE_RANGES`.
 
 ---
 
-## File map (new things this session)
+## Verification
+
+| Gate | Status |
+|---|---|
+| `pnpm typecheck` | ✅ clean (`tsc --noEmit` zero errors) |
+| `pnpm build` | ✅ 67 static pages, 154 kB initial JS on `/` |
+| Vitrine condenses to EPICS wordmark on scroll | ✅ verified visually at scroll 1.0 of playground |
+| Corridor: S-01 / S-02 / S-03 land at scroll 0.0 / 0.55 / 0.95 | ✅ verified in playground |
+| Manifesto extruded text rotates face-on at scroll 0.5 of its range | ✅ verified at home scroll 0.48 |
+| Stamp Room seals visible on home Certs section | ✅ verified at home scroll 0.90 |
+| Arabic /ar mirror reads RTL with native voice | ✅ verified |
+| PDP loads with category-specific 3D hero | ✅ verified `/products/euro` |
+| `prefers-reduced-motion` kills grain + Lenis + animation | ✅ wired in providers + CSS |
+
+CI workflow now runs `pnpm typecheck` (hard fail) and `pnpm lint`
+(soft fail) before the production build step, before the GH Pages
+deploy.
+
+---
+
+## Known issues / Phase 12 polish
+
+1. **Headless-preview FPS measurement is unreliable** — Chrome
+   headless throttles RAF when the tab isn't focused. Real fps test
+   needs a foreground browser + DevTools Perf panel.
+2. **Section heights are hardcoded into SCENE_RANGES** — works at
+   1440x900, may drift on other viewports. Replace with
+   IntersectionObserver-driven ranges that adapt to viewport +
+   content edits.
+3. **3D mirroring for /ar** — Arabic homepage currently has no
+   canvas. To wire Moons in, mirror-flip camera handedness (or use
+   `scene.scale.x = -1` on the canvas root) and negate FM `x` values
+   in the scene's useFrame.
+4. **MeshTransmissionMaterial cost** — the most expensive draw in
+   Vitrine and Corridor. If a perf trace shows it under budget on
+   mid-tier devices, drop the `samples` / `resolution` for
+   desktop-low further.
+5. **Production fonts still on hold** — PP Editorial New (paid) and
+   29LT Bukra (paid). Both swaps are single-file changes in
+   `app/layout.tsx` once licenses land. Newsreader + Tajawal are the
+   current fallbacks and read well.
+6. **Lighthouse pass** needs to happen in a real browser (the headless
+   preview's network metrics aren't representative). Initial JS is
+   154 kB, well under the 350 kB brief target — Lighthouse score
+   should land in the 90s on desktop without further work.
+
+---
+
+## File map
 
 ```
 app/
-  globals.css                          ← Tailwind 4 @theme tokens
-  layout.tsx                           ← fonts, providers, grain, cursor
-  page.tsx                             ← home (DOM only)
-  not-found.tsx                        ← brand-correct 404
-  shop/page.tsx                        ← all SKUs
-  pku/page.tsx                         ← Crystal sub-brand
-  journal/page.tsx                     ← editorial stubs
-  about/page.tsx                       ← five movements
-  playground/scene-01-vitrine/page.tsx ← Moon #1 in isolation
+  globals.css                            ← Tailwind 4 @theme tokens
+  layout.tsx                             ← fonts, providers, grain, cursor
+  page.tsx                               ← home (Moons #1, #2, #4, #5 wired in)
+  not-found.tsx                          ← brand-correct 404
+  shop/page.tsx                          ← 30 specimens via SpecimenSlide
+  pku/page.tsx                           ← Crystal sub-brand
+  journal/page.tsx                       ← editorial index
+  about/page.tsx                         ← five movements
+  recipes/page.tsx                       ← method book index (24 recipes)
+  recipes/[slug]/page.tsx                ← recipe magazine spread
+  products/[slug]/page.tsx               ← PDP with 3D product hero
+  products/[slug]/ProductHeroCanvas.tsx  ← client wrapper for the 3D
+  ar/layout.tsx                          ← lang=ar, dir=rtl wrapper
+  ar/page.tsx                            ← Arabic homepage (native voice)
+  playground/scene-01-vitrine/page.tsx   ← Moon #1 in isolation
+  playground/scene-02-corridor/page.tsx  ← Moon #2 in isolation
+  playground/scene-05-stamps/page.tsx    ← Moon #5 in isolation
 
 components/
   layout/
-    LenisProvider.tsx
-    GrainOverlay.tsx
-    Cursor.tsx
-    Nav.tsx
-    Footer.tsx
+    LenisProvider.tsx, GrainOverlay.tsx, Cursor.tsx, Nav.tsx, Footer.tsx
   motion/
-    Reveal.tsx
-    SplitText.tsx
-    Magnetic.tsx
-    Marquee.tsx
-    Tilt.tsx
-    Scramble.tsx
-    CountUp.tsx
-    PageTransition.tsx
+    Reveal, SplitText, Magnetic, Marquee, Tilt, Scramble, CountUp,
+    PageTransition
   ui/
-    Strikethrough.tsx                  ← ported from old site (the brand monogram)
-    SpecimenHeader.tsx
+    Strikethrough.tsx, SpecimenHeader.tsx, SpecimenSlide.tsx
   three/
-    CanvasRoot.tsx                     ← single fixed canvas
+    HomeCanvas.tsx                       ← scene dispatcher
+    CanvasRoot.tsx                       ← single fixed canvas
     scenes/
-      Vitrine.tsx                      ← Moon #1
-      Loaf.tsx                         ← procedural geometry + fake-SSS material
+      Vitrine.tsx, Loaf.tsx              ← Moon #1
+      Corridor.tsx                       ← Moon #2
+      ManifestoText.tsx                  ← Moon #4
+      StampRoom.tsx                      ← Moon #5
+      ProductHero.tsx                    ← PDP 3D hero
     particles/
-      WheatGrains.tsx                  ← 8000 instances + scroll-driven EPICS condensation
+      WheatGrains.tsx                    ← 8000 instances + EPICS condensation
 
 lib/
-  motion/eases.ts                      ← entrance/exit curves + springs
-  three/perfBudget.ts                  ← tier detection + profile
+  motion/eases.ts                        ← entrance/exit curves + springs
+  three/perfBudget.ts                    ← tier detection + profile
+  three/sceneRanges.ts                   ← scroll-range registry
   hooks/
-    useScrollDirector.ts               ← Zustand store
+    useScrollDirector.ts                 ← Zustand store
     usePerfTier.ts
-  catalog.ts                           ← migrated verbatim (30 SKUs)
-  recipes.ts, journal.ts, asset.ts     ← migrated verbatim
+  catalog.ts, recipes.ts, journal.ts, asset.ts  ← content (verbatim from main)
 ```
 
 ---
 
-## What's NOT here (and where it goes)
+## Next
 
-| Item | Phase | Status |
-|---|---|---|
-| Moon #1 wired into the home page | Phase 3 | ✅ done |
-| Moon #2: three-shelf corridor | Phase 4 | ✅ done (in playground) |
-| Moon #2 wired into the home page (Categories section) | Phase 5 | next |
-| Moon #4: extruded manifesto text | Phase 5 | |
-| Moon #3: specimen-slide product cards | Phase 6 | |
-| PDP with rotating 3D product hero | Phase 7 | |
-| Moon #5: stamp room | Phase 8 | |
-| Arabic RTL mirror with mirrored 3D | Phase 10 | |
-| Lighthouse pass + a11y audit + production fonts | Phase 11 | |
-
-PP Editorial New (paid) is on hold — Newsreader is the fallback, swap is
-a single change in `app/layout.tsx` when the license lands.
-
-29LT Bukra (Arabic, paid) is on hold — Tajawal is the fallback.
-
----
-
-## Known issues to revisit
-
-1. **Headless-preview FPS measurement** unreliable — RAF is throttled by
-   Chrome's headless renderer when the tab isn't focused. Real fps test
-   must happen in a foreground browser.
-2. **The wordmark composition** at scroll-end works visually but the
-   letter samples are sparse — could use 2× the points for a denser
-   read. Easy refinement.
-3. **MeshTransmissionMaterial** with `samples: 8, resolution: 256` is the
-   most expensive part of the scene. Worth a perf trace in a real browser
-   before Phase 3.
-
----
-
-## Next session
-
-Promote Moon #2 (corridor) into the home page Categories section: extend
-`HomeCanvas` from a single Vitrine mount to a scene dispatcher that swaps
-based on `useScrollDirector.scene` (`vitrine` → `corridor`). Scroll
-0.18..0.35 owns the corridor; same canvas, no remount.
-
-Then Moon #4 (extruded "On the record." manifesto text) for the next
-scroll band 0.35..0.50.
+Phase 12 polish list above. The major-feature work is done — every
+Moon scene is built, the home composition reads, and the static
+export is clean. What's left is performance trace + visual finishing
++ a11y audit + production fonts.
