@@ -268,7 +268,22 @@ function SearchTrigger({ onClick }: { onClick: () => void }) {
       aria-label="Open search (⌘K)"
       className="fixed bottom-6 right-6 z-[60] bg-[rgb(var(--ink-black))] text-[rgb(var(--cream-paper))] px-4 py-3 specimen-spec hover:bg-[rgb(var(--saffron))] hover:text-[rgb(var(--ink-black))] transition-colors shadow-[0_8px_30px_-10px_rgba(20,17,15,0.45)] flex items-center gap-3"
     >
-      <span aria-hidden>⌕</span>
+      {/* Crafted magnifying-glass — circle + 45° handle. Replaces the
+          Unicode ⌕ which renders inconsistently across fonts and was being
+          mistaken for a cursor on some browsers. */}
+      <svg
+        aria-hidden="true"
+        width="14"
+        height="14"
+        viewBox="0 0 14 14"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      >
+        <circle cx="6" cy="6" r="4.2" />
+        <line x1="9.2" y1="9.2" x2="12.5" y2="12.5" />
+      </svg>
       SEARCH
       <span className="specimen-lot opacity-60 border border-current px-1.5 py-0.5">⌘K</span>
     </button>
