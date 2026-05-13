@@ -3,110 +3,202 @@
 import { motion } from "framer-motion";
 
 /**
- * Epics wordmark. Set in Italiana — a contemporary high-contrast display
- * serif in the Bodoni family. Premium typographic restraint, all caps,
- * wide tracking, anchored by a hairline rule.
+ * Epics — premium multi-line editorial lockup.
  *
- * This is intentionally NOT a sigil + wordmark composition. The decisive
- * move on a refined editorial brand (Aesop, Le Labo, The Row, Lemaire,
- * Buly 1803, Loewe) is pure typography in a face that the rest of the
- * site doesn't use — so the wordmark carries its own voice. Italiana is
- * loaded only for this component.
+ * This is the register Buly 1803, Le Labo, and the Officine Universelle
+ * houses use: a quiet wordmark FRAMED by tiny editorial labels above and
+ * below, with hairline rules. The wordmark is set in Italiana (high-contrast
+ * Bodoni class); the labels in monospace with wide tracking.
  *
- * `size` controls the cap-height in px.
- * `withRule` adds the hairline rule below (default on for the standalone
- *   logo, off when the lot-code badge sits next to it in the nav so the
- *   two don't fight for vertical attention).
- * `animated` triggers a subtle reveal: letters fade + lift, rule wipes
- *   from left to right.
+ * The lockup makes the brand feel CATALOGUED, not just typed. That's the
+ * difference between "I picked a nice font" and "this is a documented
+ * specimen with a date, a place, and a number."
+ *
+ * Variants
+ * ────────
+ * `variant="full"` (default for footer / brand pages):
+ *     EST · MMXXVI · CAIRO              ← top label (mono, tracked)
+ *     ─────────────────────             ← hairline rule
+ *           E P I C S                   ← wordmark (Italiana, all caps)
+ *     ─────────────────────             ← hairline rule
+ *     OFFICINE · 6 OCT · LOT 0001       ← bottom label (mono, tracked)
+ *
+ * `variant="compact"` (default for nav at small sizes):
+ *     ───────────                       ← top rule
+ *      E P I C S                        ← wordmark only
+ *     ───────────                       ← bottom rule
+ *
+ *  `variant="wordmark"` (display-only, no rules):
+ *     E P I C S
  */
 export function Logo({
   size = 22,
   className = "",
   animated = false,
-  withRule = true,
+  variant = "compact",
 }: {
   size?: number;
   className?: string;
   animated?: boolean;
-  withRule?: boolean;
+  variant?: "full" | "compact" | "wordmark";
 }) {
-  // Italiana is generous on cap height — letter-spacing 0.18em gives the
-  // luxury-house tracking. Slight optical kerning between IC where the
-  // dot of the I would otherwise crowd the C bowl.
-  const letterSpacing = "0.22em";
-  // Visual width is approximately N letters × (cap-height × 0.72) + tracking.
-  // Italiana caps run ~0.7 of font-size, so width ≈ 5 × size × 0.7 + 4×size×0.22.
-  const approxWidth = Math.round(size * (5 * 0.72 + 4 * 0.22));
+  // Italiana caps run ~0.7 of font-size. Tracking 0.28em is the editorial
+  // luxury-house setting — wider than typical wordmarks so the mark reads
+  // as a label, not a heading.
+  const tracking = 0.28;
+  const wordmarkWidth = Math.round(size * (5 * 0.7 + 4 * tracking));
 
   const wordmarkStyle: React.CSSProperties = {
-    fontFamily: "var(--font-logo), 'Italiana', 'Bodoni Moda', 'Bodoni 72', Didot, serif",
+    fontFamily:
+      "var(--font-logo), 'Italiana', 'Bodoni Moda', 'Bodoni 72', Didot, serif",
     fontWeight: 400,
     fontSize: size,
     lineHeight: 1,
-    letterSpacing,
+    letterSpacing: `${tracking}em`,
     color: "currentColor",
     display: "inline-block",
     whiteSpace: "nowrap",
-    // Trim native cap-height padding so the rule sits flush with the
-    // letter baseline.
-    paddingRight: `calc(${letterSpacing} * 0)`,
   };
 
-  if (animated) {
-    return (
-      <span
-        className={`inline-flex flex-col items-start text-current select-none ${className}`}
-        aria-label="Epics"
-      >
-        <motion.span
-          style={wordmarkStyle}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
-        >
-          EPICS
-        </motion.span>
-        {withRule && (
-          <motion.span
-            aria-hidden
-            style={{
-              display: "block",
-              height: 1,
-              width: approxWidth,
-              background: "currentColor",
-              opacity: 0.85,
-              marginTop: size * 0.32,
-              transformOrigin: "left center",
-            }}
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
-          />
-        )}
-      </span>
-    );
-  }
+  // Rule width matches wordmark cap-width so it reads as an editorial frame.
+  const ruleWidth = wordmarkWidth;
+  const ruleGap = Math.round(size * 0.42);
+  const labelGap = Math.round(size * 0.24);
 
-  return (
-    <span
-      className={`inline-flex flex-col items-start text-current select-none ${className}`}
-      aria-label="Epics"
-    >
-      <span style={wordmarkStyle}>EPICS</span>
-      {withRule && (
-        <span
+  // Top label sized at ~33% of cap-height. Never let it fall below 8px or
+  // mono fonts vanish.
+  const labelSize = Math.max(8, Math.round(size * 0.33));
+
+  const Rule = ({ delay = 0.3 }: { delay?: number }) => {
+    if (animated) {
+      return (
+        <motion.span
           aria-hidden
           style={{
             display: "block",
             height: 1,
-            width: approxWidth,
+            width: ruleWidth,
             background: "currentColor",
             opacity: 0.85,
-            marginTop: size * 0.32,
+            transformOrigin: "left center",
+          }}
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{
+            duration: 0.85,
+            ease: [0.16, 1, 0.3, 1],
+            delay,
           }}
         />
-      )}
+      );
+    }
+    return (
+      <span
+        aria-hidden
+        style={{
+          display: "block",
+          height: 1,
+          width: ruleWidth,
+          background: "currentColor",
+          opacity: 0.85,
+        }}
+      />
+    );
+  };
+
+  const Wordmark = () => {
+    const content = "EPICS";
+    if (animated) {
+      return (
+        <motion.span
+          style={wordmarkStyle}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {content}
+        </motion.span>
+      );
+    }
+    return <span style={wordmarkStyle}>{content}</span>;
+  };
+
+  const Label = ({ text, delay }: { text: string; delay: number }) => {
+    const style: React.CSSProperties = {
+      fontFamily: "var(--font-mono), 'JetBrains Mono', ui-monospace, monospace",
+      fontWeight: 500,
+      fontSize: labelSize,
+      lineHeight: 1,
+      letterSpacing: "0.18em",
+      textTransform: "uppercase",
+      color: "currentColor",
+      opacity: 0.7,
+      display: "inline-block",
+      whiteSpace: "nowrap",
+    };
+    if (animated) {
+      return (
+        <motion.span
+          style={style}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 0.7, y: 0 }}
+          transition={{
+            duration: 0.7,
+            ease: [0.16, 1, 0.3, 1],
+            delay,
+          }}
+        >
+          {text}
+        </motion.span>
+      );
+    }
+    return <span style={style}>{text}</span>;
+  };
+
+  // Wordmark-only — for the tightest contexts where the rules would clutter.
+  if (variant === "wordmark") {
+    return (
+      <span
+        className={`inline-flex items-center text-current select-none ${className}`}
+        aria-label="Epics"
+      >
+        <Wordmark />
+      </span>
+    );
+  }
+
+  // Compact — wordmark inside a hairline frame (rules above + below).
+  // The frame transforms a plain font choice into a crafted mark.
+  if (variant === "compact") {
+    return (
+      <span
+        className={`inline-flex flex-col items-center text-current select-none ${className}`}
+        style={{ gap: Math.round(ruleGap * 0.55) }}
+        aria-label="Epics"
+      >
+        <Rule delay={0.05} />
+        <Wordmark />
+        <Rule delay={0.4} />
+      </span>
+    );
+  }
+
+  // Full lockup — top label, rule, wordmark, rule, bottom label. The
+  // composition that turns a font into a specimen tag.
+  return (
+    <span
+      className={`inline-flex flex-col items-center text-current select-none ${className}`}
+      aria-label="Epics — Established MMXXVI, 6 October City, Cairo"
+    >
+      <Label text="EST · MMXXVI · CAIRO" delay={0.05} />
+      <span style={{ height: labelGap }} aria-hidden />
+      <Rule delay={0.2} />
+      <span style={{ height: Math.round(ruleGap * 0.55) }} aria-hidden />
+      <Wordmark />
+      <span style={{ height: Math.round(ruleGap * 0.55) }} aria-hidden />
+      <Rule delay={0.5} />
+      <span style={{ height: labelGap }} aria-hidden />
+      <Label text="OFFICINE · 6 OCT · LOT 0001" delay={0.65} />
     </span>
   );
 }

@@ -61,8 +61,8 @@ export function Footer({ locale = "en" }: { locale?: "en" | "ar" }) {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16 border-b border-[rgb(var(--cream-paper)/0.2)] border-b-[0.5px]">
           <div className="md:col-span-5">
             <div className="specimen-lot text-[rgb(var(--cream-paper)/0.5)] mb-4">F-01 · COLOPHON</div>
-            <div className="mb-4 text-[rgb(var(--cream-paper))]">
-              <Logo size={56} withRule={true} />
+            <div className="mb-6 text-[rgb(var(--cream-paper))] flex justify-start">
+              <Logo size={48} variant="full" />
             </div>
             <p className="font-sans-text text-[15px] leading-[1.55] text-[rgb(var(--cream-paper)/0.85)] max-w-md">
               {t.made}

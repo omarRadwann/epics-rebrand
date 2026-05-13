@@ -65,7 +65,7 @@ export function Nav({ locale = "en" }: { locale?: NavLocale }) {
             className="text-[rgb(var(--ink-black))] no-underline block"
             aria-label="Epics — home"
           >
-            <Logo size={26} withRule={true} />
+            <Logo size={22} variant="compact" />
           </Link>
           <span className="specimen-lot hidden md:inline opacity-70 mt-1">EST · 6 OCT · LOT 26-0001</span>
         </div>

@@ -261,9 +261,12 @@ export function HeroCarousel() {
           </div>
         </div>
 
-        {/* Image column with Ken Burns + crossfade */}
+        {/* Image column with Ken Burns + crossfade.
+            On desktop the image stretches to the full grid-row height so it
+            keeps pace with the text column (previously aspect-[4/5] left a
+            ~250px cream-paper gap below the image — broken on desktop). */}
         <div className="col-span-12 lg:col-span-5 lg:pl-8 relative">
-          <div className="relative w-full aspect-[4/5] overflow-hidden">
+          <div className="relative w-full aspect-[4/5] lg:aspect-auto lg:h-full lg:min-h-[560px] overflow-hidden">
             <AnimatePresence mode="sync">
               <motion.div
                 key={`img-${slide.id}`}
