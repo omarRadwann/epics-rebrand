@@ -171,98 +171,85 @@ export function HeroCarousel() {
       <div className="relative mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 pt-14 pb-20 lg:pt-20 lg:pb-28 grid grid-cols-12 gap-x-8 gap-y-10 min-h-[640px] lg:min-h-[720px]">
         {/* Text column */}
         <div className="col-span-12 lg:col-span-7 flex flex-col justify-between relative z-10">
-          {/* Eyebrow */}
-          <AnimatePresence mode="wait">
-            <motion.p
-              key={`eb-${slide.id}`}
-              className={`specimen-lot ${accentEyebrow[slide.accent]}`}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.4 }}
-            >
-              {slide.eyebrow}
-            </motion.p>
-          </AnimatePresence>
+          {/* Eyebrow — keyed motion (no AnimatePresence, no exit-wait). */}
+          <motion.p
+            key={`eb-${slide.id}`}
+            className={`specimen-lot ${accentEyebrow[slide.accent]}`}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: easeOut }}
+          >
+            {slide.eyebrow}
+          </motion.p>
 
-          {/* Headline — per-word reveal with direct props (variants + masks
-              were getting stuck on first paint; this version animates each
-              word independently so it can't fall into a bad state). */}
+          {/* Headline — per-word reveal. Keyed by slide so React remounts
+              the whole h1 on slide change; each word fades + lifts on its
+              own delay. No AnimatePresence wrapper (the cascade of multiple
+              mode="wait" wrappers caused slides 2/4 to render blank). */}
           <div className="mt-8 lg:mt-10">
-            <AnimatePresence mode="wait">
-              <motion.h1
-                key={`h-${slide.id}`}
-                className={`font-serif-display text-[64px] sm:text-[100px] lg:text-[132px] leading-[0.95] tracking-[-0.035em] ${accentText[slide.accent]}`}
-                initial={{ opacity: 1 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0, transition: { duration: 0.25 } }}
-              >
-                {(() => {
-                  let wordIdx = 0;
-                  return slide.headline.map((line, li) => {
-                    const isLast = li === slide.headline.length - 1;
-                    const words = line.split(" ");
-                    return (
-                      <span key={li} className={`block ${isLast ? "italic" : ""}`}>
-                        {words.map((w, wi) => {
-                          const i = wordIdx++;
-                          return (
-                            <motion.span
-                              key={`${slide.id}-${li}-${wi}`}
-                              className="inline-block"
-                              initial={{ y: 32, opacity: 0 }}
-                              animate={{ y: 0, opacity: 1 }}
-                              transition={{
-                                duration: 0.7,
-                                ease: easeOut,
-                                delay: 0.08 + i * 0.055,
-                              }}
-                              style={{ whiteSpace: "pre" }}
-                            >
-                              {w}{wi < words.length - 1 ? " " : ""}
-                            </motion.span>
-                          );
-                        })}
-                      </span>
-                    );
-                  });
-                })()}
-              </motion.h1>
-            </AnimatePresence>
+            <motion.h1
+              key={`h-${slide.id}`}
+              className={`font-serif-display text-[64px] sm:text-[100px] lg:text-[132px] leading-[0.95] tracking-[-0.035em] ${accentText[slide.accent]}`}
+            >
+              {(() => {
+                let wordIdx = 0;
+                return slide.headline.map((line, li) => {
+                  const isLast = li === slide.headline.length - 1;
+                  const words = line.split(" ");
+                  return (
+                    <span key={li} className={`block ${isLast ? "italic" : ""}`}>
+                      {words.map((w, wi) => {
+                        const i = wordIdx++;
+                        return (
+                          <motion.span
+                            key={`${slide.id}-${li}-${wi}`}
+                            className="inline-block"
+                            initial={{ y: 32, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{
+                              duration: 0.7,
+                              ease: easeOut,
+                              delay: 0.08 + i * 0.055,
+                            }}
+                            style={{ whiteSpace: "pre" }}
+                          >
+                            {w}{wi < words.length - 1 ? " " : ""}
+                          </motion.span>
+                        );
+                      })}
+                    </span>
+                  );
+                });
+              })()}
+            </motion.h1>
 
-            {/* Body */}
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={`b-${slide.id}`}
-                className={`font-sans-text text-[17px] sm:text-[19px] leading-[1.55] mt-8 max-w-[540px] ${isInk ? "text-[rgb(var(--cream-paper)/0.85)]" : "text-[rgb(var(--charcoal-sub))]"}`}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              >
-                {slide.body}
-              </motion.p>
-            </AnimatePresence>
+            {/* Body — keyed, no AnimatePresence. */}
+            <motion.p
+              key={`b-${slide.id}`}
+              className={`font-sans-text text-[17px] sm:text-[19px] leading-[1.55] mt-8 max-w-[540px] ${isInk ? "text-[rgb(var(--cream-paper)/0.85)]" : "text-[rgb(var(--charcoal-sub))]"}`}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3, ease: easeOut }}
+            >
+              {slide.body}
+            </motion.p>
           </div>
 
-          {/* CTA */}
+          {/* CTA — keyed motion, no AnimatePresence. */}
           <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`cta-${slide.id}`}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.5, delay: 0.45 }}
+            <motion.div
+              key={`cta-${slide.id}`}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.45, ease: easeOut }}
+            >
+              <Link
+                href={slide.ctaHref}
+                className={`inline-flex items-center gap-3 px-7 py-4 specimen-spec transition-colors ${accentCta[slide.accent]}`}
               >
-                <Link
-                  href={slide.ctaHref}
-                  className={`inline-flex items-center gap-3 px-7 py-4 specimen-spec transition-colors ${accentCta[slide.accent]}`}
-                >
-                  {slide.ctaLabel}
-                </Link>
-              </motion.div>
-            </AnimatePresence>
+                {slide.ctaLabel}
+              </Link>
+            </motion.div>
 
             <button
               onClick={() => setPaused((p) => !p)}
