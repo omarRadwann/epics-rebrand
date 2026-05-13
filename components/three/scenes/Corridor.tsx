@@ -41,6 +41,7 @@ import { BlendFunction, KernelSize } from "postprocessing";
 
 import { useScrollDirector } from "@/lib/hooks/useScrollDirector";
 import { usePerfTier } from "@/lib/hooks/usePerfTier";
+import { localProgress, SCENE_RANGES } from "@/lib/three/sceneRanges";
 
 /* ============================================================
    §1 — Corridor layout constants
@@ -88,11 +89,17 @@ const SHELF_FILL_COLORS = [
 /* ============================================================
    §2 — Corridor scene component
    ============================================================ */
-export function Corridor() {
+interface CorridorProps {
+  range?: { start: number; end: number };
+}
+
+export function Corridor({ range }: CorridorProps = {}) {
   const profile = usePerfTier();
   const { camera } = useThree();
   const targetVec = useRef(new THREE.Vector3());
   const lookVec = useRef(new THREE.Vector3());
+  const sceneRange =
+    range ?? SCENE_RANGES.corridor ?? { start: 0, end: 1, fadeIn: 0, fadeOut: 1 };
 
   // Pre-computed camera curve. Anchor points are tuned so each shelf
   // lands centred in the frame at its target scroll position.
@@ -113,7 +120,13 @@ export function Corridor() {
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
-    const progress = useScrollDirector.getState().progress;
+    const global = useScrollDirector.getState().progress;
+    const progress = localProgress(global, {
+      start: sceneRange.start,
+      end: sceneRange.end,
+      fadeIn: sceneRange.start,
+      fadeOut: sceneRange.end,
+    });
 
     // Camera position uses 85% of the curve; lookAt uses (positionT +
     // 0.15) so we always look forward of ourselves. At scroll-end the

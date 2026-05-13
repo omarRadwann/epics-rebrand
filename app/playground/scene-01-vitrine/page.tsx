@@ -29,9 +29,11 @@ export default function PlaygroundVitrine() {
     <>
       <Nav />
 
-      {/* Fixed canvas root, behind DOM content */}
+      {/* Fixed canvas root, behind DOM content.
+          Playground uses the full document scroll (0..1) instead of the
+          0..0.18 slice the home page allocates to the vitrine. */}
       <CanvasRoot>
-        <Vitrine />
+        <Vitrine range={{ start: 0, end: 1 }} />
       </CanvasRoot>
 
       <main id="main" className="relative">

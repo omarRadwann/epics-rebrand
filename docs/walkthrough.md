@@ -10,11 +10,28 @@
 A Next.js 15 + React 19 + Tailwind 4 foundation with the first Moon scene
 working in isolation. Five things to look at, in order.
 
-### 1. `/` — Home (with Moon #1 wired in)
-The Vitrine now renders in a fixed canvas behind the hero. Scroll 0 → 0.18
-drives the particle condensation; the canvas fades out 0.18 → 0.24 and
-unmounts at 0.32, releasing the WebGL context. Subsequent sections (stats,
-manifesto, three-shelves intro, popular rail, etc.) scroll normally on top. Confirms the new design tokens and motion primitives.
+### 1. `/` — Home (with Moons #1, #4, #2 wired in)
+A single fixed R3F canvas hosts three scenes that swap based on a
+measured-to-DOM scroll-range registry (`lib/three/sceneRanges.ts`):
+
+  - **scroll 0.00 – 0.30** → Vitrine (Moon #1) plays through the hero
+  - **scroll 0.41 – 0.58** → "On the record." extruded text (Moon #4)
+    plays through the Manifesto section, behind the 60-word blockquote
+  - **scroll 0.60 – 0.78** → Three Shelves corridor (Moon #2) plays
+    through the Categories section, with the wheat-gold S-01 / cool-blue
+    S-02 / prismatic S-03 dioramas visible between the category tiles
+
+`HomeCanvas` (`components/three/HomeCanvas.tsx`) reads scroll progress
+and mounts/unmounts scenes by range; the canvas wrapper opacity-fades
+at each range boundary so swaps read as cuts, not pops. After the last
+canvas scene (corridor) ends at 0.96, the canvas unmounts entirely and
+releases the WebGL context.
+
+Known polish item for Phase 11: the Category tile DOM cards partially
+occlude the corridor in the middle viewport; making them taller/wider
+hides the wheat-gold loaf trio behind the centre tile. Either thinning
+the tiles into typographic labels (along the viewport edges) or moving
+them ABOVE the corridor zone would let the 3D dominate. Confirms the new design tokens and motion primitives.
 Watch for:
 - **Hero** — `<SplitText>` reveal on "Bread that doesn't apologise." with
   the EPICS · N°26 · SPECIMEN PANTRY lot ribbon above.

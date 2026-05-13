@@ -27,13 +27,23 @@ import { Loaf } from "./Loaf";
 import { WheatGrains } from "../particles/WheatGrains";
 import { useScrollDirector } from "@/lib/hooks/useScrollDirector";
 import { usePerfTier } from "@/lib/hooks/usePerfTier";
+import { SCENE_RANGES, localProgress } from "@/lib/three/sceneRanges";
 
-export function Vitrine() {
+interface VitrineProps {
+  /** Override scroll range. Defaults to SCENE_RANGES.vitrine.
+   *  Pass `{ start: 0, end: 1 }` from a playground page to use the full
+   *  document scroll. */
+  range?: { start: number; end: number };
+}
+
+export function Vitrine({ range }: VitrineProps = {}) {
   const profile = usePerfTier();
   const groupRef = useRef<THREE.Group>(null);
   const baseCameraY = useRef(0.2);
   const baseCameraZ = useRef(5);
   const { camera } = useThree();
+  const sceneRange =
+    range ?? SCENE_RANGES.vitrine ?? { start: 0, end: 1, fadeIn: 0, fadeOut: 1 };
 
   // ============================================================
   // Camera: cinematic handheld noise + scroll-driven dolly
@@ -45,7 +55,13 @@ export function Vitrine() {
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
-    const progress = useScrollDirector.getState().progress;
+    const global = useScrollDirector.getState().progress;
+    const progress = localProgress(global, {
+      start: sceneRange.start,
+      end: sceneRange.end,
+      fadeIn: sceneRange.start,
+      fadeOut: sceneRange.end,
+    });
 
     if (profile.animations.handheldCamera) {
       // Per brief: amp 0.02, freq 0.3
@@ -132,7 +148,7 @@ export function Vitrine() {
       </group>
 
       {/* Wheat-grain particle field surrounds the whole composition */}
-      <WheatGrains count={profile.particles.wheatGrains} />
+      <WheatGrains count={profile.particles.wheatGrains} range={sceneRange} />
 
       {/* Soft ground catch-shadow — fills the space below the plinth */}
       <mesh

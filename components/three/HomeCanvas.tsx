@@ -1,21 +1,27 @@
 "use client";
 
 /**
- * Home-page R3F canvas host.
+ * Home-page R3F canvas host + multi-scene dispatcher.
  *
- * Mounts the Moon #1 Vitrine and fades the entire canvas out as scroll
- * progress crosses the corridor handoff threshold (0.18 → 0.24). Past
- * that point the canvas is invisible AND the WebGL loop is paused
- * (frameloop="demand") so we don't burn GPU on something the user can't
- * see.
+ * The home page scrolls through several scenes (Vitrine → Corridor →
+ * Manifesto → Stamps, with non-canvas DOM sections in between). One
+ * canvas, one WebGL context — the active scene's component is mounted
+ * inside; siblings unmount when scrolled out of their range.
  *
- * Phase 4 will replace this single-scene mount with a multi-scene
- * dispatcher that switches based on `scrollDirector.scene`. For now
- * it's just the vitrine.
+ * The canvas wrapper crossfades at scene boundaries so the swap reads
+ * as a clean cut rather than a hard pop. Past the last scene's range
+ * the canvas unmounts entirely and frees the WebGL context.
+ *
+ * Per Moonshot Brief §6 scroll choreography.
  */
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { useScrollDirector } from "@/lib/hooks/useScrollDirector";
+import {
+  SCENE_RANGES,
+  fadeAlpha,
+  sceneAt,
+} from "@/lib/three/sceneRanges";
 
 const CanvasRoot = dynamic(
   () => import("./CanvasRoot").then((m) => m.CanvasRoot),
@@ -27,34 +33,52 @@ const Vitrine = dynamic(
   { ssr: false }
 );
 
-const FADE_START = 0.18;
-const FADE_END = 0.24;
-const UNMOUNT_AT = 0.32;
+const Corridor = dynamic(
+  () => import("./scenes/Corridor").then((m) => m.Corridor),
+  { ssr: false }
+);
+
+const ManifestoText = dynamic(
+  () => import("./scenes/ManifestoText").then((m) => m.ManifestoText),
+  { ssr: false }
+);
+
+// Keep canvas alive until past the last canvas scene (corridor ends at 0.96).
+// Pad a bit so the fade-out completes before unmount.
+const UNMOUNT_AFTER = 0.98;
 
 export function HomeCanvas() {
-  // Mirror progress into local state, but throttled to one render per
-  // visible-state transition so we don't re-render on every Lenis tick.
+  const [scene, setScene] = useState<string>("vitrine");
   const [opacity, setOpacity] = useState(1);
   const [mounted, setMounted] = useState(true);
 
   useEffect(() => {
+    let lastScene = "vitrine";
     let lastBucket = -1;
     let lastMounted = true;
+
     const unsub = useScrollDirector.subscribe((state) => {
       const p = state.progress;
-      // 12-step opacity quantisation — visually identical, ~12x fewer
-      // React re-renders than mirroring every Lenis tick.
-      const raw =
-        p < FADE_START
-          ? 1
-          : p > FADE_END
-            ? 0
-            : 1 - (p - FADE_START) / (FADE_END - FADE_START);
-      const bucket = Math.round(raw * 12);
-      const nextMounted = p < UNMOUNT_AT;
+
+      const activeScene = sceneAt(p);
+
+      // Compute fade alpha against whichever scene currently owns p, or
+      // — if we're between scenes — use the nearest range's fade-out.
+      const range =
+        activeScene !== "none"
+          ? (SCENE_RANGES[activeScene] ?? null)
+          : null;
+      const alpha = range ? fadeAlpha(p, range) : 0;
+      const bucket = Math.round(alpha * 16);
+      const nextMounted = p < UNMOUNT_AFTER;
+
+      if (activeScene !== lastScene && activeScene !== "none" && activeScene !== "specimens") {
+        lastScene = activeScene;
+        setScene(activeScene);
+      }
       if (bucket !== lastBucket) {
         lastBucket = bucket;
-        setOpacity(bucket / 12);
+        setOpacity(bucket / 16);
       }
       if (nextMounted !== lastMounted) {
         lastMounted = nextMounted;
@@ -70,12 +94,14 @@ export function HomeCanvas() {
     <div
       style={{
         opacity,
-        transition: "opacity 250ms cubic-bezier(0.16, 1, 0.3, 1)",
+        transition: "opacity 200ms cubic-bezier(0.16, 1, 0.3, 1)",
         pointerEvents: "none",
       }}
     >
       <CanvasRoot>
-        <Vitrine />
+        {scene === "vitrine" && <Vitrine />}
+        {scene === "corridor" && <Corridor />}
+        {scene === "manifesto" && <ManifestoText />}
       </CanvasRoot>
     </div>
   );

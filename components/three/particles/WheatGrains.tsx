@@ -19,9 +19,11 @@ import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useScrollDirector } from "@/lib/hooks/useScrollDirector";
 import { usePerfTier } from "@/lib/hooks/usePerfTier";
+import { localProgress, SCENE_RANGES } from "@/lib/three/sceneRanges";
 
 interface WheatGrainsProps {
   count: number;
+  range?: { start: number; end: number };
 }
 
 // Sample points that, when filled, read as the letters E-P-I-C-S.
@@ -103,10 +105,12 @@ const SCRATCH_OBJ = new THREE.Object3D();
 const SCRATCH_V = new THREE.Vector3();
 const SCRATCH_CURSOR = new THREE.Vector3();
 
-export function WheatGrains({ count }: WheatGrainsProps) {
+export function WheatGrains({ count, range }: WheatGrainsProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const profile = usePerfTier();
   const { size } = useThree();
+  const sceneRange =
+    range ?? SCENE_RANGES.vitrine ?? { start: 0, end: 1, fadeIn: 0, fadeOut: 1 };
 
   // Rest positions (where particles drift around when scroll = 0)
   const restPositions = useMemo(() => {
@@ -189,10 +193,17 @@ export function WheatGrains({ count }: WheatGrainsProps) {
     const mesh = meshRef.current;
     if (!mesh) return;
     const t = state.clock.elapsedTime;
-    const progress = useScrollDirector.getState().progress;
-    // Condensation begins at scroll 0.04 and is complete by 0.16
-    // (right before we hand off to the corridor).
-    const condense = THREE.MathUtils.clamp((progress - 0.04) / 0.12, 0, 1);
+    const global = useScrollDirector.getState().progress;
+    const progress = localProgress(global, {
+      start: sceneRange.start,
+      end: sceneRange.end,
+      fadeIn: sceneRange.start,
+      fadeOut: sceneRange.end,
+    });
+    // Condensation begins at local 0.22 and is complete by 0.88 of
+    // this scene's slice — so on the home page (range 0..0.18) the
+    // wordmark fully forms by scroll ~0.16, the corridor handoff point.
+    const condense = THREE.MathUtils.clamp((progress - 0.22) / 0.66, 0, 1);
     const condenseEased = condense * condense * (3 - 2 * condense); // smoothstep
 
     // Cursor in world: project from screen NDC onto plane z = -1.0
