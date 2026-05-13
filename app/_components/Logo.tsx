@@ -3,43 +3,30 @@
 import { motion } from "framer-motion";
 
 /**
- * Epics — typographic lockup PLUS a custom identifying mark.
+ * Epics — hand-drawn premium logomark.
  *
- * The mark: a geometric LOAF SILHOUETTE with three hairline SCORING marks
- * across its crust. It says exactly what the brand is: a bakery. Drawn at
- * the same hairline weight as the editorial rules and frame around the
- * wordmark, so the whole composition reads as ONE crafted system rather
- * than "a font next to a clipart icon."
+ * No clipart. Every line, every label, every ornament is drawn as native
+ * SVG geometry inside a single coordinate space, so the whole mark scales
+ * as one composition instead of "a font next to an icon."
  *
- * Why a scored loaf — three reasons
- * ─────────────────────────────────
- * 1. Identifies the brand category at a glance (bakery, food).
- * 2. The three scoring marks line up with the three shelves
- *    (Gluten-Free, Sugar-Free, Crystal · PKU) — a triple meaning the
- *    audience eventually discovers but doesn't need to.
- * 3. Geometric reduction — pure hairline strokes, no illustration risk.
- *    Reads at 14px (favicon) and 120px (footer) without redrawing.
+ * The composition is modelled on Officine Universelle Buly's 1803 stamp
+ * and Le Labo's apothecary-card lockups. From top to bottom:
  *
- * Variants
- * ────────
- * `variant="full"` (footer / brand pages):
+ *     OFFICINE · D'ALIMENTS          ← arched supra label (mono caps)
+ *           ╱─◊─╲
+ *           E P I C S                 ← wordmark (Italiana, large)
+ *      ──────────────────             ← hairline rule
+ *     EST · MMXXVI · CAIRO            ← infra label (mono caps)
+ *           ╱     ╲
+ *          (  26  )                   ← circular issue badge
+ *           ╲     ╱
  *
- *          ╭─╮ ╭─╮ ╭─╮          ← three scoring marks
- *         ╭─────────╮            ← scored loaf
- *         ╰─────────╯
- *     EST · MMXXVI · CAIRO
- *     ────────────────────
- *           E P I C S            ← wordmark (Italiana)
- *     ────────────────────
- *     OFFICINE · 6 OCT · LOT 0001
+ * `variant="full"`     — the whole composition above (footer / brand pages)
+ * `variant="compact"`  — wordmark inside hairline frame (nav)
+ * `variant="wordmark"` — wordmark only
  *
- * `variant="compact"` (nav default):
- *      ╭─╮ ╭─╮ ╭─╮
- *     ╭───────────╮    E P I C S
- *     ╰───────────╯
- *
- *  `variant="wordmark"` (display-only):
- *     E P I C S
+ * All paths/text inherit `currentColor`, so the mark reads on cream,
+ * ink, saffron, sage, and pomegranate surfaces without modification.
  */
 export function Logo({
   size = 22,
@@ -52,8 +39,8 @@ export function Logo({
   animated?: boolean;
   variant?: "full" | "compact" | "wordmark";
 }) {
-  // Italiana caps run ~0.7 of font-size. 0.28em tracking is the editorial
-  // luxury-house setting.
+  /* ─── compact / wordmark variants ──────────────────────────────────── */
+
   const tracking = 0.28;
   const wordmarkWidth = Math.round(size * (5 * 0.7 + 4 * tracking));
 
@@ -71,88 +58,38 @@ export function Logo({
 
   const ruleWidth = wordmarkWidth;
   const ruleGap = Math.round(size * 0.42);
-  const labelGap = Math.round(size * 0.24);
-  const labelSize = Math.max(8, Math.round(size * 0.33));
 
-  // Mark sizing — generous against the wordmark cap-height so the loaf
-  // reads at a glance instead of resembling decoration. ViewBox 38×26
-  // (proper bakery-loaf aspect ratio, generous scoring zone above).
-  const markH = Math.round(size * 1.55);
-  const markW = Math.round(markH * (38 / 26));
-
-  const Mark = ({ delay = 0 }: { delay?: number }) => {
-    const sw = Math.max(0.9, size * 0.06); // stroke weighted enough to read
-    const inner = (
-      <svg
-        width={markW}
-        height={markH}
-        viewBox="0 0 38 26"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={sw}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
+  const Wordmark = () =>
+    animated ? (
+      <motion.span
+        style={wordmarkStyle}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
       >
-        {/* Three scoring marks — the boulanger's signature gesture, drawn
-            as confident diagonal slashes across the crust. Their spacing
-            matches the brand's three shelves (S-01 / S-02 / S-03). */}
-        <line x1="11" y1="2.5" x2="15" y2="7" />
-        <line x1="17.5" y1="2.5" x2="21.5" y2="7" />
-        <line x1="24" y1="2.5" x2="28" y2="7" />
-        {/* Loaf silhouette — an asymmetric rounded shape with a higher,
-            shallower top arc (the way a baked loaf rises) and a deeper,
-            slightly flatter bottom (where it sat on the oven stone). */}
-        <path d="M 4 13 C 4 9, 9 8, 19 8 C 29 8, 34 9, 34 13 L 34 17 C 34 21, 29 23, 19 23 C 9 23, 4 21, 4 17 Z" />
-        {/* Subtle horizontal seam — adds depth and reinforces "loaf"
-            without crowding the silhouette. */}
-        <path d="M 6 15.5 C 12 16, 26 16, 32 15.5" strokeWidth={Math.max(0.6, sw * 0.7)} opacity={0.55} />
-      </svg>
+        EPICS
+      </motion.span>
+    ) : (
+      <span style={wordmarkStyle}>EPICS</span>
     );
-    if (animated) {
-      return (
-        <motion.span
-          aria-hidden="true"
-          style={{ display: "inline-flex" }}
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay }}
-        >
-          {inner}
-        </motion.span>
-      );
-    }
-    return (
-      <span aria-hidden="true" style={{ display: "inline-flex" }}>
-        {inner}
-      </span>
-    );
-  };
 
-  const Rule = ({ delay = 0.3 }: { delay?: number }) => {
-    if (animated) {
-      return (
-        <motion.span
-          aria-hidden
-          style={{
-            display: "block",
-            height: 1,
-            width: ruleWidth,
-            background: "currentColor",
-            opacity: 0.85,
-            transformOrigin: "left center",
-          }}
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{
-            duration: 0.85,
-            ease: [0.16, 1, 0.3, 1],
-            delay,
-          }}
-        />
-      );
-    }
-    return (
+  const Rule = ({ delay = 0.3 }: { delay?: number }) =>
+    animated ? (
+      <motion.span
+        aria-hidden
+        style={{
+          display: "block",
+          height: 1,
+          width: ruleWidth,
+          background: "currentColor",
+          opacity: 0.85,
+          transformOrigin: "left center",
+        }}
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: 1 }}
+        transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1], delay }}
+      />
+    ) : (
       <span
         aria-hidden
         style={{
@@ -164,54 +101,7 @@ export function Logo({
         }}
       />
     );
-  };
 
-  const Wordmark = () => {
-    const content = "EPICS";
-    if (animated) {
-      return (
-        <motion.span
-          style={wordmarkStyle}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
-        >
-          {content}
-        </motion.span>
-      );
-    }
-    return <span style={wordmarkStyle}>{content}</span>;
-  };
-
-  const Label = ({ text, delay }: { text: string; delay: number }) => {
-    const style: React.CSSProperties = {
-      fontFamily: "var(--font-mono), 'JetBrains Mono', ui-monospace, monospace",
-      fontWeight: 500,
-      fontSize: labelSize,
-      lineHeight: 1,
-      letterSpacing: "0.18em",
-      textTransform: "uppercase",
-      color: "currentColor",
-      opacity: 0.7,
-      display: "inline-block",
-      whiteSpace: "nowrap",
-    };
-    if (animated) {
-      return (
-        <motion.span
-          style={style}
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 0.7, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay }}
-        >
-          {text}
-        </motion.span>
-      );
-    }
-    return <span style={style}>{text}</span>;
-  };
-
-  // Wordmark-only — for tightest contexts.
   if (variant === "wordmark") {
     return (
       <span
@@ -223,17 +113,88 @@ export function Logo({
     );
   }
 
-  // Compact — Mark + Wordmark side-by-side. The mark sits left, vertically
-  // centered against the wordmark cap-height. The hairline frame around
-  // the wordmark survives for visual continuity with the full variant.
   if (variant === "compact") {
+    // Compact: small sigil ("N°26") + framed wordmark.
+    // The sigil is a hairline rounded square containing the year code,
+    // a tiny apothecary-card mark that sits beside the wordmark.
+    const sigilSize = Math.round(size * 1.5);
+    const SigilSVG = (
+      <svg
+        width={sigilSize}
+        height={sigilSize}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={0.8}
+        aria-hidden
+      >
+        {/* Rounded-square frame */}
+        <rect x="1.5" y="1.5" width="21" height="21" rx="1.8" />
+        {/* Inner hairline border */}
+        <rect
+          x="3.5"
+          y="3.5"
+          width="17"
+          height="17"
+          rx="1"
+          strokeWidth={0.4}
+          opacity={0.55}
+        />
+        {/* "N°" superscript */}
+        <text
+          x="12"
+          y="11.5"
+          fontSize="5"
+          letterSpacing="0.4"
+          textAnchor="middle"
+          fill="currentColor"
+          stroke="none"
+          style={{
+            fontFamily:
+              "var(--font-mono), 'JetBrains Mono', ui-monospace, monospace",
+            fontWeight: 500,
+          }}
+        >
+          N°
+        </text>
+        {/* "26" big numerals */}
+        <text
+          x="12"
+          y="19"
+          fontSize="7.5"
+          letterSpacing="0.2"
+          textAnchor="middle"
+          fill="currentColor"
+          stroke="none"
+          style={{
+            fontFamily:
+              "var(--font-logo), 'Italiana', 'Bodoni Moda', Didot, serif",
+            fontWeight: 400,
+          }}
+        >
+          26
+        </text>
+      </svg>
+    );
+
     return (
       <span
         className={`inline-flex items-center text-current select-none ${className}`}
-        style={{ gap: Math.round(size * 0.45) }}
+        style={{ gap: Math.round(size * 0.55) }}
         aria-label="Epics — gluten-free, sugar-free, PKU-safe bakery"
       >
-        <Mark delay={0.05} />
+        {animated ? (
+          <motion.span
+            style={{ display: "inline-flex" }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {SigilSVG}
+          </motion.span>
+        ) : (
+          SigilSVG
+        )}
         <span
           className="inline-flex flex-col items-center"
           style={{ gap: Math.round(ruleGap * 0.55) }}
@@ -246,24 +207,153 @@ export function Logo({
     );
   }
 
-  // Full — Mark above, then top label, rule, wordmark, rule, bottom label.
-  // The specimen-tag composition with the brand mark crowning it.
+  /* ─── full variant: Buly-style stamp ──────────────────────────────── */
+
+  // Coordinate system: 200×140. Generous around the wordmark so the
+  // arched supra label + circular date badge have room to breathe.
+  const fullW = 200;
+  const fullH = 140;
+  const renderH = size * (fullH / 28); // scale the lockup against the cap-height of the wordmark inside
+  const renderW = renderH * (fullW / fullH);
+
+  // Curve path used as the baseline for the arched supra label. Bezier
+  // curve flattening upward — leaves the brand name fully visible
+  // beneath without crowding it.
+  const archPath = "M 30 36 Q 100 16, 170 36";
+
+  const Inner = (
+    <svg
+      width={renderW}
+      height={renderH}
+      viewBox={`0 0 ${fullW} ${fullH}`}
+      fill="none"
+      stroke="currentColor"
+      aria-hidden
+    >
+      <defs>
+        <path id="epics-arch" d={archPath} fill="none" />
+      </defs>
+
+      {/* Arched supra label */}
+      <text
+        fill="currentColor"
+        stroke="none"
+        fontSize="5.5"
+        letterSpacing="2.6"
+        style={{
+          fontFamily:
+            "var(--font-mono), 'JetBrains Mono', ui-monospace, monospace",
+          fontWeight: 500,
+        }}
+        opacity="0.7"
+      >
+        <textPath href="#epics-arch" startOffset="50%" textAnchor="middle">
+          OFFICINE  ·  D&apos;ALIMENTS
+        </textPath>
+      </text>
+
+      {/* Decorative diamond above the wordmark */}
+      <g stroke="currentColor" strokeWidth="0.7" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="86" y1="48" x2="100" y2="42" />
+        <line x1="100" y1="42" x2="114" y2="48" />
+        <line x1="86" y1="48" x2="100" y2="54" opacity="0.55" />
+        <line x1="100" y1="54" x2="114" y2="48" opacity="0.55" />
+        <line x1="100" y1="42" x2="100" y2="54" opacity="0.35" />
+      </g>
+
+      {/* The EPICS wordmark — Italiana, sized to dominate */}
+      <text
+        x={fullW / 2}
+        y={82}
+        textAnchor="middle"
+        fontSize="28"
+        letterSpacing="6"
+        fill="currentColor"
+        stroke="none"
+        style={{
+          fontFamily:
+            "var(--font-logo), 'Italiana', 'Bodoni Moda', 'Bodoni 72', Didot, serif",
+          fontWeight: 400,
+        }}
+      >
+        EPICS
+      </text>
+
+      {/* Hairline rules flanking the infra label */}
+      <line x1="40" y1="96" x2="68" y2="96" strokeWidth="0.6" opacity="0.85" />
+      <line x1="132" y1="96" x2="160" y2="96" strokeWidth="0.6" opacity="0.85" />
+
+      {/* Infra label */}
+      <text
+        x={fullW / 2}
+        y={98.5}
+        textAnchor="middle"
+        fontSize="5.5"
+        letterSpacing="2.4"
+        fill="currentColor"
+        stroke="none"
+        style={{
+          fontFamily:
+            "var(--font-mono), 'JetBrains Mono', ui-monospace, monospace",
+          fontWeight: 500,
+        }}
+        opacity="0.78"
+      >
+        EST  ·  MMXXVI  ·  CAIRO
+      </text>
+
+      {/* Issue / year stamp — hairline circle with the year inside */}
+      <g>
+        <circle cx={fullW / 2} cy={120} r={10} strokeWidth="0.8" />
+        <circle cx={fullW / 2} cy={120} r={7.5} strokeWidth="0.4" opacity={0.6} />
+        <text
+          x={fullW / 2}
+          y={123}
+          textAnchor="middle"
+          fontSize="7.5"
+          fill="currentColor"
+          stroke="none"
+          letterSpacing="0.4"
+          style={{
+            fontFamily:
+              "var(--font-logo), 'Italiana', 'Bodoni Moda', Didot, serif",
+            fontWeight: 400,
+          }}
+        >
+          26
+        </text>
+      </g>
+
+      {/* Tiny serif flourishes flanking the issue stamp */}
+      <g stroke="currentColor" strokeWidth="0.5" strokeLinecap="round" opacity="0.6">
+        <line x1="70" y1="120" x2="84" y2="120" />
+        <line x1="116" y1="120" x2="130" y2="120" />
+        <circle cx="68" cy="120" r="0.7" fill="currentColor" stroke="none" />
+        <circle cx="132" cy="120" r="0.7" fill="currentColor" stroke="none" />
+      </g>
+    </svg>
+  );
+
+  if (animated) {
+    return (
+      <motion.span
+        className={`inline-flex text-current select-none ${className}`}
+        aria-label="Epics — Officine d'Aliments, Established MMXXVI, 6 October City, Cairo"
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+      >
+        {Inner}
+      </motion.span>
+    );
+  }
+
   return (
     <span
-      className={`inline-flex flex-col items-center text-current select-none ${className}`}
-      aria-label="Epics — Established MMXXVI, 6 October City, Cairo. Gluten-free, sugar-free, PKU-safe bakery"
+      className={`inline-flex text-current select-none ${className}`}
+      aria-label="Epics — Officine d'Aliments, Established MMXXVI, 6 October City, Cairo"
     >
-      <Mark delay={0.05} />
-      <span style={{ height: Math.round(ruleGap * 0.7) }} aria-hidden />
-      <Label text="EST · MMXXVI · CAIRO" delay={0.15} />
-      <span style={{ height: labelGap }} aria-hidden />
-      <Rule delay={0.25} />
-      <span style={{ height: Math.round(ruleGap * 0.55) }} aria-hidden />
-      <Wordmark />
-      <span style={{ height: Math.round(ruleGap * 0.55) }} aria-hidden />
-      <Rule delay={0.55} />
-      <span style={{ height: labelGap }} aria-hidden />
-      <Label text="OFFICINE · 6 OCT · LOT 0001" delay={0.7} />
+      {Inner}
     </span>
   );
 }
