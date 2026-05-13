@@ -1,244 +1,268 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/*
-  =========================================================================
-  EPICS GROUP · SPECIMEN PANTRY · BASE STYLES
-  =========================================================================
-  Production fonts (licensed, to be self-hosted under /public/fonts/):
-    - Untitled Serif      (Klim Type Foundry)       → Latin display
-    - Söhne               (Klim Type Foundry)       → Latin text
-    - GT America Mono     (Grilli Type)             → Latin mono / specimen
-    - 29LT Bukra          (29LT)                    → Arabic display + text
+/* ============================================================
+   §1 — Design tokens (Tailwind v4 CSS-first config)
+   Sourced from the Moonshot Brief §3 + §4.
+   Tokens here become Tailwind utilities automatically:
+   --color-paper → bg-paper, text-paper, border-paper, etc.
+   ============================================================ */
+@theme {
+  /* Color */
+  --color-paper: #f2efe7;
+  --color-paper-rgb: 242 239 231;
+  --color-ink: #161512;
+  --color-ink-rgb: 22 21 18;
+  --color-lot: #8a857a;
+  --color-saffron: #e07a1b;
+  --color-saffron-dim: #c76814;
+  --color-clay: #b85636;
+  --color-shelf-01: #c9a961;        /* gluten-free, wheat-gold   */
+  --color-shelf-02: #6f8fa8;        /* sugar-free, cool blue     */
+  --color-shelf-03: #b7c7d9;        /* PKU, prismatic pale       */
+  --color-stamp: #7a2e1f;           /* halal/iso accent, oxblood */
+  --color-sage: #5a6e58;
+  --color-charcoal-sub: #2b2825;
+  --color-charcoal-soft: #b6b0a6;
+  --color-linen-mid: #e4d9c0;
+  --color-linen-deep: #3a3631;
 
-  Open-source fallbacks (loaded via next/font/google in layout.tsx):
-    - Newsreader        → Untitled Serif fallback
-    - Inter             → Söhne fallback
-    - JetBrains Mono    → GT America Mono fallback
-    - Tajawal           → 29LT Bukra fallback
-*/
+  /* Typography — fonts loaded via next/font in layout.tsx and bound to these custom-properties */
+  --font-display: var(--font-newsreader), ui-serif, Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "JetBrains Mono", "Courier New", monospace;
+  --font-arabic: var(--font-tajawal), "29LT Bukra", ui-sans-serif, sans-serif;
 
-@layer base {
-  :root {
-    /* Specimen Pantry · MMXXVI Refresh — warmer cream, bolder saffron,
-       deeper ink, new clay terracotta as secondary accent. */
-    --cream-paper: 250 245 232;       /* #FAF5E8  — warmer, more golden */
-    --ink-black: 20 17 15;            /* #14110F  — deeper warm black */
-    --saffron: 224 122 27;            /* #E07A1B  — bolder orange */
-    --clay: 184 86 54;                /* #B85636  — warm terracotta, NEW */
-    --pomegranate: 142 42 42;         /* #8E2A2A  — kept for PKU only */
-    --linen-mid: 228 217 192;         /* #E4D9C0  — warmer */
-    --charcoal-sub: 43 40 37;         /* #2B2825  — deeper */
-    --sage: 90 110 88;                /* #5A6E58  — calm editorial green, sparingly */
-  }
+  /* Type scale (brief §3 + brand-book §5) */
+  --text-spec: 0.75rem;        /* 12px — spec labels   */
+  --text-lot:  0.6875rem;      /* 11px — lot numbers   */
+  --text-small: 0.8125rem;     /* 13px */
+  --text-body: 1rem;           /* 16px */
+  --text-subhead: 1.25rem;     /* 20px */
+  --text-h2: 2rem;             /* 32px */
+  --text-h1: 3rem;             /* 48px */
+  --text-display: 4.5rem;      /* 72px */
+  --text-display-huge: clamp(4rem, 12vw, 15rem);
 
-  html {
-    background: rgb(var(--cream-paper));
-    color: rgb(var(--ink-black));
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    font-feature-settings: "ss01", "ss02";
-    text-rendering: optimizeLegibility;
-    scroll-behavior: smooth;
-  }
+  /* Tracking */
+  --tracking-display: -0.02em;
+  --tracking-h1: -0.015em;
+  --tracking-h2: -0.01em;
+  --tracking-spec: 0.08em;
+  --tracking-lot: 0.12em;
 
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    *, *::before, *::after {
-      animation-duration: 0.001ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.001ms !important;
-    }
-  }
+  /* Springs (FM consumers reference these via constants in lib/motion/eases.ts;
+     listed here for documentation parity) */
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit:     cubic-bezier(0.7, 0, 0.84, 0);
+}
 
-  body {
-    font-family: var(--font-sans), "Söhne", Inter, system-ui, sans-serif;
-    line-height: 1.55;
-    background: rgb(var(--cream-paper));
-  }
+/* ============================================================
+   §2 — Root + base
+   ============================================================ */
+:root {
+  color-scheme: light;
+  --grain-opacity: 0.04;
+}
 
-  /* Latin display — literary serif. Production uses Untitled Serif. */
-  .font-serif-display {
-    font-family: "Untitled Serif", var(--font-serif), Newsreader, Georgia, serif;
-    font-feature-settings: "lnum", "ss01";
-    letter-spacing: -0.015em;
-  }
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-  /* Latin text — neutral technical sans. Production uses Söhne. */
-  .font-sans-text {
-    font-family: "Söhne", var(--font-sans), Inter, system-ui, sans-serif;
-    font-feature-settings: "ss01";
-  }
+html[lang="ar"] {
+  font-family: var(--font-arabic);
+}
 
-  /* Latin mono — the specimen language. Production uses GT America Mono. */
-  .font-mono-spec {
-    font-family: "GT America Mono", var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
-    font-feature-settings: "ss01", "ss02";
-  }
+body {
+  /* Background lives on <html> so the fixed R3F canvas (z-index: -1) shows
+     through. Page sections that need an opaque ground set their own bg. */
+  background: transparent;
+  color: var(--color-ink);
+  margin: 0;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
 
-  /* Arabic — production uses 29LT Bukra. */
-  .font-arabic {
-    font-family: "29LT Bukra", var(--font-arabic), Tajawal, "Noto Naskh Arabic", sans-serif;
-    font-feature-settings: "kern", "calt";
-  }
+::selection {
+  background: color-mix(in srgb, var(--color-saffron) 35%, transparent);
+  color: var(--color-ink);
+}
 
-  /* RTL layout direction inherited from <html dir="rtl"> on /ar pages */
-  [dir="rtl"] {
-    font-family: "29LT Bukra", var(--font-arabic), Tajawal, "Noto Naskh Arabic", sans-serif;
+/* ============================================================
+   §3 — Lenis smooth-scroll requirements
+   Per Lenis docs: html.lenis disables native smooth scroll;
+   body needs height enforcement so RAF-driven scrolling lands cleanly.
+   ============================================================ */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ============================================================
+   §4 — Specimen typography utilities
+   These are used everywhere — lot numbers, spec labels, ISO codes.
+   ============================================================ */
+.specimen-lot {
+  font-family: var(--font-mono);
+  font-size: var(--text-lot);
+  letter-spacing: var(--tracking-lot);
+  text-transform: uppercase;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.specimen-spec {
+  font-family: var(--font-mono);
+  font-size: var(--text-spec);
+  letter-spacing: var(--tracking-spec);
+  text-transform: uppercase;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-feature-settings: "ss01" on, "kern" on;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* ============================================================
+   §5 — Cursor hide on interactive surfaces (custom cursor takes over)
+   Cursor still rendered for keyboard / touch / reduced-motion users
+   via the <Cursor /> component which detects pointer:fine + no-touch.
+   ============================================================ */
+@media (hover: hover) and (pointer: fine) {
+  html.has-custom-cursor,
+  html.has-custom-cursor * {
+    cursor: none !important;
   }
 }
 
-/*
-  =========================================================================
-  TYPE SCALE — the specimen language
-  =========================================================================
-*/
-
-@layer components {
-  .specimen-lot {
-    font-family: "GT America Mono", var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
-    font-size: 11px;
-    line-height: 15px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    /* No hard-coded color — inherit from the closest text-color ancestor so
-       the same utility class works on cream surfaces AND on the ink-black
-       ticker band. */
+/* ============================================================
+   §6 — Reduced motion (NON-NEGOTIABLE; brief §10)
+   Kills parallax, freezes animation, removes the grain canvas.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 
-  .specimen-spec {
-    font-family: "GT America Mono", var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
-    font-size: 12px;
-    line-height: 17px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    /* Same — inherit color. */
+  .grain-overlay {
+    display: none !important;
   }
 
-  .hairline {
-    border-color: rgb(var(--ink-black) / 0.6);
-    border-width: 0.5px;
-  }
-
-  .hairline-soft {
-    border-color: rgb(var(--ink-black) / 0.15);
-    border-width: 0.5px;
-  }
-
-  /* The specimen-header treatment used across product cards and PDPs */
-  .specimen-header {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    flex-wrap: wrap;
-    padding: 8px 0;
-    border-top: 0.5px solid rgb(var(--ink-black) / 0.6);
-    border-bottom: 0.5px solid rgb(var(--ink-black) / 0.6);
-  }
+  /* Three.js canvases freeze; framer-motion's transition prop becomes
+     { duration: 0 } via a global override in lib/motion/eases.ts */
 }
 
-/*
-  =========================================================================
-  FOCUS — keyboard accessibility, saffron ring per brand accent rule
-  =========================================================================
-*/
-:where(a, button, [role="button"], input, select, textarea):focus-visible {
-  outline: 2px solid rgb(var(--saffron));
+/* ============================================================
+   §7 — Focus rings — brand-correct, not browser default
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid var(--color-saffron);
   outline-offset: 3px;
   border-radius: 1px;
 }
 
-/* Skip-link visible target */
-.sr-only:not(:focus):not(:focus-within) {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/*
-  =========================================================================
-  MARQUEE — continuous horizontal scroll used in the nav-strip ticker and
-  the editorial big-typography band. Items duplicate 4x in JSX; we shift
-  -25% so each loop lands on the next clone seamlessly.
-  =========================================================================
-*/
-@keyframes epicsMarquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-25%); }
-}
-
-/*
-  =========================================================================
-  FLOAT — used on the hero product image. Subtle up/down + slow rotation
-  so the product feels alive rather than pasted on a card.
-  =========================================================================
-*/
-@keyframes epicsFloat {
-  0%   { transform: translateY(0)     rotate(-0.6deg); }
-  50%  { transform: translateY(-14px) rotate(0.6deg); }
-  100% { transform: translateY(0)     rotate(-0.6deg); }
-}
-.epics-float {
-  animation: epicsFloat 6.5s ease-in-out infinite;
-  transform-origin: center;
-}
-
-/*
-  =========================================================================
-  STROKE DRAW — used on decorative SVG monograms that animate in when
-  scrolled into view. The element gets data-draw="in" via IntersectionObserver
-  styling; we toggle the dashoffset.
-  =========================================================================
-*/
-@keyframes epicsDraw {
-  from { stroke-dashoffset: 1200; }
-  to   { stroke-dashoffset: 0; }
-}
-.epics-draw-line {
-  stroke-dasharray: 1200;
-  stroke-dashoffset: 1200;
-  animation: epicsDraw 3.2s cubic-bezier(0.16,1,0.3,1) 0.4s forwards;
-}
-
-/*
-  =========================================================================
-  HALO — soft saffron pulse behind the hero product, suggesting depth
-  =========================================================================
-*/
-@keyframes epicsHalo {
-  0%, 100% { opacity: 0.45; transform: scale(0.92); }
-  50%      { opacity: 0.85; transform: scale(1.08); }
-}
-.epics-halo {
-  animation: epicsHalo 7s ease-in-out infinite;
-  filter: blur(48px);
-  border-radius: 50%;
-  position: absolute;
+/* ============================================================
+   §8 — Grain overlay (canvas painted by <GrainOverlay /> client component)
+   Persistent across the whole page, blend-mode multiply.
+   ============================================================ */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
   pointer-events: none;
+  z-index: 100;
+  mix-blend-mode: multiply;
+  opacity: var(--grain-opacity);
 }
 
-/*
-  =========================================================================
-  SELECTION
-  =========================================================================
-*/
-::selection {
-  background: rgb(var(--saffron));
-  color: rgb(var(--cream-paper));
+/* ============================================================
+   §9 — R3F canvas root — fixed, full-viewport, behind DOM
+   The single shared canvas all five Moon scenes render into.
+   z-index: 0 (NOT -1 — that puts it behind the html background).
+   Content stacks above via position: relative which is already on <main>.
+   ============================================================ */
+.canvas-root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  pointer-events: none;
+  z-index: 0;
 }
 
-/* Hide scrollbars for horizontal rails but keep functionality */
+/* ============================================================
+   §10 — Marquee mask (avoid visible edges of looping strip)
+   ============================================================ */
+.marquee-mask {
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black 5%,
+    black 95%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black 5%,
+    black 95%,
+    transparent 100%
+  );
+}
+
+/* ============================================================
+   §11 — Skip link for keyboard a11y
+   ============================================================ */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  padding: 8px 16px;
+  z-index: 9999;
+  transition: top 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* ============================================================
+   §12 — No-scrollbar utility (rails, marquees that scroll horizontally)
+   ============================================================ */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }

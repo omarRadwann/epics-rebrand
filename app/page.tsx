@@ -1,452 +1,450 @@
 import Link from "next/link";
-import { Nav } from "./_components/Nav";
-import { Footer } from "./_components/Footer";
-import Image from "next/image";
-import { Strikethrough } from "./_components/Strikethrough";
-import { ProductCard } from "./_components/ProductCard";
-import { Marquee } from "./_components/Marquee";
-import { Reveal } from "./_components/Reveal";
-import { AnimatedCounter } from "./_components/AnimatedCounter";
-import { TextReveal } from "./_components/TextReveal";
-import { MagneticButton } from "./_components/MagneticButton";
-import { HeroCarousel } from "./_components/HeroCarousel";
-import { products, recipes } from "@/lib/catalog";
-import { asset } from "@/lib/asset";
+import { products } from "@/lib/catalog";
+import { Nav } from "@/components/layout/Nav";
+import { Footer } from "@/components/layout/Footer";
+import { Reveal } from "@/components/motion/Reveal";
+import { SplitText } from "@/components/motion/SplitText";
+import { Marquee } from "@/components/motion/Marquee";
+import { Magnetic } from "@/components/motion/Magnetic";
+import { Tilt } from "@/components/motion/Tilt";
+import { Scramble } from "@/components/motion/Scramble";
+import { CountUp } from "@/components/motion/CountUp";
+import { Strikethrough } from "@/components/ui/Strikethrough";
 
-const featuredProduct = products.find((p) => p.slug === "euro")!;
-const featuredRecipe = recipes.find((r) => r.slug === "italian-pizza-using-flat-bread-mixture") ?? recipes[0]!;
+const certifications = [
+  "ISO 22000 : 2018",
+  "ISO 9001 : 2015",
+  "HALAL · EHA-2025-0061",
+  "EST. 6 OCTOBER · GIZA",
+  "ISSUE 26 · LOT 0001",
+  "SHIPS WITHIN 24h ANYWHERE IN EGYPT",
+  "30 SPECIMENS ACROSS THREE SHELVES",
+];
+
+interface StatItem {
+  value: number | string;
+  label: string;
+  detail: string;
+  suffix?: string;
+  saffron?: boolean;
+}
+const stats: StatItem[] = [
+  { value: 30, label: "Specimens", detail: "Across three shelves" },
+  { value: 2018, label: "Established", detail: "In 6th of October City" },
+  { value: "ISO", label: "22000:2018", detail: "Bureau Veritas Egypt" },
+  { value: 24, label: "Hours", detail: "Delivery anywhere in Egypt", suffix: "h", saffron: true },
+];
 
 export default function Home() {
-  const popular = ["flat", "brownies", "soft", "basbousa", "cocoa-powder", "multi-grain"]
-    .map((s) => products.find((p) => p.slug === s)!)
-    .filter(Boolean);
+  const popular = products.filter((p) => !p.isWholesale).slice(0, 6);
+  const counts = {
+    gf: products.filter((p) => p.category === "gluten-free").length,
+    sf: products.filter((p) => p.category === "sugar-free").length,
+    pku: products.filter((p) => p.category === "pku").length,
+  };
 
   return (
-    <main id="main" className="min-h-screen bg-[rgb(var(--cream-paper))] text-[rgb(var(--ink-black))]">
+    <>
       <Nav />
 
-      {/* ============================================================ */}
-      {/* CERTIFICATIONS TICKER — continuous scroll under nav.          */}
-      {/* ============================================================ */}
-      <Marquee
-        speedSeconds={40}
-        bg="ink-black"
-        fg="cream-paper"
-        items={[
-          { key: "iso22000", content: "ISO 22000 : 2018" },
-          { key: "iso9001",  content: "ISO 9001 : 2015" },
-          { key: "halal",    content: "HALAL · EHA-2025-0061" },
-          { key: "est",      content: "ESTABLISHED 6 OCTOBER · GIZA" },
-          { key: "lot",      content: "ISSUE 26 · LOT 0001" },
-          { key: "ship",     content: "SHIPS WITHIN 24 HOURS ANYWHERE IN EGYPT" },
-          { key: "rcd",      content: "30 SPECIMENS ACROSS THREE SHELVES" },
-        ]}
-      />
+      <main id="main" className="relative">
+        {/* ============================================================
+            HERO — placeholder for Moon #1 (Specimen Vitrine).
+            Tall section (140vh) so scroll progress 0 → ~0.10 maps here.
+            DOM content sits above; R3F canvas will fill the negative space.
+            ============================================================ */}
+        <section
+          id="hero"
+          aria-label="Specimen Pantry"
+          className="relative flex min-h-[140vh] flex-col items-start justify-end overflow-hidden border-b border-ink/40 px-6 pb-16 pt-24 sm:px-12 sm:pb-24 sm:pt-32 lg:px-24"
+        >
+          {/* lot ribbon */}
+          <p className="specimen-lot mb-6 text-ink/60">
+            EPICS · N°26 · SPECIMEN PANTRY · MMXXVI
+          </p>
 
-      {/* ============================================================ */}
-      {/* HERO — cinematic 4-slide carousel via Framer Motion.         */}
-      {/* ============================================================ */}
-      <HeroCarousel />
+          <SplitText
+            as="h1"
+            text="Bread that doesn't apologise."
+            mode="char"
+            stagger={0.018}
+            className="font-display text-[clamp(3.2rem,9vw,9rem)] leading-[0.95] tracking-[-0.025em]"
+          />
 
-      {/* ============================================================ */}
-      {/* STATS BAND — huge serif numerals, by the numbers              */}
-      {/* ============================================================ */}
-      <Reveal as="section" className="bg-[rgb(var(--ink-black))] text-[rgb(var(--cream-paper))]">
-        <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-16 sm:py-20">
-          <p className="specimen-lot opacity-60 mb-8">B-01 · BY THE NUMBERS</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
-            <StatTile big={<AnimatedCounter to={30} duration={1600} />} mono="SPECIMENS" detail="Across three shelves" />
-            <StatTile big={<AnimatedCounter from={2010} to={2018} duration={1800} />} mono="ESTABLISHED" detail="In 6th of October City" />
-            <StatTile big="ISO" mono="22000:2018" detail="Bureau Veritas Egypt" />
-            <StatTile big={<><AnimatedCounter to={24} duration={1400} />h</>} mono="DELIVERY" detail="Anywhere in Egypt" highlight />
-          </div>
-        </div>
-      </Reveal>
+          <p className="mt-8 max-w-xl text-[18px] leading-[1.55] text-ink/75 sm:text-[20px]">
+            Wheat-free, sugar-free, PKU-safe baked goods — engineered in 6th of October City,
+            catalogued like a museum specimen. Every loaf carries a lot number.
+          </p>
 
-      {/* ============================================================ */}
-      {/* MANIFESTO — the 60-word anchoring document, ruled in.         */}
-      {/* ============================================================ */}
-      <Reveal
-        as="section"
-        className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]"
-      >
-        <div id="manifesto" aria-labelledby="manifesto-title" className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-24 grid grid-cols-12 gap-x-8">
-          <div className="col-span-12 md:col-span-3">
-            <p className="specimen-lot">M-01 · MANIFESTO</p>
-            <h2 id="manifesto-title" className="font-serif-display text-[32px] leading-[36px] tracking-[-0.01em] mt-2">
-              On the record.
-            </h2>
-          </div>
-          <div className="col-span-12 md:col-span-8 md:col-start-5">
-            <blockquote className="font-serif-display italic text-[28px] sm:text-[36px] leading-[1.25] tracking-[-0.01em] text-[rgb(var(--ink-black))]">
-              We bake food for bodies that don&rsquo;t negotiate. Wheat-free, sugar-free, PKU-safe — engineered in 6th of
-              October, certified to ISO 22000 and ISO 9001, catalogued like a museum specimen. Every loaf carries a lot
-              number. Every recipe carries a real measure. We don&rsquo;t romanticise our limits; we publish them.
-              Welcome to the pantry of people who read the label.
-            </blockquote>
-            <p className="specimen-lot mt-6 opacity-60">
-              — EPICS, FIRST PRINTED MMXXVI · 6TH OF OCTOBER CITY
-            </p>
-          </div>
-        </div>
-      </Reveal>
-
-      {/* ============================================================ */}
-      {/* GIANT PRODUCT-NAME MARQUEE — italic serif, continuous scroll. */}
-      {/* ============================================================ */}
-      <Marquee
-        speedSeconds={45}
-        bg="cream-paper"
-        fg="ink-black"
-        variant="huge"
-        separator="·"
-        className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]"
-        items={[
-          { key: "european", content: "European Loaf" },
-          { key: "brownies", content: "Brownies" },
-          { key: "basbousa", content: "Basbousa" },
-          { key: "crystal", content: "Crystal · PKU" },
-          { key: "multi-grain", content: "Multi Grain" },
-          { key: "cocoa", content: "Cocoa P-04" },
-          { key: "vanilla", content: "Vanilla Cake" },
-          { key: "ice-cream", content: "Ice Cream — Triple Free" },
-        ]}
-      />
-
-      {/* ============================================================ */}
-      {/* CATEGORY GATEWAY — three typographic tiles, not three icons.  */}
-      {/* ============================================================ */}
-      <Reveal
-        as="section"
-        className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]"
-      >
-        <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-24">
-          <header className="flex flex-wrap items-baseline justify-between gap-4 mb-12">
-            <div>
-              <p className="specimen-lot">C-01 · THE PANTRY</p>
-              <h2 id="categories-title" className="font-serif-display text-[48px] leading-[1.05] tracking-[-0.015em] mt-2">
-                Three shelves.
-              </h2>
-            </div>
-            <p className="font-sans-text text-[15px] max-w-md text-[rgb(var(--charcoal-sub))]">
-              Each shelf serves a different body. Each body deserves the same gravity. We don&rsquo;t hide the third.
-            </p>
-          </header>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[rgb(var(--ink-black)/0.6)]">
-            <CategoryTile
-              code="01"
-              monogram="wheat"
-              title="Gluten-Free"
-              count={`${products.filter((p) => p.category === "gluten-free").length} specimens`}
-              summary="Bread, baking mixes, cereal, brownies. For coeliac kitchens that want to behave like every other kitchen."
-              accent="saffron"
-              href="/gluten-free"
-            />
-            <CategoryTile
-              code="02"
-              monogram="sugar"
-              title="Sugar-Free"
-              count={`${products.filter((p) => p.category === "sugar-free").length} specimens`}
-              summary="Cake mix, whipping cream, ice cream. For diabetic households who still want birthdays."
-              accent="saffron"
-              href="/sugar-free"
-            />
-            <CategoryTile
-              code="03"
-              monogram="protein"
-              title="Crystal &middot; PKU"
-              count={`${products.filter((p) => p.category === "pku").length} specimens`}
-              summary="Low-protein, phenylalanine-measured. Endorsed sub-brand for families who count milligrams."
-              accent="pomegranate"
-              href="/pku"
-              endorsed
-            />
-          </div>
-        </div>
-      </Reveal>
-
-      {/* ============================================================ */}
-      {/* MOST POPULAR — horizontal rail of specimen cards.             */}
-      {/* ============================================================ */}
-      <Reveal
-        as="section"
-        className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]"
-      >
-        <div className="mx-auto max-w-[1440px] pl-6 sm:pl-12 lg:pl-24 py-24">
-          <header className="flex items-end justify-between pr-6 sm:pr-12 lg:pr-24 mb-10">
-            <div>
-              <p className="specimen-lot">P-01 · LAST QUARTER&rsquo;S LEADERS</p>
-              <h2 id="popular-title" className="font-serif-display text-[40px] leading-[1.05] tracking-[-0.015em] mt-2">
-                Selling fastest, by lot.
-              </h2>
-            </div>
-            <Link href="/shop" className="font-sans-text text-[14px] underline underline-offset-4 decoration-[0.5px] hidden md:inline">
-              Full catalogue →
-            </Link>
-          </header>
-
-          <ol className="no-scrollbar flex gap-6 overflow-x-auto pr-6 sm:pr-12 lg:pr-24 pb-2 list-none p-0">
-            {popular.map((p, i) => (
-              <li key={p.slug} className="shrink-0 w-[260px]">
-                {/* All 6 popular cards eager-load — the rail is short and
-                    sits below the fold; lazy-loading produced empty tiles
-                    by the time users scrolled to it. */}
-                <ProductCard product={p} variant="rail" priority={i < 6} />
-              </li>
-            ))}
-          </ol>
-        </div>
-      </Reveal>
-
-      {/* ============================================================ */}
-      {/* CERTIFICATIONS — typographic, not a logo strip.               */}
-      {/* ============================================================ */}
-      <Reveal
-        as="section"
-        className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]"
-      >
-        <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-20">
-          <header className="mb-10">
-            <p className="specimen-lot">X-01 · CERTIFICATIONS</p>
-            <h2 id="certs-title" className="font-serif-display text-[32px] leading-[1.1] tracking-[-0.01em] mt-2 max-w-2xl">
-              We publish the certifications the way a watchmaker publishes its movement.
-            </h2>
-          </header>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-8 border-t border-[rgb(var(--ink-black)/0.6)] border-t-[0.5px] pt-8">
-            <CertSpec
-              code="X-01-A"
-              standard="ISO 22000:2018"
-              name="Food safety management"
-              body="Issuing body: Bureau Veritas Egypt"
-              certNo="EG-FS-2024-1138"
-              renewed="Renewed Sep 2024"
-            />
-            <CertSpec
-              code="X-01-B"
-              standard="ISO 9001:2015"
-              name="Quality management"
-              body="Issuing body: Bureau Veritas Egypt"
-              certNo="EG-QM-2024-0944"
-              renewed="Renewed Sep 2024"
-            />
-            <CertSpec
-              code="X-01-C"
-              standard="HALAL"
-              name="Halal certification"
-              body="Egyptian Halal Authority"
-              certNo="EHA-2025-0061"
-              renewed="Renewed Jan 2025"
-            />
-          </div>
-        </div>
-      </Reveal>
-
-      {/* ============================================================ */}
-      {/* FULL-BLEED SAFFRON CTA — break the cream uniformity.          */}
-      {/* ============================================================ */}
-      <Reveal
-        as="section"
-        className="relative bg-[rgb(var(--saffron))] text-[rgb(var(--ink-black))] overflow-hidden border-b border-[rgb(var(--ink-black))] border-b-[0.5px]"
-      >
-        <div className="absolute -right-16 -bottom-16 opacity-20 pointer-events-none hidden md:block">
-          <Strikethrough variant="protein" size={420} />
-        </div>
-        <div className="relative mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-24 grid grid-cols-12 gap-x-8 gap-y-8 items-end">
-          <div className="col-span-12 md:col-span-7">
-            <p className="specimen-lot opacity-70">CTA · S-01</p>
-            <TextReveal
-              as="h2"
-              lines={[
-                "Browse the",
-                { text: "whole pantry.", className: "italic" },
-              ]}
-              className="font-serif-display text-[48px] sm:text-[80px] lg:text-[104px] leading-[0.98] tracking-[-0.03em] mt-4"
-            />
-            <p className="font-sans-text text-[18px] sm:text-[20px] leading-[1.5] mt-8 max-w-[520px]">
-              30 specimens, all shelves. Filter by the strikethrough that matters to your body —
-              gluten, sugar, protein — and we&rsquo;ll pack the slip within four hours.
-            </p>
-          </div>
-          <div className="col-span-12 md:col-span-5 flex flex-col gap-3 md:items-end">
-            <MagneticButton
-              href="/shop"
-              className="inline-flex bg-[rgb(var(--ink-black))] text-[rgb(var(--cream-paper))] px-8 py-5 specimen-spec hover:bg-[rgb(var(--cream-paper))] hover:text-[rgb(var(--ink-black))] transition-colors"
-              strength={18}
-            >
-              ENTER THE PANTRY
-              <span aria-hidden>→</span>
-            </MagneticButton>
-            <Link
-              href="/pku"
-              className="specimen-spec underline underline-offset-[6px] decoration-[1px] hover:decoration-[2px]"
-            >
-              OR JUMP STRAIGHT TO CRYSTAL · PKU →
-            </Link>
-          </div>
-        </div>
-      </Reveal>
-
-      {/* ============================================================ */}
-      {/* RECIPE FEATURE — editorial, magazine spread.                  */}
-      {/* ============================================================ */}
-      <Reveal
-        as="section"
-        className="border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]"
-      >
-        <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-24 grid grid-cols-12 gap-x-8 gap-y-10">
-          <div className="col-span-12 md:col-span-5">
-            <article
-              aria-label="Recipe specimen"
-              className="bg-[rgb(var(--ink-black))] text-[rgb(var(--cream-paper))] aspect-[4/5] flex flex-col justify-between p-8"
-            >
-              <p className="specimen-lot text-[rgb(var(--cream-paper)/0.5)]">{featuredRecipe.code} · METHOD</p>
-              <div className="text-center">
-                <p className="specimen-spec text-[rgb(var(--cream-paper)/0.6)] mb-3">FROM {featuredProduct.loafNumber.toUpperCase()}</p>
-                <div className="font-serif-display text-[44px] leading-[46px] tracking-[-0.015em]">
-                  {featuredRecipe.title}
-                </div>
-              </div>
-              <div className="flex items-baseline justify-between">
-                <span className="specimen-spec text-[rgb(var(--cream-paper)/0.7)]">{featuredRecipe.time}</span>
-                <span className="specimen-spec text-[rgb(var(--cream-paper)/0.7)]">{featuredRecipe.yield}</span>
-              </div>
-            </article>
-          </div>
-
-          <div className="col-span-12 md:col-span-7 md:pl-8 flex flex-col justify-between">
-            <div>
-              <p className="specimen-lot">R-01 · LATEST FROM THE METHOD BOOK</p>
-              <h2
-                id="recipe-title"
-                className="font-serif-display text-[44px] leading-[1.1] tracking-[-0.015em] mt-3"
+          <div className="mt-10 flex flex-wrap items-center gap-4">
+            <Magnetic strength={0.3}>
+              <Link
+                href="/shop"
+                className="specimen-spec inline-flex items-center gap-2 border border-ink bg-ink px-7 py-4 text-paper no-underline transition-colors hover:bg-saffron hover:text-ink"
               >
-                The European Loaf.
-              </h2>
-              <p className="font-sans-text text-[17px] leading-[1.55] mt-6 max-w-[480px] text-[rgb(var(--charcoal-sub))]">
-                Crackling crust, open crumb, scorable. The bread our manifesto refers to. Real measures, real timings,
-                printed in milligrams where it matters.
-              </p>
-            </div>
-
-            <ol className="mt-8 grid grid-cols-2 gap-x-6 gap-y-4 list-none p-0">
-              <RecipeStat code="01" label="Time" value="1h 50m" />
-              <RecipeStat code="02" label="Yield" value="800g loaf" />
-              <RecipeStat code="03" label="Oven" value="200°C · convection" />
-              <RecipeStat code="04" label="Method" value="Kneaded · Proved · Scored" />
-            </ol>
-
+                ENTER THE PANTRY <span aria-hidden>→</span>
+              </Link>
+            </Magnetic>
             <Link
-              href={`/recipes/${featuredRecipe.slug}`}
-              className="self-start mt-10 specimen-spec underline underline-offset-[6px] decoration-[0.5px] hover:decoration-[1.5px]"
+              href="/pku"
+              className="specimen-spec underline decoration-[1px] underline-offset-[6px] hover:decoration-2"
             >
-              READ THE FULL METHOD →
-            </Link>
-          </div>
-        </div>
-      </Reveal>
-
-      {/* ============================================================ */}
-      {/* JOURNAL TEASER — manifesto extension                          */}
-      {/* ============================================================ */}
-      <Reveal
-        as="section"
-        className="bg-[rgb(var(--linen-mid)/0.35)] border-b border-[rgb(var(--ink-black)/0.6)] border-b-[0.5px]"
-      >
-        <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-24 grid grid-cols-12 gap-x-8 gap-y-12">
-          <div className="col-span-12 md:col-span-4">
-            <p className="specimen-lot">J-01 · THE JOURNAL</p>
-            <h2 id="journal-title" className="font-serif-display text-[40px] leading-[1.1] tracking-[-0.015em] mt-2">
-              We don&rsquo;t
-              <br />
-              romanticise
-              <br />
-              our limits.
-            </h2>
-            <Link href="/journal" className="inline-block mt-8 specimen-spec underline underline-offset-[6px] decoration-[0.5px]">
-              READ THE JOURNAL →
+              OR JUMP TO CRYSTAL · PKU →
             </Link>
           </div>
 
-          <ol className="col-span-12 md:col-span-8 md:col-start-5 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10 list-none p-0">
-            {[
-              { code: "J-001", slug: "phenylalanine-in-milligrams", title: "Why we list phenylalanine in milligrams.", date: "12 OCT 2026", read: "4 min" },
-              { code: "J-002", slug: "the-lot-number-is-the-warranty", title: "The lot number is the warranty.", date: "28 SEP 2026", read: "3 min" },
-              { code: "J-003", slug: "what-the-iso-audit-involves", title: "What the ISO audit actually involves.", date: "14 SEP 2026", read: "6 min" },
-              { code: "J-004", slug: "no-wooden-boards", title: "On not photographing food on wooden boards.", date: "01 SEP 2026", read: "2 min" },
-            ].map((item) => (
-              <li key={item.code}>
-                <article>
-                  <p className="specimen-lot">{item.code}</p>
-                  <h3 className="font-serif-display text-[24px] leading-[1.2] tracking-[-0.01em] mt-2">
-                    <Link href={`/journal/${item.slug}`} className="hover:text-[rgb(var(--saffron))] transition-colors no-underline">
-                      {item.title}
-                    </Link>
-                  </h3>
-                  <p className="specimen-lot mt-4 opacity-60">
-                    {item.date} · {item.read} READ
-                  </p>
-                </article>
-              </li>
+          {/* corner specimen badges */}
+          <div className="pointer-events-none absolute right-6 top-24 hidden flex-col items-end gap-3 sm:flex sm:right-12 lg:right-24">
+            {(["wheat", "sugar", "protein"] as const).map((variant, i) => (
+              <Reveal key={variant} delay={i * 0.12} amount={0.1}>
+                <div className="text-ink/80">
+                  <Strikethrough variant={variant} size={48} />
+                </div>
+              </Reveal>
             ))}
-          </ol>
-        </div>
-      </Reveal>
+          </div>
+        </section>
+
+        {/* ============================================================
+            CERTIFICATIONS MARQUEE — under the hero
+            ============================================================ */}
+        <Marquee speedSeconds={42} background="ink">
+          {certifications.map((c, i) => (
+            <span
+              key={i}
+              className="specimen-spec inline-block px-8 py-3 text-paper/85"
+            >
+              {c}
+            </span>
+          ))}
+        </Marquee>
+
+        {/* ============================================================
+            STATS BAND — by the numbers
+            ============================================================ */}
+        <Reveal as="section" className="bg-ink text-paper">
+          <div className="mx-auto max-w-[1440px] px-6 py-16 sm:px-12 sm:py-20 lg:px-24">
+            <p className="specimen-lot mb-8 text-paper/60">B-01 · BY THE NUMBERS</p>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
+              {stats.map((s, i) => (
+                <div
+                  key={i}
+                  className="flex flex-col gap-2 border-t border-paper/25 pt-5"
+                >
+                  <p
+                    className={`font-display text-[56px] leading-[0.95] tracking-[-0.03em] sm:text-[80px] lg:text-[96px] ${
+                      s.saffron ? "text-saffron" : "text-paper"
+                    }`}
+                  >
+                    {typeof s.value === "number" ? (
+                      <>
+                        <CountUp to={s.value} duration={1600} />
+                        {s.suffix}
+                      </>
+                    ) : (
+                      s.value
+                    )}
+                  </p>
+                  <p className="specimen-lot opacity-80">{s.label}</p>
+                  <p className="max-w-[180px] text-[14px] leading-[1.45] text-paper/70">
+                    {s.detail}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* ============================================================
+            MANIFESTO INTRO — split-text headline + the 60-word anchor
+            ============================================================ */}
+        <Reveal as="section" id="manifesto" className="border-b border-ink/40">
+          <div className="mx-auto grid max-w-[1440px] grid-cols-12 gap-x-8 px-6 py-24 sm:px-12 lg:px-24">
+            <div className="col-span-12 md:col-span-3">
+              <p className="specimen-lot">M-01 · MANIFESTO</p>
+              <SplitText
+                as="h2"
+                text="On the record."
+                mode="word"
+                className="mt-2 font-display text-[32px] leading-[36px] tracking-[-0.01em]"
+              />
+            </div>
+            <blockquote className="col-span-12 mt-6 font-display text-[28px] italic leading-[1.25] tracking-[-0.01em] text-ink md:col-span-8 md:col-start-5 md:mt-0 sm:text-[36px]">
+              We bake food for bodies that don&rsquo;t negotiate. Wheat-free, sugar-free,
+              PKU-safe — engineered in 6th of October, certified to ISO 22000 and ISO 9001,
+              catalogued like a museum specimen. Every loaf carries a lot number. Every recipe
+              carries a real measure. We don&rsquo;t romanticise our limits; we publish them.
+              Welcome to the pantry of people who read the label.
+              <footer className="specimen-lot mt-6 not-italic text-ink/60">
+                — EPICS, FIRST PRINTED MMXXVI · 6TH OF OCTOBER CITY
+              </footer>
+            </blockquote>
+          </div>
+        </Reveal>
+
+        {/* ============================================================
+            GIANT PRODUCT NAME MARQUEE
+            ============================================================ */}
+        <Marquee speedSeconds={45}>
+          {["European Loaf", "Brownies", "Basbousa", "Crystal · PKU", "Multi Grain", "Cocoa P-04", "Vanilla Cake", "Ice Cream — Triple Free"].map((name, i) => (
+            <span
+              key={i}
+              className="inline-block px-10 py-6 font-display text-[clamp(3rem,8vw,7rem)] italic leading-none tracking-[-0.02em]"
+            >
+              {name} ·
+            </span>
+          ))}
+        </Marquee>
+
+        {/* ============================================================
+            CATEGORY GATEWAY — placeholder for Moon #2 corridor.
+            Three typographic tiles, will be overlaid by 3D shelves later.
+            ============================================================ */}
+        <Reveal as="section" className="border-b border-ink/40">
+          <div className="mx-auto max-w-[1440px] px-6 py-24 sm:px-12 lg:px-24">
+            <header className="mb-12 flex flex-wrap items-baseline justify-between gap-4">
+              <div>
+                <p className="specimen-lot">C-01 · THE PANTRY</p>
+                <h2 className="mt-2 font-display text-[48px] leading-[1.05] tracking-[-0.015em]">
+                  Three shelves.
+                </h2>
+              </div>
+              <p className="max-w-md text-[15px] text-ink/70">
+                Each shelf serves a different body. Each body deserves the same gravity. We
+                don&rsquo;t hide the third.
+              </p>
+            </header>
+            <div className="grid grid-cols-1 gap-px bg-ink/40 md:grid-cols-3">
+              <CategoryTile
+                code="01"
+                monogram="wheat"
+                title="Gluten-Free"
+                count={`${counts.gf} specimens`}
+                summary="Bread, baking mixes, cereal, brownies. For coeliac kitchens that want to behave like every other kitchen."
+                href="/gluten-free"
+                accent="saffron"
+              />
+              <CategoryTile
+                code="02"
+                monogram="sugar"
+                title="Sugar-Free"
+                count={`${counts.sf} specimens`}
+                summary="Cake mix, whipping cream, ice cream. For diabetic households who still want birthdays."
+                href="/sugar-free"
+                accent="saffron"
+              />
+              <CategoryTile
+                code="03"
+                monogram="protein"
+                title="Crystal · PKU"
+                count={`${counts.pku} specimens`}
+                summary="Low-protein, phenylalanine-measured. Endorsed sub-brand for families who count milligrams."
+                href="/pku"
+                accent="stamp"
+                endorsed
+              />
+            </div>
+          </div>
+        </Reveal>
+
+        {/* ============================================================
+            POPULAR RAIL — placeholder for Moon #3 specimen slides
+            ============================================================ */}
+        <Reveal as="section" className="border-b border-ink/40">
+          <div className="mx-auto max-w-[1440px] py-24 pl-6 sm:pl-12 lg:pl-24">
+            <header className="mb-10 flex items-end justify-between pr-6 sm:pr-12 lg:pr-24">
+              <div>
+                <p className="specimen-lot">P-01 · LAST QUARTER&rsquo;S LEADERS</p>
+                <h2 className="mt-2 font-display text-[40px] leading-[1.05] tracking-[-0.015em]">
+                  Selling fastest, by lot.
+                </h2>
+              </div>
+              <Link
+                href="/shop"
+                className="specimen-spec hidden underline decoration-[0.5px] underline-offset-4 md:inline"
+              >
+                FULL CATALOGUE →
+              </Link>
+            </header>
+
+            <ol className="no-scrollbar flex list-none gap-6 overflow-x-auto p-0 pb-2 pr-6 sm:pr-12 lg:pr-24">
+              {popular.map((p) => (
+                <li key={p.slug} className="w-[280px] shrink-0">
+                  <Tilt className="h-full">
+                    <article className="flex h-full flex-col border border-ink/30 bg-paper p-6">
+                      <p className="specimen-lot text-ink/60">
+                        {p.loafNumber.toUpperCase()} · LOT {p.lot}
+                      </p>
+                      <Scramble
+                        as="h3"
+                        text={p.name}
+                        className="mt-4 font-display text-[24px] leading-[1.15] tracking-[-0.01em]"
+                      />
+                      <p className="specimen-spec mt-2 text-ink/55">
+                        {p.weight} · ISO {p.iso}
+                      </p>
+                      <div className="mt-auto flex items-end justify-between pt-6">
+                        <span className="font-display text-[28px] leading-none">
+                          {p.priceEgp ? `${p.priceEgp}` : "—"}
+                          <span className="specimen-lot ml-1 align-baseline">EGP</span>
+                        </span>
+                        <div className="flex gap-1">
+                          {p.freeFrom.map((code) => (
+                            <span
+                              key={code}
+                              className="specimen-lot rounded-sm border border-ink/30 px-1.5 py-0.5"
+                            >
+                              {code}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </article>
+                  </Tilt>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </Reveal>
+
+        {/* ============================================================
+            CERTIFICATIONS — placeholder for Moon #5 Stamp Room
+            ============================================================ */}
+        <Reveal as="section" className="border-b border-ink/40 bg-paper">
+          <div className="mx-auto max-w-[1440px] px-6 py-20 sm:px-12 lg:px-24">
+            <header className="mb-10">
+              <p className="specimen-lot">X-01 · CERTIFICATIONS</p>
+              <h2 className="mt-2 max-w-2xl font-display text-[32px] leading-[1.1] tracking-[-0.01em]">
+                We publish the certifications the way a watchmaker publishes its movement.
+              </h2>
+            </header>
+            <div className="grid grid-cols-1 gap-x-12 gap-y-8 border-t border-ink/40 pt-8 md:grid-cols-3">
+              <CertSpec
+                code="X-01-A"
+                standard="ISO 22000:2018"
+                name="Food safety management"
+                body="Bureau Veritas Egypt"
+                certNo="EG-FS-2024-1138"
+              />
+              <CertSpec
+                code="X-01-B"
+                standard="ISO 9001:2015"
+                name="Quality management"
+                body="Bureau Veritas Egypt"
+                certNo="EG-QM-2024-0944"
+              />
+              <CertSpec
+                code="X-01-C"
+                standard="HALAL"
+                name="Halal certification"
+                body="Egyptian Halal Authority"
+                certNo="EHA-2025-0061"
+              />
+            </div>
+          </div>
+        </Reveal>
+
+        {/* ============================================================
+            JOURNAL TEASER
+            ============================================================ */}
+        <Reveal as="section" className="bg-linen-mid/35 border-b border-ink/40">
+          <div className="mx-auto grid max-w-[1440px] grid-cols-12 gap-x-8 gap-y-12 px-6 py-24 sm:px-12 lg:px-24">
+            <div className="col-span-12 md:col-span-4">
+              <p className="specimen-lot">J-01 · THE JOURNAL</p>
+              <h2 className="mt-2 font-display text-[40px] leading-[1.1] tracking-[-0.015em]">
+                We don&rsquo;t<br />romanticise<br />our limits.
+              </h2>
+              <Link
+                href="/journal"
+                className="specimen-spec mt-8 inline-block underline decoration-[0.5px] underline-offset-[6px]"
+              >
+                READ THE JOURNAL →
+              </Link>
+            </div>
+            <ol className="col-span-12 grid list-none grid-cols-1 gap-x-8 gap-y-10 p-0 md:col-span-8 md:col-start-5 sm:grid-cols-2">
+              {[
+                { code: "J-001", slug: "phenylalanine-in-milligrams", title: "Why we list phenylalanine in milligrams.", date: "12 OCT 2026", read: "4 min" },
+                { code: "J-002", slug: "the-lot-number-is-the-warranty", title: "The lot number is the warranty.", date: "28 SEP 2026", read: "3 min" },
+                { code: "J-003", slug: "what-the-iso-audit-involves", title: "What the ISO audit actually involves.", date: "14 SEP 2026", read: "6 min" },
+                { code: "J-004", slug: "no-wooden-boards", title: "On not photographing food on wooden boards.", date: "01 SEP 2026", read: "2 min" },
+              ].map((item) => (
+                <li key={item.code}>
+                  <article>
+                    <p className="specimen-lot">{item.code}</p>
+                    <h3 className="mt-2 font-display text-[24px] leading-[1.2] tracking-[-0.01em]">
+                      <Link
+                        href={`/journal/${item.slug}`}
+                        className="no-underline transition-colors hover:text-saffron"
+                      >
+                        {item.title}
+                      </Link>
+                    </h3>
+                    <p className="specimen-lot mt-4 text-ink/60">
+                      {item.date} · {item.read} READ
+                    </p>
+                  </article>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </Reveal>
+      </main>
 
       <Footer />
-    </main>
+    </>
   );
 }
 
 /* =================== Page-local subcomponents =================== */
 
 function CategoryTile({
-  code, monogram, title, count, summary, accent, href, endorsed,
+  code,
+  monogram,
+  title,
+  count,
+  summary,
+  href,
+  accent,
+  endorsed,
 }: {
   code: string;
   monogram: "wheat" | "sugar" | "protein";
   title: string;
   count: string;
   summary: string;
-  accent: "saffron" | "pomegranate";
   href: string;
+  accent: "saffron" | "stamp";
   endorsed?: boolean;
 }) {
-  const accentColor =
-    accent === "saffron" ? "rgb(var(--saffron))" : "rgb(var(--pomegranate))";
-
+  const accentClass = accent === "saffron" ? "text-saffron" : "text-stamp";
   return (
     <Link
       href={href}
-      className="group bg-[rgb(var(--cream-paper))] p-8 lg:p-10 flex flex-col justify-between min-h-[420px] no-underline hover:bg-[rgb(var(--linen-mid)/0.4)] transition-colors"
+      className="group flex min-h-[420px] flex-col justify-between bg-paper p-8 no-underline transition-colors hover:bg-linen-mid/40 lg:p-10"
     >
-      <header className="flex items-start justify-between text-[rgb(var(--ink-black))]">
+      <header className="flex items-start justify-between text-ink">
         <div>
-          <p className="specimen-lot opacity-60">CATEGORY · {code}</p>
+          <p className="specimen-lot text-ink/60">CATEGORY · {code}</p>
           {endorsed && (
-            <p className="specimen-lot mt-1" style={{ color: accentColor }}>
+            <p className={`specimen-lot mt-1 ${accentClass}`}>
               ENDORSED · CRYSTAL BY EPICS
             </p>
           )}
         </div>
         <Strikethrough variant={monogram} size={56} />
       </header>
-
-      <div className="text-[rgb(var(--ink-black))]">
+      <div className="text-ink">
         <h3
-          className="font-serif-display text-[44px] leading-[1.05] tracking-[-0.015em]"
-          style={endorsed ? { color: accentColor } : undefined}
+          className={`font-display text-[44px] leading-[1.05] tracking-[-0.015em] ${
+            endorsed ? accentClass : ""
+          }`}
         >
           {title}
         </h3>
-        <p className="specimen-spec mt-2 opacity-60">{count.toUpperCase()}</p>
-        <p className="font-sans-text text-[15px] leading-[1.5] mt-5 text-[rgb(var(--charcoal-sub))]">
-          {summary}
-        </p>
+        <p className="specimen-spec mt-2 text-ink/60">{count.toUpperCase()}</p>
+        <p className="mt-5 text-[15px] leading-[1.5] text-ink/75">{summary}</p>
         <p
-          className="specimen-spec mt-8 transition-colors group-hover:underline underline-offset-[6px] decoration-[0.5px]"
-          style={{ color: accentColor }}
+          className={`specimen-spec mt-8 underline decoration-[0.5px] underline-offset-[6px] ${accentClass}`}
         >
           BROWSE SHELF →
         </p>
@@ -455,60 +453,32 @@ function CategoryTile({
   );
 }
 
-function StatTile({ big, mono, detail, highlight }: { big: React.ReactNode; mono: string; detail: string; highlight?: boolean }) {
-  return (
-    <div className={`flex flex-col gap-2 border-t border-[rgb(var(--cream-paper)/0.25)] border-t-[0.5px] pt-5`}>
-      <p
-        className={`font-serif-display tracking-[-0.03em] leading-[0.95] ${
-          highlight ? "text-[rgb(var(--saffron))]" : "text-[rgb(var(--cream-paper))]"
-        } text-[56px] sm:text-[80px] lg:text-[96px]`}
-      >
-        {big}
-      </p>
-      <p className="specimen-lot opacity-80 mt-2">{mono}</p>
-      <p className="font-sans-text text-[14px] leading-[1.45] text-[rgb(var(--cream-paper)/0.7)] max-w-[180px]">
-        {detail}
-      </p>
-    </div>
-  );
-}
-
 function CertSpec({
-  code, standard, name, body, certNo, renewed,
+  code,
+  standard,
+  name,
+  body,
+  certNo,
 }: {
   code: string;
   standard: string;
   name: string;
   body: string;
   certNo: string;
-  renewed: string;
 }) {
   return (
     <article className="flex flex-col gap-2">
-      <p className="specimen-lot opacity-60">{code}</p>
-      <h3 className="font-serif-display text-[32px] leading-[1.05] tracking-[-0.015em] text-[rgb(var(--ink-black))]">
+      <p className="specimen-lot text-ink/60">{code}</p>
+      <h3 className="font-display text-[32px] leading-[1.05] tracking-[-0.015em] text-ink">
         {standard}
       </h3>
-      <p className="font-sans-text text-[15px] text-[rgb(var(--ink-black))]">{name}</p>
-      <dl className="mt-3 grid grid-cols-[80px_1fr] gap-x-3 gap-y-1.5 text-[rgb(var(--charcoal-sub))]">
-        <dt className="specimen-lot opacity-60">BODY</dt>
-        <dd className="font-sans-text text-[13px]">{body}</dd>
-        <dt className="specimen-lot opacity-60">CERT NO.</dt>
+      <p className="text-[15px] text-ink">{name}</p>
+      <dl className="mt-3 grid grid-cols-[80px_1fr] gap-x-3 gap-y-1.5 text-ink/70">
+        <dt className="specimen-lot text-ink/60">BODY</dt>
+        <dd className="text-[13px]">{body}</dd>
+        <dt className="specimen-lot text-ink/60">CERT NO.</dt>
         <dd className="specimen-lot">{certNo}</dd>
-        <dt className="specimen-lot opacity-60">RENEWED</dt>
-        <dd className="font-sans-text text-[13px]">{renewed}</dd>
       </dl>
     </article>
-  );
-}
-
-function RecipeStat({ code, label, value }: { code: string; label: string; value: string }) {
-  return (
-    <li className="flex flex-col gap-1 border-t border-[rgb(var(--ink-black)/0.6)] border-t-[0.5px] pt-3">
-      <span className="specimen-lot opacity-60">
-        {code} · {label.toUpperCase()}
-      </span>
-      <span className="font-serif-display text-[20px] leading-[1.2] tracking-[-0.005em]">{value}</span>
-    </li>
   );
 }

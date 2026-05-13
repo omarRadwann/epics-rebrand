@@ -1,19 +1,21 @@
-# Epics Group — Rebrand
+# Epics Group — Moonshot Rebrand
 
 A complete bespoke rebrand of [Epics Group](https://epics-group.com), an Egyptian manufacturer of gluten-free, sugar-free, and PKU-safe baked goods headquartered at Plot 330, 6th Industrial Zone, 6 October City, Giza.
 
 **Territory:** *The Specimen Pantry* — apothecary, but appetizing. Warm cream paper, ink-black serif headlines, saffron accents, every product catalogued as a numbered specimen with a real lot number.
 
-**Brand architecture:**
-- Master brand: **Epics** (typographic wordmark, no graphic logo)
-- Line descriptors: *Epics · Gluten-Free*, *Epics · Sugar-Free*
-- Endorsed sub-brand: **Crystal by Epics — PKU** (pomegranate gravity color)
+**This branch (`moonshot`):** fuses the editorial brand with **cinematic 3D, scroll choreography, and physics-grade micro-interactions**. Five "Moon" scenes built on Three.js + React-Three-Fiber + Framer Motion + Lenis. Branch off the editorial baseline kept on `main` (deployed at GitHub Pages).
 
 ---
 
-## Stack
+## Stack (moonshot branch)
 
-Next.js 14 (App Router) · React 18 · TypeScript · Tailwind v3 · `next/font` for Google Fonts as open-source brand fallbacks · Edge-rendered Open Graph + favicon via `next/og`.
+- **Next.js 15** (App Router, static export) · **React 19** · **TypeScript** (strict)
+- **Tailwind v4** (CSS-first `@theme` config) · Geist Sans + Mono · Newsreader (display)
+- **Three.js + @react-three/fiber + @react-three/drei + @react-three/postprocessing**
+- **Framer Motion 12** for all 2D motion · **GSAP** reserved for scroll-locked timelines FM can't express
+- **Lenis** smooth scroll → **Zustand** scroll-director store → R3F `useFrame` (no per-frame React re-render)
+- **`next/font`** for Google Fonts; production fonts (PP Editorial New, 29LT Bukra) on hold until licenses land
 
 ---
 
@@ -22,156 +24,124 @@ Next.js 14 (App Router) · React 18 · TypeScript · Tailwind v3 · `next/font` 
 ```bash
 pnpm install
 pnpm dev
-# → http://localhost:3000      English
-# → http://localhost:3000/ar   Arabic (RTL)
+# → http://localhost:3000                                English home
+# → http://localhost:3000/playground/scene-01-vitrine    Moon #1 in isolation
 ```
 
-Production build:
+Production build (static export → `./out/`):
 
 ```bash
-pnpm build && pnpm start
-```
-
----
-
-## Deploy
-
-### One-click → Vercel (recommended)
-
-This repo is configured for Vercel out of the box (`vercel.json` sets `framework: nextjs`, `buildCommand: pnpm build`, `installCommand: pnpm install --frozen-lockfile`).
-
-```bash
-# from inside the epics-rebrand directory
-pnpm dlx vercel        # first-time link
-pnpm dlx vercel --prod # deploy to production
-```
-
-Or push to a GitHub repo and connect it to Vercel via [vercel.com/new](https://vercel.com/new) — auto-detects Next.js, no config needed.
-
-### Static export (any host)
-
-```bash
-# Add to next.config.mjs:
-#   output: "export"
 pnpm build
-# → ./out/  is a static site ready for any CDN
 ```
 
-Suitable for Netlify, Cloudflare Pages, S3 + CloudFront, or any static host.
+Useful gates:
 
----
-
-## Repository layout
-
-```
-epics-rebrand/
-├── BRAND-BOOK.md                # Onboarding doc — read first
-├── README.md                    # This file
-├── vercel.json                  # Vercel deploy config
-├── app/
-│   ├── layout.tsx               # Root layout — fonts, CartProvider, skip-link
-│   ├── globals.css              # Tokens, base styles, specimen-* utilities
-│   ├── page.tsx                 # English homepage (LTR)
-│   ├── not-found.tsx            # 404 — "Not in this lot."
-│   ├── icon.tsx                 # Favicon (edge-rendered serif "E")
-│   ├── opengraph-image.tsx      # Default OG image (1200×630, edge-rendered)
-│   ├── about/page.tsx           # About / Our Vision — five movements
-│   ├── pku/page.tsx             # Crystal by Epics PKU explainer microsite
-│   ├── gluten-free/page.tsx     # Category landing — gluten-free
-│   ├── sugar-free/page.tsx      # Category landing — sugar-free
-│   ├── cart/
-│   │   ├── page.tsx             # Cart server wrapper
-│   │   └── _CartView.tsx        # Client cart view (reads CartProvider)
-│   ├── products/[slug]/page.tsx # Product detail (dynamic — every SKU)
-│   ├── recipes/[slug]/page.tsx  # Recipe page — editorial magazine spread
-│   ├── ar/
-│   │   ├── layout.tsx           # Arabic locale wrapper (dir=rtl)
-│   │   └── page.tsx             # Arabic RTL homepage mirror
-│   └── _components/
-│       ├── Nav.tsx              # Top nav with active state (usePathname)
-│       ├── Footer.tsx           # Real Epics contact info, bilingual
-│       ├── Strikethrough.tsx    # S-01 / S-02 / S-03 monograms (SVG)
-│       ├── SpecimenHeader.tsx   # Typographic specimen banner
-│       ├── ProductCard.tsx      # Reusable specimen card
-│       ├── ProductIllustration.tsx # Hairline-art package illustration
-│       ├── CartProvider.tsx     # Client cart Context + localStorage
-│       ├── CartCount.tsx        # Live nav cart counter
-│       └── AddToCartButton.tsx  # PDP add button with feedback flash
-├── lib/
-│   └── catalog.ts               # Product + recipe catalog (12 SKUs, 3 recipes)
-├── tokens/
-│   ├── colors.json              # Design tokens (color, W3C format)
-│   └── typography.json          # Design tokens (type, W3C format)
-├── tailwind.config.ts           # Tokens → Tailwind theme
-├── postcss.config.mjs
-├── next.config.mjs
-├── tsconfig.json
-└── public/
-    └── fonts/                   # Self-host licensed Untitled Serif / Söhne /
-                                 # GT America Mono / 29LT Bukra here in production
+```bash
+pnpm typecheck    # tsc --noEmit
+pnpm lint
 ```
 
 ---
 
-## What's built
+## Five Moon scenes
+
+| # | Scene | Status | Route |
+|---|---|---|---|
+| 1 | The Specimen Vitrine — rotating museum vitrine, procedural loaf with fake-SSS, 8000 wheat-grain particles condensing into the EPICS wordmark on scroll | ✅ Phase 2 | `/playground/scene-01-vitrine` |
+| 2 | Three Shelves — camera flies through corridor (wheat-gold / cool blue / prismatic) | Phase 4 | `/playground/scene-02-corridor` |
+| 3 | Specimen Slides — glass microscope-slide product cards with tilt + chromatic aberration | Phase 6 | `/shop` |
+| 4 | On The Record — 3D extruded manifesto text + caustic GLSL backdrop | Phase 5 | `/` (mid-scroll) |
+| 5 | The Stamp Room — PBR wax seals / metallic stamps with anisotropic reflection | Phase 8 | `/` (late scroll) |
+
+Performance budget per scene: **60fps @ 1440p on M1 Air**, Lighthouse ≥ 90 desktop / ≥ 80 mobile, initial JS ≤ 350kb gzipped on `/`. Mobile drops particle counts 60%, disables postprocessing. `prefers-reduced-motion` freezes scenes on the hero frame.
+
+See [`docs/walkthrough.md`](./docs/walkthrough.md) for a scroll-by-scroll tour of what's currently shipped.
+
+---
+
+## Routes
 
 | Route | Purpose |
 |---|---|
-| `/` | Homepage — asymmetric hero, manifesto, category gateway, popular rail, certifications, recipe feature, journal teaser |
-| `/gluten-free` | Category — editorial intro, hero pair, 4-up grid |
-| `/sugar-free` | Category — sugar-free shelf with S-02 monogram |
-| `/products/[slug]` | PDP (12 SKUs prerendered) — specimen header, hairline package illustration, designed ingredients/nutrition tables, Add to Cart with persistence |
-| `/recipes/[slug]` | Recipe — magazine spread, numbered steps, real timings (3 recipes) |
-| `/about` | "5 movements" founding story, ISO/manufacturing/sourcing facts, Crystal pull-out |
-| `/pku` | Crystal by Epics PKU explainer — pomegranate gravity color, plain-language PKU primer |
-| `/cart` | Interactive cart with localStorage persistence, no dark patterns |
-| `/not-found` | 404 — struck-through specimen card "Not in this lot." |
-| `/ar` | Arabic RTL homepage mirror (native Egyptian voice, not translated) |
+| `/` | Homepage — manifesto, three-shelves intro, popular rail, certifications, journal teaser. **Currently DOM-only; Phase 3 wires Moon #1 behind the hero.** |
+| `/shop` | Full catalogue (30 SKUs from `lib/catalog.ts`) |
+| `/pku` | Crystal by Epics PKU explainer — pomegranate accent, 4 specimens |
+| `/journal` | Editorial article index |
+| `/about` | Five movements founding story |
+| `/playground/scene-01-vitrine` | Moon #1 in isolation — scroll to condense particles into EPICS |
+| `/not-found` | "Not in this lot." |
+| `/ar` | (planned Phase 10) Arabic RTL mirror |
 
-Plus auto-generated:
-- `/icon` — favicon (edge-rendered)
-- `/opengraph-image` — social card (1200×630, edge-rendered)
+---
+
+## Architecture
+
+```
+app/
+  layout.tsx         ← fonts + LenisProvider + GrainOverlay + Cursor
+  globals.css        ← Tailwind v4 @theme tokens, custom-cursor rules,
+                       reduced-motion gate, canvas-root positioning
+  page.tsx           ← Home (DOM-only this phase)
+  playground/scene-01-vitrine/page.tsx ← Moon #1
+
+components/
+  layout/            ← Nav, Footer, LenisProvider, GrainOverlay, Cursor
+  motion/            ← Reveal, SplitText, Magnetic, Marquee, Tilt,
+                       Scramble, CountUp, PageTransition
+  ui/                ← Strikethrough (S-01/S-02/S-03 monograms), SpecimenHeader
+  three/
+    CanvasRoot.tsx   ← single fixed R3F canvas
+    scenes/          ← Vitrine, Loaf (+ Corridor, ManifestoText, StampRoom)
+    particles/       ← WheatGrains (+ SugarCrystals)
+    materials/       ← (Crust, Caustics, WaxSeal — Phase 5–8)
+
+lib/
+  catalog.ts         ← 30 real SKUs (verbatim from epics-group.com)
+  recipes.ts, journal.ts
+  asset.ts           ← basePath helper for GH Pages
+  motion/eases.ts    ← entrance/exit curves + springs (single source of truth)
+  three/perfBudget.ts ← tier detection (desktop-high/-low/mobile/reduced)
+  hooks/
+    useScrollDirector.ts  ← Zustand store, written by Lenis, read by R3F
+    usePerfTier.ts
+
+tokens/
+  colors.json, typography.json   ← W3C design tokens (sync to globals.css)
+
+docs/
+  walkthrough.md     ← session-by-session shipped surface
+```
+
+The DOM scrolls; R3F scenes react via `useScrollDirector`. The R3F canvas is `position: fixed; inset: 0; z-index: 0; pointer-events: none` — pure background under the page content.
+
+---
+
+## Decisions locked
+
+- **Project location**: `moonshot` branch of this repo. `main` stays deployable on GitHub Pages as a fallback.
+- **Display font**: Newsreader (free, Google Fonts) until PP Editorial New license arrives.
+- **UI font**: Geist Sans + Geist Mono (free, Vercel).
+- **Arabic font**: Tajawal until 29LT Bukra license arrives.
+- **Hosting**: GitHub Pages static export. R3F runs client-only via `dynamic(…, { ssr: false })` so static export holds.
+- **Color tokens**: `--paper #F2EFE7`, `--ink #161512`, `--saffron #E07A1B`, `--stamp #7A2E1F` (Crystal) — per Moonshot Brief §4, replacing the `main` branch palette.
 
 ---
 
 ## Brand fundamentals
 
-Read [`BRAND-BOOK.md`](./BRAND-BOOK.md) end-to-end before changing anything visual. It covers:
+Read [`BRAND-BOOK.md`](./BRAND-BOOK.md) end-to-end before changing anything visual. It covers manifesto, brand architecture, Crystal sub-brand rules, color system, type system, specimen language (lot codes, monograms), photography + voice, do/don't pairs, RTL rules, and the 11 anti-patterns rejected on sight.
 
-- The 60-word anchoring manifesto
-- Brand architecture + Crystal sub-brand rules
-- The 6-token color system (light + dark)
-- The type system (production fonts + open-source fallbacks)
-- The specimen language (numbering conventions, lot codes, free-from monograms)
-- Photography & illustration brief (80 words, explicit do/don'ts)
-- Voice & tone with 25 sample headlines
-- 10 do/don't pairs
-- Arabic & RTL typography rules
-- The 11 anti-patterns to reject on sight
+The plan that produced this branch lives at `C:\Users\acer\.claude\plans\hello-please-analyze-epics-rebrand-hazy-manatee.md`.
 
 ---
 
-## Demo notes
+## Production fonts (licensed, on hold)
 
-1. **Open / and resize** between desktop (1440) and mobile (390) — the asymmetric hero re-stacks cleanly.
-2. **Click into /pku** — the gravity color shift (saffron → pomegranate) is the central brand demonstration. PKU is the moat.
-3. **Toggle to /ar** — RTL parity is genuine. Arabic typography, layout direction, and a native Egyptian voice (not translated).
-4. **Click into /products/european-baking-mix** — the specimen header at the top, the hairline-art package illustration, the designed ingredients table. Hit "ADD TO CART" — the button flashes saffron, the nav counter increments, and the value persists across reloads.
-5. **Visit /cart** — Pre-seeded with 3 items so the demo doesn't start empty. Adjust quantities, remove, or "EMPTY THE SLIP."
-6. **Type any URL that doesn't exist** — `/404` itself, or `/products/foo` — to see the "Not in this lot." treatment.
+The repo ships open-source fallbacks (Newsreader / Geist / Tajawal). Production will swap to:
+- **PP Editorial New** — Pangram Pangram (display, variable italic axis)
+- **29LT Bukra** — 29LT (Arabic display + text)
 
----
-
-## Production fonts (licensed)
-
-The repo ships open-source fallbacks (Newsreader / Inter / JetBrains Mono / Tajawal) loaded via `next/font/google`. Production swaps to the licensed brand fonts under `public/fonts/`:
-
-- **Untitled Serif** — Klim Type Foundry
-- **Söhne** — Klim Type Foundry
-- **GT America Mono** — Grilli Type
-- **29LT Bukra** — 29LT
-
-Add `@font-face` declarations to `app/globals.css` pointing at `/fonts/*.woff2` once the licenses are in place.
+Drop `.woff2` files into `public/fonts/` and switch `next/font/google` calls to `next/font/local` in `app/layout.tsx` — single-file change.
 
 ---
 

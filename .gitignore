@@ -40,3 +40,6 @@ next-env.d.ts
 # scratch — Quiver.ai generation outputs (chosen logos are in public/logo/)
 /quiver-logos
 
+# Pre-rebuild app/ kept locally during moonshot rewrite — never commit
+/.old-app
+

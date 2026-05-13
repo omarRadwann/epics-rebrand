@@ -16,6 +16,18 @@ const nextConfig = {
     // assets (next/image with unoptimized:true does not auto-prefix basePath).
     NEXT_PUBLIC_BASE_PATH: basePath,
   },
+  // R3F + three: keep three out of the server bundle, mark drei externals as ESM-only.
+  // Three.js examples loaders (Draco, KTX2) are loaded lazily on the client.
+  experimental: {
+    optimizePackageImports: [
+      "@react-three/fiber",
+      "@react-three/drei",
+      "@react-three/postprocessing",
+      "framer-motion",
+      "three",
+    ],
+  },
+  transpilePackages: ["three"],
 };
 
 export default nextConfig;

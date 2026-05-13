@@ -1,92 +1,88 @@
-import type { Metadata } from "next";
-import { Newsreader, Inter, JetBrains_Mono, Tajawal, Italiana } from "next/font/google";
-import { CartProvider } from "./_components/CartProvider";
-import { ScrollProgress } from "./_components/ScrollProgress";
-import { PaperTexture } from "./_components/PaperTexture";
-import { PageTransition } from "./_components/PageTransition";
-import { SearchOverlay } from "./_components/SearchOverlay";
+import type { Metadata, Viewport } from "next";
+import { Newsreader, Tajawal } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
+
+import { LenisProvider } from "@/components/layout/LenisProvider";
+import { GrainOverlay } from "@/components/layout/GrainOverlay";
+import { Cursor } from "@/components/layout/Cursor";
+
 import "./globals.css";
 
-const serif = Newsreader({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
-  variable: "--font-serif",
-  display: "swap",
-});
-
-const sans = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-sans",
-  display: "swap",
-});
-
-const mono = JetBrains_Mono({
+/* ============================================================
+   Fonts — bound to CSS custom properties consumed by globals.css.
+   Newsreader fills the Untitled Serif slot (free, variable, literary).
+   Geist Sans + Mono fill the Söhne / GT America slots.
+   Tajawal handles Arabic until 29LT Bukra is wired via next/font/local.
+   ============================================================ */
+const newsreader = Newsreader({
   subsets: ["latin"],
   weight: ["400", "500"],
-  variable: "--font-mono",
+  style: ["normal", "italic"],
+  variable: "--font-newsreader",
   display: "swap",
 });
 
-const arabic = Tajawal({
-  subsets: ["arabic"],
+const tajawal = Tajawal({
+  subsets: ["arabic", "latin"],
   weight: ["400", "500", "700"],
-  variable: "--font-arabic",
-  display: "swap",
-});
-
-// Dedicated logo typeface — high-contrast Bodoni-class display serif, the
-// kind premium fashion houses and apothecary brands (Le Labo, The Row,
-// Buly 1803) use as their wordmark. Kept *separate* from the body serif so
-// the logo carries its own voice.
-const logo = Italiana({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-logo",
+  variable: "--font-tajawal",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Epics — Bread that doesn't apologise. Gluten-free, sugar-free, PKU-safe.",
-  description:
-    "We bake food for bodies that don't negotiate. Wheat-free, sugar-free, PKU-safe — engineered in 6th of October City, certified to ISO 22000 and ISO 9001.",
-  metadataBase: new URL("https://epics-group.com"),
-  openGraph: {
-    title: "Epics — Bread that doesn't apologise.",
-    description:
-      "Gluten-free, sugar-free, PKU-safe pantry staples. Made in 6th of October. ISO 22000.",
-    type: "website",
-    locale: "en_EG",
-    alternateLocale: ["ar_EG"],
+  title: {
+    default: "Epics · Bread that doesn't apologise",
+    template: "%s · Epics",
   },
+  description:
+    "Wheat-free, sugar-free, PKU-safe baked goods. Engineered in 6th of October City. Certified to ISO 22000 and ISO 9001. Every loaf carries a lot number.",
+  keywords: [
+    "gluten-free",
+    "sugar-free",
+    "PKU",
+    "Egypt",
+    "Cairo",
+    "coeliac",
+    "phenylketonuria",
+    "low-protein",
+    "bakery",
+  ],
+  authors: [{ name: "Epics Group" }],
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: "Epics",
+    title: "Epics · Bread that doesn't apologise",
+    description:
+      "Wheat-free, sugar-free, PKU-safe baked goods. Engineered in 6th of October.",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#F2EFE7",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
-      className={`${serif.variable} ${sans.variable} ${mono.variable} ${arabic.variable} ${logo.variable}`}
+      className={`${newsreader.variable} ${tajawal.variable} ${GeistSans.variable} ${GeistMono.variable}`}
     >
-      <body className="relative">
-        <PaperTexture />
-        <ScrollProgress />
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-[rgb(var(--ink-black))] focus:text-[rgb(var(--cream-paper))] focus:px-4 focus:py-2 focus:specimen-spec"
-        >
+      <body>
+        <a href="#main" className="skip-link">
           Skip to content
         </a>
-        <CartProvider>
-          <div className="relative z-[1]">
-            <PageTransition>{children}</PageTransition>
-          </div>
-          <SearchOverlay />
-        </CartProvider>
+
+        <LenisProvider>{children}</LenisProvider>
+
+        <GrainOverlay />
+        <Cursor />
       </body>
     </html>
   );
