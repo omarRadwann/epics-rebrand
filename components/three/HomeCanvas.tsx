@@ -43,9 +43,14 @@ const ManifestoText = dynamic(
   { ssr: false }
 );
 
-// Keep canvas alive until past the last canvas scene (corridor ends at 0.96).
-// Pad a bit so the fade-out completes before unmount.
-const UNMOUNT_AFTER = 0.98;
+const StampRoom = dynamic(
+  () => import("./scenes/StampRoom").then((m) => m.StampRoom),
+  { ssr: false }
+);
+
+// Keep canvas alive until past the last canvas scene (stamps ends at 0.97).
+// Pad slightly so the fade-out completes before unmount.
+const UNMOUNT_AFTER = 0.99;
 
 export function HomeCanvas() {
   const [scene, setScene] = useState<string>("vitrine");
@@ -102,6 +107,7 @@ export function HomeCanvas() {
         {scene === "vitrine" && <Vitrine />}
         {scene === "corridor" && <Corridor />}
         {scene === "manifesto" && <ManifestoText />}
+        {scene === "stamps" && <StampRoom />}
       </CanvasRoot>
     </div>
   );

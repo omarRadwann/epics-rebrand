@@ -42,8 +42,8 @@ export const SCENE_RANGES: Record<SceneKey, SceneRange | null> = {
   vitrine:   { start: 0.00, end: 0.30, fadeIn: 0.00, fadeOut: 0.28 },
   manifesto: { start: 0.41, end: 0.58, fadeIn: 0.41, fadeOut: 0.56 },
   corridor:  { start: 0.60, end: 0.78, fadeIn: 0.60, fadeOut: 0.76 },
-  specimens: null,
-  stamps:    null,                                                    // Phase 8
+  specimens: null,                                                    // DOM-rendered specimen slides on /shop
+  stamps:    { start: 0.86, end: 0.97, fadeIn: 0.86, fadeOut: 0.95 },
   none:      null,
 };
 

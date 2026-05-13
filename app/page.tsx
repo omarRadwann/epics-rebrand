@@ -318,17 +318,23 @@ export default function Home() {
         </Reveal>
 
         {/* ============================================================
-            CERTIFICATIONS — placeholder for Moon #5 Stamp Room
+            CERTIFICATIONS — Moon #5 Stamp Room plays in the canvas
+            behind this section. Section is transparent and tall so the
+            dark 3D stamp room reads as the visual backdrop; the
+            typographic certification specs sit at the bottom over the
+            3D scene's natural floor area.
             ============================================================ */}
-        <Reveal as="section" className="border-b border-ink/40 bg-paper">
-          <div className="mx-auto max-w-[1440px] px-6 py-20 sm:px-12 lg:px-24">
-            <header className="mb-10">
-              <p className="specimen-lot">X-01 · CERTIFICATIONS</p>
-              <h2 className="mt-2 max-w-2xl font-display text-[32px] leading-[1.1] tracking-[-0.01em]">
+        <Reveal as="section" className="relative text-paper">
+          <div className="mx-auto flex min-h-[120vh] max-w-[1440px] flex-col justify-between px-6 py-24 sm:px-12 lg:px-24">
+            <header>
+              <p className="specimen-lot text-paper/65">X-01 · CERTIFICATIONS</p>
+              <h2 className="mt-2 max-w-2xl font-display text-[clamp(2rem,4vw,3rem)] leading-[1.1] tracking-[-0.01em]">
                 We publish the certifications the way a watchmaker publishes its movement.
               </h2>
             </header>
-            <div className="grid grid-cols-1 gap-x-12 gap-y-8 border-t border-ink/40 pt-8 md:grid-cols-3">
+            {/* Three thin spec columns sit at the bottom of the section,
+                leaving the upper viewport for the stamp room canvas. */}
+            <div className="grid grid-cols-1 gap-x-12 gap-y-8 border-t border-paper/25 pt-8 md:grid-cols-3">
               <CertSpec
                 code="X-01-A"
                 standard="ISO 22000:2018"
@@ -479,15 +485,15 @@ function CertSpec({
 }) {
   return (
     <article className="flex flex-col gap-2">
-      <p className="specimen-lot text-ink/60">{code}</p>
-      <h3 className="font-display text-[32px] leading-[1.05] tracking-[-0.015em] text-ink">
+      <p className="specimen-lot text-paper/60">{code}</p>
+      <h3 className="font-display text-[32px] leading-[1.05] tracking-[-0.015em] text-paper">
         {standard}
       </h3>
-      <p className="text-[15px] text-ink">{name}</p>
-      <dl className="mt-3 grid grid-cols-[80px_1fr] gap-x-3 gap-y-1.5 text-ink/70">
-        <dt className="specimen-lot text-ink/60">BODY</dt>
+      <p className="text-[15px] text-paper">{name}</p>
+      <dl className="mt-3 grid grid-cols-[80px_1fr] gap-x-3 gap-y-1.5 text-paper/70">
+        <dt className="specimen-lot text-paper/60">BODY</dt>
         <dd className="text-[13px]">{body}</dd>
-        <dt className="specimen-lot text-ink/60">CERT NO.</dt>
+        <dt className="specimen-lot text-paper/60">CERT NO.</dt>
         <dd className="specimen-lot">{certNo}</dd>
       </dl>
     </article>
