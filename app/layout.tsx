@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Newsreader, Inter, JetBrains_Mono, Tajawal } from "next/font/google";
+import { Newsreader, Inter, JetBrains_Mono, Tajawal, Italiana } from "next/font/google";
 import { CartProvider } from "./_components/CartProvider";
 import { ScrollProgress } from "./_components/ScrollProgress";
 import { PaperTexture } from "./_components/PaperTexture";
@@ -36,6 +36,17 @@ const arabic = Tajawal({
   display: "swap",
 });
 
+// Dedicated logo typeface — high-contrast Bodoni-class display serif, the
+// kind premium fashion houses and apothecary brands (Le Labo, The Row,
+// Buly 1803) use as their wordmark. Kept *separate* from the body serif so
+// the logo carries its own voice.
+const logo = Italiana({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-logo",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Epics — Bread that doesn't apologise. Gluten-free, sugar-free, PKU-safe.",
   description:
@@ -59,7 +70,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${serif.variable} ${sans.variable} ${mono.variable} ${arabic.variable}`}
+      className={`${serif.variable} ${sans.variable} ${mono.variable} ${arabic.variable} ${logo.variable}`}
     >
       <body className="relative">
         <PaperTexture />

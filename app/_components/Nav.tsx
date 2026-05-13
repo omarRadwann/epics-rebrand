@@ -57,16 +57,17 @@ export function Nav({ locale = "en" }: { locale?: NavLocale }) {
       aria-label={locale === "ar" ? "التنقل الرئيسي" : "Primary"}
     >
       <div className="mx-auto max-w-[1440px] flex items-center justify-between px-6 sm:px-12 lg:px-24 py-5">
-        {/* Left: typographic wordmark + lot, baseline-aligned */}
-        <div className="flex items-baseline gap-4">
+        {/* Left: premium Italiana wordmark + hairline rule, with the lot
+            code stacked beneath the rule so the two form a small "label". */}
+        <div className="flex items-center gap-5">
           <Link
             href={t.home}
-            className="text-[rgb(var(--ink-black))] no-underline"
+            className="text-[rgb(var(--ink-black))] no-underline block"
             aria-label="Epics — home"
           >
-            <Logo size={32} />
+            <Logo size={26} withRule={true} />
           </Link>
-          <span className="specimen-lot hidden sm:inline">EST · 6 OCT · LOT 26-0001</span>
+          <span className="specimen-lot hidden md:inline opacity-70 mt-1">EST · 6 OCT · LOT 26-0001</span>
         </div>
 
         {/* Right: links + locale + cart */}
