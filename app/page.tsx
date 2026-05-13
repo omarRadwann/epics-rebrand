@@ -204,53 +204,56 @@ export default function Home() {
         </Marquee>
 
         {/* ============================================================
-            CATEGORY GATEWAY — placeholder for Moon #2 corridor.
-            Three typographic tiles, will be overlaid by 3D shelves later.
+            CATEGORY GATEWAY — the Moon #2 corridor plays in the canvas
+            behind this section. DOM here is typographic-only so the
+            3D shelves can carry the visual story. Thin labels float at
+            the corners; the tall min-height gives the camera flight
+            full scroll-real-estate.
             ============================================================ */}
-        <Reveal as="section" className="border-b border-ink/40">
-          <div className="mx-auto max-w-[1440px] px-6 py-24 sm:px-12 lg:px-24">
-            <header className="mb-12 flex flex-wrap items-baseline justify-between gap-4">
+        <Reveal as="section" className="relative">
+          <div className="mx-auto flex min-h-[140vh] max-w-[1440px] flex-col justify-between px-6 py-24 sm:px-12 lg:px-24">
+            <header className="flex flex-wrap items-baseline justify-between gap-4">
               <div>
-                <p className="specimen-lot">C-01 · THE PANTRY</p>
-                <h2 className="mt-2 font-display text-[48px] leading-[1.05] tracking-[-0.015em]">
+                <p className="specimen-lot text-paper/90">C-01 · THE PANTRY</p>
+                <h2 className="mt-2 font-display text-[clamp(2.4rem,6vw,4.5rem)] leading-[1.05] tracking-[-0.015em] text-paper">
                   Three shelves.
                 </h2>
               </div>
-              <p className="max-w-md text-[15px] text-ink/70">
-                Each shelf serves a different body. Each body deserves the same gravity. We
-                don&rsquo;t hide the third.
+              <p className="max-w-md text-[14px] leading-[1.55] text-paper/70">
+                Each shelf serves a different body. Each body deserves the same gravity.
+                We don&rsquo;t hide the third.
               </p>
             </header>
-            <div className="grid grid-cols-1 gap-px bg-ink/40 md:grid-cols-3">
-              <CategoryTile
-                code="01"
+
+            {/* Three shelf labels — stretched across the section so each
+                aligns roughly with its 3D shelf reveal moment. */}
+            <ol className="mt-auto grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-3 md:gap-8">
+              <ShelfLabel
+                code="S-01"
                 monogram="wheat"
                 title="Gluten-Free"
-                count={`${counts.gf} specimens`}
-                summary="Bread, baking mixes, cereal, brownies. For coeliac kitchens that want to behave like every other kitchen."
+                count={counts.gf}
                 href="/gluten-free"
                 accent="saffron"
               />
-              <CategoryTile
-                code="02"
+              <ShelfLabel
+                code="S-02"
                 monogram="sugar"
                 title="Sugar-Free"
-                count={`${counts.sf} specimens`}
-                summary="Cake mix, whipping cream, ice cream. For diabetic households who still want birthdays."
+                count={counts.sf}
                 href="/sugar-free"
                 accent="saffron"
               />
-              <CategoryTile
-                code="03"
+              <ShelfLabel
+                code="S-03"
                 monogram="protein"
                 title="Crystal · PKU"
-                count={`${counts.pku} specimens`}
-                summary="Low-protein, phenylalanine-measured. Endorsed sub-brand for families who count milligrams."
+                count={counts.pku}
                 href="/pku"
                 accent="stamp"
                 endorsed
               />
-            </div>
+            </ol>
           </div>
         </Reveal>
 
@@ -404,12 +407,11 @@ export default function Home() {
 
 /* =================== Page-local subcomponents =================== */
 
-function CategoryTile({
+function ShelfLabel({
   code,
   monogram,
   title,
   count,
-  summary,
   href,
   accent,
   endorsed,
@@ -417,46 +419,48 @@ function CategoryTile({
   code: string;
   monogram: "wheat" | "sugar" | "protein";
   title: string;
-  count: string;
-  summary: string;
+  count: number;
   href: string;
   accent: "saffron" | "stamp";
   endorsed?: boolean;
 }) {
   const accentClass = accent === "saffron" ? "text-saffron" : "text-stamp";
   return (
-    <Link
-      href={href}
-      className="group flex min-h-[420px] flex-col justify-between bg-paper p-8 no-underline transition-colors hover:bg-linen-mid/40 lg:p-10"
-    >
-      <header className="flex items-start justify-between text-ink">
-        <div>
-          <p className="specimen-lot text-ink/60">CATEGORY · {code}</p>
-          {endorsed && (
-            <p className={`specimen-lot mt-1 ${accentClass}`}>
-              ENDORSED · CRYSTAL BY EPICS
-            </p>
-          )}
-        </div>
-        <Strikethrough variant={monogram} size={56} />
-      </header>
-      <div className="text-ink">
+    <li>
+      <Link
+        href={href}
+        className="group block border-t border-paper/30 pt-4 no-underline transition-colors hover:border-paper"
+      >
+        <header className="flex items-start justify-between">
+          <div>
+            <p className={`specimen-lot ${accentClass}`}>{code}</p>
+            {endorsed && (
+              <p className={`specimen-lot mt-1 text-paper/60`}>
+                ENDORSED
+              </p>
+            )}
+          </div>
+          <span className="text-paper/85">
+            <Strikethrough variant={monogram} size={32} />
+          </span>
+        </header>
         <h3
-          className={`font-display text-[44px] leading-[1.05] tracking-[-0.015em] ${
-            endorsed ? accentClass : ""
+          className={`mt-4 font-display text-[clamp(1.75rem,3vw,2.4rem)] leading-[1.1] tracking-[-0.015em] ${
+            endorsed ? accentClass : "text-paper"
           }`}
         >
           {title}
         </h3>
-        <p className="specimen-spec mt-2 text-ink/60">{count.toUpperCase()}</p>
-        <p className="mt-5 text-[15px] leading-[1.5] text-ink/75">{summary}</p>
+        <p className="specimen-spec mt-2 text-paper/55">
+          {count} SPECIMENS
+        </p>
         <p
-          className={`specimen-spec mt-8 underline decoration-[0.5px] underline-offset-[6px] ${accentClass}`}
+          className={`specimen-spec mt-6 inline-block underline decoration-[0.5px] underline-offset-[6px] ${accentClass}`}
         >
           BROWSE SHELF →
         </p>
-      </div>
-    </Link>
+      </Link>
+    </li>
   );
 }
 
