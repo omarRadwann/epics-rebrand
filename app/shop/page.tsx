@@ -2,8 +2,7 @@ import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { Reveal } from "@/components/motion/Reveal";
 import { consumerProducts, wholesaleProducts } from "@/lib/catalog";
-import { Scramble } from "@/components/motion/Scramble";
-import { Tilt } from "@/components/motion/Tilt";
+import { SpecimenSlide } from "@/components/ui/SpecimenSlide";
 
 export const metadata = {
   title: "Shop · 30 Specimens",
@@ -32,42 +31,9 @@ export default function ShopPage() {
         </Reveal>
 
         <section className="mx-auto max-w-[1440px] px-6 py-16 sm:px-12 lg:px-24">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {products.map((p) => (
-              <Tilt key={p.slug} className="h-full">
-                <article className="flex h-full flex-col border border-ink/30 bg-paper p-6">
-                  <p className="specimen-lot text-ink/60">
-                    {p.loafNumber.toUpperCase()} · LOT {p.lot}
-                  </p>
-                  <Scramble
-                    as="h2"
-                    text={p.name}
-                    className="mt-4 font-display text-[24px] leading-[1.15] tracking-[-0.01em]"
-                  />
-                  <p className="specimen-spec mt-2 text-ink/55">
-                    {p.weight} · ISO {p.iso}
-                  </p>
-                  <p className="mt-3 line-clamp-3 text-[14px] leading-[1.5] text-ink/70">
-                    {p.description}
-                  </p>
-                  <div className="mt-auto flex items-end justify-between pt-6">
-                    <span className="font-display text-[28px] leading-none">
-                      {p.priceEgp ? `${p.priceEgp}` : "—"}
-                      <span className="specimen-lot ml-1 align-baseline">EGP</span>
-                    </span>
-                    <div className="flex gap-1">
-                      {p.freeFrom.map((code) => (
-                        <span
-                          key={code}
-                          className="specimen-lot rounded-sm border border-ink/30 px-1.5 py-0.5"
-                        >
-                          {code}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </article>
-              </Tilt>
+              <SpecimenSlide key={p.slug} product={p} />
             ))}
           </div>
 
