@@ -10,6 +10,7 @@ import { Tilt } from "@/components/motion/Tilt";
 import { Scramble } from "@/components/motion/Scramble";
 import { CountUp } from "@/components/motion/CountUp";
 import { Strikethrough } from "@/components/ui/Strikethrough";
+import { HomeCanvas } from "@/components/three/HomeCanvas";
 
 const certifications = [
   "ISO 22000 : 2018",
@@ -47,16 +48,22 @@ export default function Home() {
     <>
       <Nav />
 
+      {/* Single R3F canvas, fixed behind DOM. Renders the Vitrine
+          (Moon #1) and fades out as the user scrolls past 0.18. */}
+      <HomeCanvas />
+
       <main id="main" className="relative">
         {/* ============================================================
-            HERO — placeholder for Moon #1 (Specimen Vitrine).
-            Tall section (140vh) so scroll progress 0 → ~0.10 maps here.
-            DOM content sits above; R3F canvas will fill the negative space.
+            HERO — Moon #1 (Specimen Vitrine) lives in the fixed canvas
+            BEHIND this section. The DOM here is the typographic overlay
+            (lot ribbon, headline, intro copy, strikethrough monograms).
+            Tall (140vh) so scroll progress 0 → ~0.18 covers the
+            condensation + handoff to corridor.
             ============================================================ */}
         <section
           id="hero"
           aria-label="Specimen Pantry"
-          className="relative flex min-h-[140vh] flex-col items-start justify-end overflow-hidden border-b border-ink/40 px-6 pb-16 pt-24 sm:px-12 sm:pb-24 sm:pt-32 lg:px-24"
+          className="relative flex min-h-[140vh] flex-col items-start justify-end overflow-hidden px-6 pb-16 pt-24 sm:px-12 sm:pb-24 sm:pt-32 lg:px-24"
         >
           {/* lot ribbon */}
           <p className="specimen-lot mb-6 text-ink/60">

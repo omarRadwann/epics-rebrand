@@ -1,6 +1,6 @@
-# Epics Moonshot — Session 1 Walkthrough
+# Epics Moonshot — Session Walkthrough
 
-> Phase 0 → 1 → 2 of the Moonshot Rebrand Plan.
+> Phases 0–4 of the Moonshot Rebrand Plan.
 > Branch: `moonshot`. Run: `pnpm dev` → http://localhost:3000
 
 ---
@@ -10,9 +10,11 @@
 A Next.js 15 + React 19 + Tailwind 4 foundation with the first Moon scene
 working in isolation. Five things to look at, in order.
 
-### 1. `/` — Home (DOM-only)
-The full editorial structure of the new site, but with no 3D yet — pure DOM
-on cream paper. Confirms the new design tokens and motion primitives.
+### 1. `/` — Home (with Moon #1 wired in)
+The Vitrine now renders in a fixed canvas behind the hero. Scroll 0 → 0.18
+drives the particle condensation; the canvas fades out 0.18 → 0.24 and
+unmounts at 0.32, releasing the WebGL context. Subsequent sections (stats,
+manifesto, three-shelves intro, popular rail, etc.) scroll normally on top. Confirms the new design tokens and motion primitives.
 Watch for:
 - **Hero** — `<SplitText>` reveal on "Bread that doesn't apologise." with
   the EPICS · N°26 · SPECIMEN PANTRY lot ribbon above.
@@ -49,6 +51,22 @@ particles condense into the EPICS wordmark.
 The scene lives in one fixed R3F canvas (`.canvas-root` in `globals.css`):
 `position: fixed; inset: 0; z-index: 0; pointer-events: none`. DOM scrolls
 over it.
+
+### 2b. `/playground/scene-02-corridor` — **Moon #2 in isolation**
+The three-shelves corridor. Scroll the page top → bottom and the camera
+flies along a Catmull-Rom curve through three illuminated diorama spaces.
+
+- **Scroll 0%**: corridor entrance, S-01 (Gluten-Free) wheat-gold spotlight
+  on a trio of stacked loaf blocks.
+- **Scroll ~55%**: camera passes S-02 (Sugar-Free) — cool blue light on a
+  crystalline icosahedron sugar cube with transmission.
+- **Scroll ~95%**: camera approaches S-03 (Crystal · PKU) — prismatic
+  refractive cone with chromatic aberration.
+
+Camera position uses 85% of the curve; lookAt uses (positionT + 0.15) so
+the camera always looks forward of itself, and at scroll-end the look
+lands on the final anchor. Corridor reads as a single shared space — no
+canvas swaps.
 
 ### 3. `/shop` — All 30 specimens
 Static catalogue, no 3D yet. Tilt cards with scramble lot numbers. Mostly
@@ -151,16 +169,17 @@ lib/
 
 ## What's NOT here (and where it goes)
 
-| Item | Phase |
-|---|---|
-| Moon #1 wired into the home page | Phase 3 |
-| Moon #2: three-shelf corridor | Phase 4 |
-| Moon #4: extruded manifesto text | Phase 5 |
-| Moon #3: specimen-slide product cards | Phase 6 |
-| PDP with rotating 3D product hero | Phase 7 |
-| Moon #5: stamp room | Phase 8 |
-| Arabic RTL mirror with mirrored 3D | Phase 10 |
-| Lighthouse pass + a11y audit + production fonts | Phase 11 |
+| Item | Phase | Status |
+|---|---|---|
+| Moon #1 wired into the home page | Phase 3 | ✅ done |
+| Moon #2: three-shelf corridor | Phase 4 | ✅ done (in playground) |
+| Moon #2 wired into the home page (Categories section) | Phase 5 | next |
+| Moon #4: extruded manifesto text | Phase 5 | |
+| Moon #3: specimen-slide product cards | Phase 6 | |
+| PDP with rotating 3D product hero | Phase 7 | |
+| Moon #5: stamp room | Phase 8 | |
+| Arabic RTL mirror with mirrored 3D | Phase 10 | |
+| Lighthouse pass + a11y audit + production fonts | Phase 11 | |
 
 PP Editorial New (paid) is on hold — Newsreader is the fallback, swap is
 a single change in `app/layout.tsx` when the license lands.
@@ -185,9 +204,10 @@ a single change in `app/layout.tsx` when the license lands.
 
 ## Next session
 
-Wire Moon #1 into the actual home page (Phase 3): canvas-root spans the
-hero section, scroll progress 0 → 0.18 drives the same condensation, then
-the marquee + manifesto-intro DOM scrolls into view above it.
+Promote Moon #2 (corridor) into the home page Categories section: extend
+`HomeCanvas` from a single Vitrine mount to a scene dispatcher that swaps
+based on `useScrollDirector.scene` (`vitrine` → `corridor`). Scroll
+0.18..0.35 owns the corridor; same canvas, no remount.
 
-After that, `/playground/scene-02-corridor` (Moon #2) — same canvas, new
-scene: cinematic camera fly-through three illuminated shelves.
+Then Moon #4 (extruded "On the record." manifesto text) for the next
+scroll band 0.35..0.50.
