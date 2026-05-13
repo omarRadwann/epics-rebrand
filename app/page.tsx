@@ -187,9 +187,12 @@ export default function Home() {
           </header>
 
           <ol className="no-scrollbar flex gap-6 overflow-x-auto pr-6 sm:pr-12 lg:pr-24 pb-2 list-none p-0">
-            {popular.map((p) => (
+            {popular.map((p, i) => (
               <li key={p.slug} className="shrink-0 w-[260px]">
-                <ProductCard product={p} variant="rail" />
+                {/* All 6 popular cards eager-load — the rail is short and
+                    sits below the fold; lazy-loading produced empty tiles
+                    by the time users scrolled to it. */}
+                <ProductCard product={p} variant="rail" priority={i < 6} />
               </li>
             ))}
           </ol>
