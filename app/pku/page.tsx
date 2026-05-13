@@ -138,9 +138,9 @@ export default function PkuPage() {
             Two specimens live now. Four more in development. Listed in order of PHE per gram, ascending.
           </p>
           <ul className="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-6 list-none p-0">
-            {pkuProducts.map((p) => (
+            {pkuProducts.map((p, i) => (
               <li key={p.slug}>
-                <ProductCard product={p} variant="grid" />
+                <ProductCard product={p} variant="grid" priority={i < 4} />
               </li>
             ))}
           </ul>

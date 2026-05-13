@@ -81,9 +81,9 @@ export default function GlutenFreePage() {
         <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-24 py-16">
           <p className="specimen-lot mb-6">CONTINUED · LOT GROUP 22-12 / 22-15</p>
           <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 list-none p-0">
-            {rest.map((p) => (
+            {rest.map((p, i) => (
               <li key={p.slug}>
-                <ProductCard product={p} variant="grid" />
+                <ProductCard product={p} variant="grid" priority={i < 8} />
               </li>
             ))}
           </ul>

@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { productBySlug } from "@/lib/catalog";
 
 export type CartLine = { slug: string; qty: number };
 
@@ -16,7 +17,10 @@ type CartCtx = {
 
 const Ctx = createContext<CartCtx | null>(null);
 
-const STORAGE_KEY = "epics.cart.v1";
+// v2 — bumped from v1 because the catalog slugs were shortened
+// (`european-baking-mix` → `euro`, etc.) and stale v1 carts produced a
+// "Cart · 4 in nav / empty on cart page" mismatch.
+const STORAGE_KEY = "epics.cart.v2";
 
 const seed: CartLine[] = [
   { slug: "euro", qty: 2 },
@@ -24,19 +28,41 @@ const seed: CartLine[] = [
   { slug: "pku-baking-mix", qty: 1 },
 ];
 
+/** Drop any cart lines whose slug no longer exists in the catalog or has
+ *  no price (wholesale-only). Prevents the "ghost-count" hydration mismatch
+ *  where Nav counts entries but the cart page filters them out. */
+function sanitize(lines: CartLine[]): CartLine[] {
+  return lines.filter((l) => {
+    if (!l || typeof l.slug !== "string" || typeof l.qty !== "number" || l.qty <= 0) {
+      return false;
+    }
+    const product = productBySlug(l.slug);
+    return Boolean(product) && product!.priceEgp != null;
+  });
+}
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [lines, setLines] = useState<CartLine[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
-  // Load from localStorage on mount. If absent, seed with a demo cart so the
-  // /cart page has something to show on first visit (demo-friendly).
+  // Load from localStorage on mount. If absent, seed with a demo cart so
+  // the /cart page has something to show on first visit. Always sanitize
+  // — any line whose slug was deleted from the catalog or whose price
+  // dropped to null is silently removed. Also wipe stale v1 keys.
   useEffect(() => {
+    if (typeof window === "undefined") return;
     try {
-      const raw = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
+      // One-time migration: remove stale v1 key with old catalog slugs.
+      window.localStorage.removeItem("epics.cart.v1");
+
+      const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as CartLine[];
         if (Array.isArray(parsed)) {
-          setLines(parsed);
+          const valid = sanitize(parsed);
+          // If sanitize stripped everything, fall back to the seed so a
+          // demo visitor still sees the cart populated.
+          setLines(valid.length > 0 ? valid : sanitize(seed));
           setHydrated(true);
           return;
         }
@@ -44,7 +70,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } catch {
       /* fall through to seed */
     }
-    setLines(seed);
+    setLines(sanitize(seed));
     setHydrated(true);
   }, []);
 

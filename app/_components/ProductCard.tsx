@@ -20,9 +20,13 @@ import { asset } from "@/lib/asset";
 export function ProductCard({
   product,
   variant = "grid",
+  priority = false,
 }: {
   product: Product;
   variant?: "rail" | "grid" | "hero";
+  /** Eager-load the image. Set true for above-the-fold cards on grids so
+   *  the first paint isn't a row of empty white tiles. */
+  priority?: boolean;
 }) {
   const isCrystal = product.subBrand === "crystal";
   const aspect = variant === "hero" ? "aspect-[3/2]" : "aspect-[3/4]";
@@ -81,7 +85,8 @@ export function ProductCard({
               width={500}
               height={500}
               unoptimized
-              priority={variant === "hero"}
+              priority={priority || variant === "hero"}
+              loading={priority || variant === "hero" ? "eager" : "lazy"}
               className={`object-contain ${
                 variant === "hero" ? "max-h-[88%] max-w-[55%]" : "max-h-[85%] max-w-[80%]"
               }`}

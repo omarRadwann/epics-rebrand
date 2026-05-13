@@ -74,19 +74,19 @@ export function Logo({
   const labelGap = Math.round(size * 0.24);
   const labelSize = Math.max(8, Math.round(size * 0.33));
 
-  // Mark sizing — the scored loaf is roughly cap-height tall so it sits
-  // beside the wordmark without dominating. The viewBox is 32×22 (wider
-  // than tall) so the loaf shape reads correctly.
-  const markH = Math.round(size * 1.05);
-  const markW = Math.round(markH * (32 / 22));
+  // Mark sizing — generous against the wordmark cap-height so the loaf
+  // reads at a glance instead of resembling decoration. ViewBox 38×26
+  // (proper bakery-loaf aspect ratio, generous scoring zone above).
+  const markH = Math.round(size * 1.55);
+  const markW = Math.round(markH * (38 / 26));
 
   const Mark = ({ delay = 0 }: { delay?: number }) => {
-    const sw = Math.max(0.7, size * 0.045); // stroke width scales with size
+    const sw = Math.max(0.9, size * 0.06); // stroke weighted enough to read
     const inner = (
       <svg
         width={markW}
         height={markH}
-        viewBox="0 0 32 22"
+        viewBox="0 0 38 26"
         fill="none"
         stroke="currentColor"
         strokeWidth={sw}
@@ -94,15 +94,19 @@ export function Logo({
         strokeLinejoin="round"
         aria-hidden="true"
       >
-        {/* Three scoring marks — short diagonal slashes across the
-            top of the loaf. The signature gesture of a hand-scored
-            loaf, and a callback to the brand's three shelves. */}
-        <line x1="9" y1="3" x2="12" y2="6" />
-        <line x1="14.5" y1="3" x2="17.5" y2="6" />
-        <line x1="20" y1="3" x2="23" y2="6" />
-        {/* Loaf silhouette — a generous rounded capsule. The top arc
-            is shallower than the bottom, the way a baked loaf swells. */}
-        <path d="M 5 11 C 5 7.5, 9 7, 16 7 C 23 7, 27 7.5, 27 11 L 27 14 C 27 17.5, 23 19, 16 19 C 9 19, 5 17.5, 5 14 Z" />
+        {/* Three scoring marks — the boulanger's signature gesture, drawn
+            as confident diagonal slashes across the crust. Their spacing
+            matches the brand's three shelves (S-01 / S-02 / S-03). */}
+        <line x1="11" y1="2.5" x2="15" y2="7" />
+        <line x1="17.5" y1="2.5" x2="21.5" y2="7" />
+        <line x1="24" y1="2.5" x2="28" y2="7" />
+        {/* Loaf silhouette — an asymmetric rounded shape with a higher,
+            shallower top arc (the way a baked loaf rises) and a deeper,
+            slightly flatter bottom (where it sat on the oven stone). */}
+        <path d="M 4 13 C 4 9, 9 8, 19 8 C 29 8, 34 9, 34 13 L 34 17 C 34 21, 29 23, 19 23 C 9 23, 4 21, 4 17 Z" />
+        {/* Subtle horizontal seam — adds depth and reinforces "loaf"
+            without crowding the silhouette. */}
+        <path d="M 6 15.5 C 12 16, 26 16, 32 15.5" strokeWidth={Math.max(0.6, sw * 0.7)} opacity={0.55} />
       </svg>
     );
     if (animated) {

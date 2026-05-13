@@ -67,9 +67,12 @@ export function ShopGrid() {
                 {filtered.length} {filtered.length === 1 ? "specimen" : "specimens"} · sorted by lot number
               </p>
               <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 list-none p-0">
-                {filtered.map((p) => (
+                {filtered.map((p, i) => (
                   <li key={p.slug}>
-                    <ProductCard product={p} variant="grid" />
+                    {/* Eager-load the first 8 cards (≈ first two rows
+                        above the fold) so the shop's first paint isn't
+                        a row of empty white tiles. */}
+                    <ProductCard product={p} variant="grid" priority={i < 8} />
                   </li>
                 ))}
               </ul>
