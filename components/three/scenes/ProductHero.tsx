@@ -202,11 +202,12 @@ function ProductGeometry({
     );
   }
 
-  // Default: a loaf, scaled up for hero. Loaf base sits at y=0, so it's
-  // dropped to roughly centre it in the hero frame.
+  // Default: a loaf. The GLB normalises to a ~2.0-long box; scale 0.7
+  // (~1.4 long / ~0.93 tall) reads as a generous hero. Base sits at
+  // y=0, so it's dropped to roughly centre it in the hero frame.
   return (
     <group ref={groupRef} scale={1.15}>
-      <Loaf position={[0, -0.4, 0]} scale={1.05} warmth={1.2} />
+      <Loaf position={[0, -0.46, 0]} scale={0.7} warmth={1.2} />
     </group>
   );
 }

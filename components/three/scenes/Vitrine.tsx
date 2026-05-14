@@ -115,24 +115,28 @@ export function Vitrine({ range }: VitrineProps = {}) {
       <group ref={groupRef}>
         {/* Plinth — a dark stone pedestal. Deliberately much darker than
             the cream paper so the warm loaf has something to sit AGAINST
-            instead of dissolving into a same-tone beige field. */}
+            instead of dissolving into a same-tone beige field. Sized to
+            sit a touch proud of the display frame's footprint. */}
         <mesh position={[0, -0.48, 0]} receiveShadow castShadow>
-          <boxGeometry args={[2.6, 0.16, 1.3]} />
+          <boxGeometry args={[2.3, 0.16, 1.95]} />
           <meshStandardMaterial color="#3b362f" roughness={0.78} metalness={0.04} />
         </mesh>
 
-        {/* Loaf — Moon #1 specimen. Base sits on the plinth top
-            surface (plinth centre -0.48 + half-height 0.08 = -0.40),
-            scaled to own the centre of the display frame. */}
-        <Loaf position={[0, -0.4, 0]} scale={1.05} warmth={1.15} />
+        {/* Loaf — Moon #1 specimen. Base sits on the plinth top surface
+            (plinth centre -0.48 + half-height 0.08 = -0.40). Scale 0.62:
+            the GLB normalises to a 2.0-long box, so 0.62 puts the loaf
+            at ~0.82 tall / ~1.24 long — prominent, but fits inside the
+            display frame through its full rotation. */}
+        <Loaf position={[0, -0.4, 0]} scale={0.62} warmth={1.15} />
 
-        {/* Display frame — the "vitrine" is now a hairline museum-case
-            skeleton, NOT a transmission-glass slab. Cheap glass refraction
-            read as a muddy plastic box and buried the specimen; an
-            implied case in fine ink lines is more elegant and far
-            lighter to render. */}
-        <lineSegments position={[0, 0.175, 0]}>
-          <edgesGeometry args={[new THREE.BoxGeometry(2.7, 1.15, 1.4)]} />
+        {/* Display frame — the "vitrine" is a hairline museum-case
+            skeleton, NOT a transmission-glass slab. Cheap glass
+            refraction read as a muddy plastic box and buried the
+            specimen; an implied case in fine ink lines is more elegant
+            and far lighter to render. Sized to hug the loaf with even
+            margin: bottom rail sits on the plinth top (y -0.40). */}
+        <lineSegments position={[0, 0.2, 0]}>
+          <edgesGeometry args={[new THREE.BoxGeometry(2.0, 1.2, 1.7)]} />
           <lineBasicMaterial color="#161512" transparent opacity={0.85} />
         </lineSegments>
       </group>
