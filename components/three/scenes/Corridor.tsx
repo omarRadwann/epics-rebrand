@@ -26,10 +26,7 @@
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
-import {
-  Environment,
-  MeshTransmissionMaterial,
-} from "@react-three/drei";
+import { Environment } from "@react-three/drei";
 import {
   Bloom,
   ChromaticAberration,
@@ -67,13 +64,16 @@ const SHELF_POSITIONS: ReadonlyArray<readonly [
   string,
   string,
 ]> = [
+  // Shelves pulled in tight (2.5 apart, was 4) — the wide spacing left
+  // the camera flying through long stretches of dead dark corridor
+  // between dioramas. Closer = the scene always has a specimen in frame.
   [0, 0, -1.5, "S-01", "GLUTEN-FREE"],
-  [0, 0, -5.5, "S-02", "SUGAR-FREE"],
-  [0, 0, -9.5, "S-03", "CRYSTAL · PKU"],
+  [0, 0, -4.0, "S-02", "SUGAR-FREE"],
+  [0, 0, -6.5, "S-03", "CRYSTAL · PKU"],
 ];
 
 const CAMERA_START = new THREE.Vector3(0, 1.0, 3);
-const CAMERA_END = new THREE.Vector3(0, 0.55, -10.2);
+const CAMERA_END = new THREE.Vector3(0, 0.55, -7.5);
 
 const SHELF_KEY_LIGHT_COLORS = [
   "#e7a857", // S-01 wheat-gold
@@ -108,9 +108,9 @@ export function Corridor({ range }: CorridorProps = {}) {
     return new THREE.CatmullRomCurve3(
       [
         CAMERA_START,
-        new THREE.Vector3(0.3, 0.92, 0.5),
-        new THREE.Vector3(-0.25, 0.82, -2.5),
-        new THREE.Vector3(0.2, 0.68, -6.5),
+        new THREE.Vector3(0.32, 0.92, 0.4),
+        new THREE.Vector3(-0.28, 0.82, -2.2),
+        new THREE.Vector3(0.24, 0.66, -4.9),
         CAMERA_END,
       ],
       false,
@@ -195,7 +195,6 @@ export function Corridor({ range }: CorridorProps = {}) {
           position={[x, y, z]}
           code={code}
           label={label}
-          tier={profile.tier}
         />
       ))}
 
@@ -211,20 +210,21 @@ export function Corridor({ range }: CorridorProps = {}) {
         color="#e0d3b8"
       />
 
-      {/* Postprocessing pass — corridor benefits from heavier bloom
-          than the vitrine so the chromatic shelf lights bloom into
-          the surrounding darkness. */}
+      {/* Postprocessing pass — corridor runs a touch more bloom than
+          the vitrine so the shelf key-lights glow into the surrounding
+          dark, but moderated: 0.85/0.55 was blowing the glossy crystals
+          and emissive panels into a haze. */}
       {(profile.postprocessing.bloom ||
         profile.postprocessing.chromaticAberration ||
         profile.postprocessing.grain) && (
         <EffectComposer multisampling={0}>
           {profile.postprocessing.bloom ? (
             <Bloom
-              intensity={0.85}
-              luminanceThreshold={0.55}
+              intensity={0.6}
+              luminanceThreshold={0.7}
               luminanceSmoothing={0.22}
               mipmapBlur
-              kernelSize={KernelSize.LARGE}
+              kernelSize={KernelSize.MEDIUM}
             />
           ) : (
             <></>
@@ -259,59 +259,62 @@ interface ShelfProps {
   position: [number, number, number];
   code: string;
   label: string;
-  tier: ReturnType<typeof usePerfTier>["tier"];
 }
 
-function Shelf({ index, position, tier }: ShelfProps) {
+function Shelf({ index, position }: ShelfProps) {
   const keyColor = SHELF_KEY_LIGHT_COLORS[index % 3] ?? "#e7a857";
   const fillColor = SHELF_FILL_COLORS[index % 3] ?? "#f4d5a0";
 
-  // The "back wall" of each diorama — a soft glowing plane that
-  // catches the key light and reads as the brand monogram tone for
-  // that shelf. The S-01/S-02/S-03 letterforms themselves are
-  // rendered as floating extruded shapes (see ShelfMonogram).
+  // Each diorama runs the same 3-light rig as the home vitrine — key,
+  // fill, rim — plus a raised dark-stone plinth so the specimen sits
+  // ON something instead of floating over a flat floor decal.
   return (
     <group position={position}>
-      {/* Key light: directional, coming from above-front */}
+      {/* Key light — warm/cool/prismatic, from above-front-right */}
       <spotLight
-        position={[0, 1.6, 0.4]}
+        position={[0.6, 1.7, 0.7]}
         target-position={[0, 0, 0]}
-        angle={0.85}
-        penumbra={0.75}
-        intensity={index === 2 ? 2.2 : 2.0}
+        angle={0.8}
+        penumbra={0.7}
+        intensity={index === 2 ? 3.0 : 2.6}
         color={keyColor}
         castShadow
         shadow-mapSize={[512, 512]}
-        distance={4.5}
+        distance={5}
       />
 
-      {/* Fill / glow source above the shelf */}
-      <pointLight
-        position={[0, 0.6, 0.1]}
-        intensity={0.6}
-        color={fillColor}
-        distance={2.6}
-      />
+      {/* Fill — soft glow opposite the key, lifts the shadow side */}
+      <pointLight position={[-0.6, 0.7, 0.2]} intensity={0.55} color={fillColor} distance={2.8} />
 
-      {/* Floor accent — a paler plinth on the corridor floor */}
+      {/* Rim — low backlight that separates the specimen from the
+          back wall, same trick as the vitrine */}
+      <pointLight position={[0, 0.5, -0.8]} intensity={0.7} color={keyColor} distance={2.2} />
+
+      {/* Plinth — raised dark-stone pedestal, top surface at y -0.41 */}
+      <mesh position={[0, -0.5, 0]} receiveShadow castShadow>
+        <boxGeometry args={[1.5, 0.18, 1.1]} />
+        <meshStandardMaterial color="#2e2a25" roughness={0.8} metalness={0.05} />
+      </mesh>
+
+      {/* Floor accent under the plinth */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.59, 0]}>
-        <planeGeometry args={[3.2, 2.2]} />
+        <planeGeometry args={[3.0, 2.2]} />
         <meshStandardMaterial color="#3a3631" roughness={0.85} />
       </mesh>
 
-      {/* Back wall plane (slightly behind the shelf core) */}
+      {/* Back wall — soft glowing panel in the shelf's gravity colour */}
       <mesh position={[0, 0.5, -1.0]}>
-        <planeGeometry args={[3.0, 2.0]} />
+        <planeGeometry args={[2.6, 2.0]} />
         <meshStandardMaterial
           color="#1a1817"
           roughness={0.9}
           emissive={fillColor}
-          emissiveIntensity={0.05}
+          emissiveIntensity={0.08}
         />
       </mesh>
 
       {/* Centerpiece — depends on shelf identity */}
-      <ShelfCenterpiece index={index} keyColor={keyColor} tier={tier} />
+      <ShelfCenterpiece index={index} keyColor={keyColor} />
     </group>
   );
 }
@@ -322,11 +325,9 @@ function Shelf({ index, position, tier }: ShelfProps) {
 function ShelfCenterpiece({
   index,
   keyColor,
-  tier,
 }: {
   index: number;
   keyColor: string;
-  tier: ReturnType<typeof usePerfTier>["tier"];
 }) {
   const groupRef = useRef<THREE.Group>(null);
 
@@ -337,68 +338,60 @@ function ShelfCenterpiece({
   });
 
   if (index === 0) {
-    // S-01 Gluten-Free — the real bread specimen: the same CC0 GLB loaf
-    // the home vitrine uses. A bread shelf needs actual bread on it,
-    // not the placeholder stacked blocks that were here (they read as
-    // programmer-art). Group sits on the shelf floor (y ≈ -0.55); the
-    // Loaf's base-at-origin pivot means it rests cleanly on it.
+    // S-01 Gluten-Free — the real CC0 GLB loaf, sitting on the plinth
+    // (top surface y -0.41). Base-at-origin pivot rests it cleanly.
     return (
-      <group ref={groupRef} position={[0, -0.55, 0]}>
+      <group ref={groupRef} position={[0, -0.41, 0]}>
         <Loaf position={[0, 0, 0]} scale={0.5} warmth={1.35} />
       </group>
     );
   }
 
   if (index === 1) {
-    // S-02 Sugar-Free — a slowly rotating crystalline sugar cube.
+    // S-02 Sugar-Free — a faceted crystalline form. The old version
+    // used MeshTransmissionMaterial, which read as a muddy plastic
+    // blob at the low samples the perf budget allows. A clean glossy
+    // physical material with full clearcoat + flat shading reads as
+    // crisp sugar crystal — sharp facets, bright, no muddy refraction.
     return (
-      <group ref={groupRef} position={[0, 0.1, 0]}>
+      <group ref={groupRef} position={[0, 0.04, 0]}>
         <mesh castShadow>
-          <icosahedronGeometry args={[0.45, 0]} />
+          <icosahedronGeometry args={[0.42, 0]} />
           <meshPhysicalMaterial
-            color="#dde7f2"
-            roughness={0.18}
-            metalness={0.05}
-            transmission={0.72}
-            thickness={0.6}
-            ior={1.46}
-            attenuationColor="#c4d9ec"
-            attenuationDistance={0.8}
-            clearcoat={0.6}
-            clearcoatRoughness={0.15}
+            color="#eef4fb"
+            roughness={0.12}
+            metalness={0}
+            clearcoat={1}
+            clearcoatRoughness={0.08}
             emissive={keyColor}
-            emissiveIntensity={0.06}
+            emissiveIntensity={0.12}
+            flatShading
           />
         </mesh>
       </group>
     );
   }
 
-  // S-03 Crystal · PKU — a prismatic refractive crystal, drei's
-  // transmission material gives the most convincing dispersion.
+  // S-03 Crystal · PKU — a faceted prismatic gem. Same reasoning as
+  // S-02: a crisp glossy physical material with full clearcoat +
+  // iridescence reads as a sharp quartz crystal where cheap
+  // transmission read as a smudge — and iridescence is nearly free,
+  // unlike the multi-sample transmission buffer it replaces.
   return (
-    <group ref={groupRef} position={[0, 0.05, 0]}>
+    <group ref={groupRef} position={[0, 0.0, 0]}>
       <mesh castShadow>
-        <coneGeometry args={[0.42, 0.85, 6, 1]} />
-        {/* Sample/resolution kept low and backside off — a single-pass
-            transmission still disperses convincingly at this scale, and
-            the multi-sample backside buffer was the corridor's heaviest
-            per-frame cost. */}
-        <MeshTransmissionMaterial
-          samples={tier === "desktop-high" ? 2 : 1}
-          resolution={64}
-          transmission={0.94}
-          roughness={0.06}
-          thickness={0.4}
-          ior={1.5}
-          chromaticAberration={0.12}
-          anisotropy={0.2}
-          distortion={0.05}
-          distortionScale={0.3}
-          temporalDistortion={0}
-          attenuationDistance={0.7}
-          attenuationColor="#f5efe2"
-          backside={false}
+        <coneGeometry args={[0.4, 0.82, 6, 1]} />
+        <meshPhysicalMaterial
+          color="#e9e3f2"
+          roughness={0.1}
+          metalness={0.04}
+          clearcoat={1}
+          clearcoatRoughness={0.06}
+          iridescence={0.6}
+          iridescenceIOR={1.6}
+          emissive={keyColor}
+          emissiveIntensity={0.14}
+          flatShading
         />
       </mesh>
     </group>
