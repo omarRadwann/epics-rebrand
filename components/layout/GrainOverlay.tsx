@@ -79,10 +79,12 @@ export function GrainOverlay() {
     <canvas
       ref={canvasRef}
       className="grain-overlay"
+      // No `imageRendering: pixelated` — letting the browser bilinear-
+      // scale the 128px tile gives soft FILM grain. Pixelated made the
+      // whole page read as chunky low-fi noise.
       style={{
         width: "100vw",
         height: "100dvh",
-        imageRendering: "pixelated",
       }}
       aria-hidden="true"
     />

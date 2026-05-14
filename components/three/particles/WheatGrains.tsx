@@ -249,12 +249,14 @@ export function WheatGrains({ count, range }: WheatGrainsProps) {
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]} frustumCulled={false}>
       {/* Tiny stretched icosahedron = wheat-grain shape, low-poly */}
       <icosahedronGeometry args={[1, 0]} />
+      {/* Pale cool-cream, matte, no emissive — the old wheat-tan +
+          warm emissive put the grains in the same colour family as the
+          loaf, so they read as brown dirt specks competing with the
+          specimen. Paler + cooler reads as suspended dust motes. */}
       <meshStandardMaterial
-        color="#c9a86b"
-        roughness={0.55}
+        color="#e8dcc0"
+        roughness={0.7}
         metalness={0.0}
-        emissive="#7a5c2c"
-        emissiveIntensity={0.18}
       />
     </instancedMesh>
   );

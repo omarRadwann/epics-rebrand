@@ -133,7 +133,7 @@ export function Vitrine({ range }: VitrineProps = {}) {
             lighter to render. */}
         <lineSegments position={[0, 0.175, 0]}>
           <edgesGeometry args={[new THREE.BoxGeometry(2.7, 1.15, 1.4)]} />
-          <lineBasicMaterial color="#161512" transparent opacity={0.5} />
+          <lineBasicMaterial color="#161512" transparent opacity={0.85} />
         </lineSegments>
       </group>
 
