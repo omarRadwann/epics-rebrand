@@ -66,43 +66,52 @@ export default function Home() {
           aria-label="Specimen Pantry"
           className="relative flex min-h-[140vh] flex-col items-start justify-end overflow-hidden px-6 pb-16 pt-24 sm:px-12 sm:pb-24 sm:pt-32 lg:px-24"
         >
-          {/* lot ribbon */}
-          <p className="specimen-lot mb-6 text-ink/60">
-            EPICS · N°26 · SPECIMEN PANTRY · MMXXVI
-          </p>
-
-          <SplitText
-            as="h1"
-            text="Bread that doesn't apologise."
-            mode="char"
-            stagger={0.018}
-            className="font-display text-[clamp(3.2rem,9vw,9rem)] leading-[0.95] tracking-[-0.025em]"
+          {/* Readability scrim — a paper gradient that lifts the headline
+              cleanly off the busy particle field rendered behind it. */}
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[68%] bg-gradient-to-t from-paper via-paper/85 to-transparent"
+            aria-hidden
           />
 
-          <p className="mt-8 max-w-xl text-[18px] leading-[1.55] text-ink/75 sm:text-[20px]">
-            Wheat-free, sugar-free, PKU-safe baked goods — engineered in 6th of October City,
-            catalogued like a museum specimen. Every loaf carries a lot number.
-          </p>
+          <div className="relative z-10 flex flex-col items-start">
+            {/* lot ribbon */}
+            <p className="specimen-lot mb-6 text-ink/65">
+              EPICS · N°26 · SPECIMEN PANTRY · MMXXVI
+            </p>
 
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <Magnetic strength={0.3}>
+            <SplitText
+              as="h1"
+              text="Bread that doesn't apologise."
+              mode="char"
+              stagger={0.018}
+              className="font-display text-[clamp(3.4rem,9.5vw,9.5rem)] leading-[0.92] tracking-[-0.03em]"
+            />
+
+            <p className="mt-8 max-w-xl text-[18px] leading-[1.55] text-ink/85 sm:text-[20px]">
+              Wheat-free, sugar-free, PKU-safe baked goods — engineered in 6th of October City,
+              catalogued like a museum specimen. Every loaf carries a lot number.
+            </p>
+
+            <div className="mt-10 flex flex-wrap items-center gap-4">
+              <Magnetic strength={0.3}>
+                <Link
+                  href="/shop"
+                  className="specimen-spec inline-flex items-center gap-2 border border-ink bg-ink px-7 py-4 text-paper no-underline transition-colors hover:bg-saffron hover:text-ink"
+                >
+                  ENTER THE PANTRY <span aria-hidden>→</span>
+                </Link>
+              </Magnetic>
               <Link
-                href="/shop"
-                className="specimen-spec inline-flex items-center gap-2 border border-ink bg-ink px-7 py-4 text-paper no-underline transition-colors hover:bg-saffron hover:text-ink"
+                href="/pku"
+                className="specimen-spec underline decoration-[1px] underline-offset-[6px] hover:decoration-2"
               >
-                ENTER THE PANTRY <span aria-hidden>→</span>
+                OR JUMP TO CRYSTAL · PKU →
               </Link>
-            </Magnetic>
-            <Link
-              href="/pku"
-              className="specimen-spec underline decoration-[1px] underline-offset-[6px] hover:decoration-2"
-            >
-              OR JUMP TO CRYSTAL · PKU →
-            </Link>
+            </div>
           </div>
 
           {/* corner specimen badges */}
-          <div className="pointer-events-none absolute right-6 top-24 hidden flex-col items-end gap-3 sm:flex sm:right-12 lg:right-24">
+          <div className="pointer-events-none absolute right-6 top-24 z-10 hidden flex-col items-end gap-3 sm:flex sm:right-12 lg:right-24">
             {(["wheat", "sugar", "protein"] as const).map((variant, i) => (
               <Reveal key={variant} delay={i * 0.12} amount={0.1}>
                 <div className="text-ink/80">
@@ -166,8 +175,14 @@ export default function Home() {
         {/* ============================================================
             MANIFESTO INTRO — split-text headline + the 60-word anchor
             ============================================================ */}
-        <Reveal as="section" id="manifesto" data-scene="manifesto" className="border-b border-ink/40">
-          <div className="mx-auto grid max-w-[1440px] grid-cols-12 gap-x-8 px-6 py-24 sm:px-12 lg:px-24">
+        <Reveal as="section" id="manifesto" data-scene="manifesto" className="relative border-b border-ink/40">
+          {/* Soft paper scrim — calms the caustic backdrop behind the
+              blockquote so the manifesto type stays the focus. */}
+          <div
+            className="pointer-events-none absolute inset-0 z-0 bg-paper/45"
+            aria-hidden
+          />
+          <div className="relative z-10 mx-auto grid max-w-[1440px] grid-cols-12 gap-x-8 px-6 py-24 sm:px-12 lg:px-24">
             <div className="col-span-12 md:col-span-3">
               <p className="specimen-lot">M-01 · MANIFESTO</p>
               <SplitText
@@ -212,7 +227,15 @@ export default function Home() {
             full scroll-real-estate.
             ============================================================ */}
         <Reveal as="section" data-scene="corridor" className="relative">
-          <div className="mx-auto flex min-h-[140vh] max-w-[1440px] flex-col justify-between px-6 py-24 sm:px-12 lg:px-24">
+          {/* Dark readability scrim — strong at the top and bottom where
+              the labels sit, near-clear through the middle so the
+              corridor flythrough still reads. Also guarantees the cream
+              text never lands on bare paper during a scene handoff. */}
+          <div
+            className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-ink/70 via-ink/20 to-ink/75"
+            aria-hidden
+          />
+          <div className="relative z-10 mx-auto flex min-h-[140vh] max-w-[1440px] flex-col justify-between px-6 py-24 sm:px-12 lg:px-24">
             <header className="flex flex-wrap items-baseline justify-between gap-4">
               <div>
                 <p className="specimen-lot text-paper/90">C-01 · THE PANTRY</p>
@@ -326,7 +349,13 @@ export default function Home() {
             3D scene's natural floor area.
             ============================================================ */}
         <Reveal as="section" data-scene="stamps" className="relative text-paper">
-          <div className="mx-auto flex min-h-[120vh] max-w-[1440px] flex-col justify-between px-6 py-24 sm:px-12 lg:px-24">
+          {/* Dark readability scrim — keeps the cream certification specs
+              legible over the stamp room and during scene handoffs. */}
+          <div
+            className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-ink/75 via-ink/30 to-ink/80"
+            aria-hidden
+          />
+          <div className="relative z-10 mx-auto flex min-h-[120vh] max-w-[1440px] flex-col justify-between px-6 py-24 sm:px-12 lg:px-24">
             <header>
               <p className="specimen-lot text-paper/65">X-01 · CERTIFICATIONS</p>
               <h2 className="mt-2 max-w-2xl font-display text-[clamp(2rem,4vw,3rem)] leading-[1.1] tracking-[-0.01em]">

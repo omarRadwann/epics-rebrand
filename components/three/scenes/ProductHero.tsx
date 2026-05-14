@@ -126,21 +126,24 @@ function ProductGeometry({
       <group ref={groupRef} scale={1.05}>
         <mesh castShadow>
           <coneGeometry args={[0.55, 1.2, 6, 1]} />
+          {/* Low sample/resolution, backside off — single-pass
+              transmission disperses convincingly at hero scale and
+              keeps the PDP canvas cheap. */}
           <MeshTransmissionMaterial
-            samples={tier === "desktop-high" ? 6 : 3}
-            resolution={tier === "desktop-high" ? 256 : 128}
-            transmission={0.94}
-            roughness={0.04}
-            thickness={0.5}
-            ior={1.52}
-            chromaticAberration={0.2}
-            anisotropy={0.5}
-            distortion={0.14}
-            distortionScale={0.5}
-            temporalDistortion={0.08}
+            samples={tier === "desktop-high" ? 2 : 1}
+            resolution={64}
+            transmission={0.92}
+            roughness={0.05}
+            thickness={0.45}
+            ior={1.5}
+            chromaticAberration={0.14}
+            anisotropy={0.25}
+            distortion={0.05}
+            distortionScale={0.3}
+            temporalDistortion={0}
             attenuationColor="#f5efe2"
-            attenuationDistance={0.6}
-            backside={true}
+            attenuationDistance={0.7}
+            backside={false}
           />
         </mesh>
       </group>

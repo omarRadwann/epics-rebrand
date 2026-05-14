@@ -3,19 +3,22 @@
 /**
  * Procedural loaf — Moon #1's centrepiece specimen.
  *
- * Geometry: high-poly stretched icosahedron, vertices displaced by 3D
- * simplex noise to produce a believable crust topology.
- * Material: meshPhysicalMaterial with low-strength transmission + a warm
- * emissive layer faking subsurface scattering so the crumb glows when the
- * key light grazes it.
+ * A scored bâtard, not a blob: elongated body, flattened base, gently
+ * domed top, tapered ends, and a single slash groove down the spine.
+ * Crust topology is subtle high-frequency value-noise — not the large
+ * amplitude lumps that made the old version read as a brown rock.
  *
- * The displacement is applied once at construction time, then frozen —
- * no shader cost per frame.
+ * Two-tone vertex colours do the heavy lifting: dark baked crust on the
+ * shaded sides, a sun-kissed lighter dome, and pale floury crumb inside
+ * the score. Opaque meshStandardMaterial — bread is not translucent, so
+ * the old fake-SSS transmission is gone.
+ *
+ * Geometry + colours are built once in useMemo, then frozen. No per-frame
+ * shader cost beyond a slow rotational drift.
  */
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
-// noise function copied inline below — avoids a runtime dep on simplex-noise
 
 interface LoafProps {
   position?: [number, number, number];
@@ -24,68 +27,104 @@ interface LoafProps {
   warmth?: number;
 }
 
+// Brand-tuned crust palette — sampled toward warm wheat, away from "mud".
+const C_DARK = new THREE.Color("#7c4f25"); // shaded sides + base
+const C_TOP = new THREE.Color("#b67f3d"); // sun-kissed dome
+const C_SCORE = new THREE.Color("#e8ccA0"); // floury exposed crumb in the slash
+
 export function Loaf({ position = [0, 0, 0], scale = 1, warmth = 1 }: LoafProps) {
   const ref = useRef<THREE.Mesh>(null);
 
   // ============================================================
-  // Geometry — stretched icosahedron with noise-displaced vertices
+  // Geometry — a sphere reshaped into a scored bâtard, with baked
+  // vertex colours. detail 5 → ~10k verts: smooth enough for subtle
+  // crust, light enough to draw cheaply every frame.
   // ============================================================
   const geometry = useMemo(() => {
-    const geo = new THREE.IcosahedronGeometry(0.5, 6);
+    const geo = new THREE.IcosahedronGeometry(1, 5);
     const pos = geo.attributes.position;
     if (!pos) return geo;
+
     const v = new THREE.Vector3();
+    const colors = new Float32Array(pos.count * 3);
+    const col = new THREE.Color();
 
     for (let i = 0; i < pos.count; i++) {
-      v.fromBufferAttribute(pos, i);
+      v.fromBufferAttribute(pos, i).normalize();
+      const dx = v.x;
+      const dy = v.y;
+      const dz = v.z;
+      const ax = Math.abs(dx);
 
-      // Stretch into a loaf shape (long-axis x, slight squash on y)
-      v.x *= 1.7;
-      v.y *= 0.9;
-      v.z *= 0.95;
+      // --- base dimensions: wider than tall = bread, not a sausage ---
+      let X = dx * 1.02;
+      let Y = dy * 0.42;
+      let Z = dz * 0.5;
 
-      // Multi-octave noise displacement for crust topology
+      // --- flatten the underside so it sits like a loaf on a board ---
+      if (dy < 0) Y *= 0.4;
+
+      // --- dome the top across the middle of the body ---
+      Y += Math.max(0, dy) * (1 - dx * dx) * 0.13;
+
+      // --- taper the ends: bâtard ends draw inward, not capsule-round ---
+      if (ax > 0.55) {
+        const k = (ax - 0.55) / 0.45;
+        const pinch = 1 - 0.62 * k * k;
+        Y *= pinch;
+        Z *= pinch;
+      }
+
+      // --- scoring slash: a groove down the spine, fading at the ends ---
+      let groove = 0;
+      if (dy > 0.1) {
+        const d = Math.abs(Z - dx * 0.06); // near-straight slash
+        const within = 1 - sstep(0, 0.12, d); // 1 at the centre line
+        const bodyMask = 1 - sstep(0.5, 0.92, ax);
+        groove = within * bodyMask;
+        Y -= groove * 0.07; // carve the groove down
+      }
+
+      // --- subtle high-frequency crust topology (no large lumps) ---
       const n =
-        0.04 * noise(v.x * 4.5, v.y * 4.5, v.z * 4.5) +
-        0.02 * noise(v.x * 9.0, v.y * 9.0, v.z * 9.0) +
-        0.012 * noise(v.x * 18.0, v.y * 18.0, v.z * 18.0);
+        0.014 * noise(X * 7.5, Y * 7.5, Z * 7.5) +
+        0.007 * noise(X * 19.0, Y * 19.0, Z * 19.0);
+      X += dx * n;
+      Y += dy * n;
+      Z += dz * n;
 
-      v.normalize().multiplyScalar(0.5 + n);
-      // restore stretch after re-normalize
-      v.x *= 1.7;
-      v.y *= 0.9;
-      v.z *= 0.95;
+      pos.setXYZ(i, X, Y, Z);
 
-      pos.setXYZ(i, v.x, v.y, v.z);
+      // --- vertex colour: dark crust → sun-kissed top → floury score ---
+      const topFactor = sstep(-0.25, 0.75, dy);
+      col.copy(C_DARK).lerp(C_TOP, topFactor);
+      // gentle bake variation so the gradient isn't a flat ramp
+      const shade = 0.9 + 0.2 * (noise(X * 5, Y * 5, Z * 5) + 0.5);
+      col.multiplyScalar(shade);
+      if (groove > 0.02) col.lerp(C_SCORE, Math.min(1, groove * 1.2));
+      colors[i * 3] = col.r;
+      colors[i * 3 + 1] = col.g;
+      colors[i * 3 + 2] = col.b;
     }
 
+    geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
     geo.computeVertexNormals();
     return geo;
   }, []);
 
-  // Slow rotational drift so the loaf reveals every face.
+  // Slow rotational drift so the loaf reveals every face + the score.
   useFrame((_, dt) => {
     if (ref.current) ref.current.rotation.y += dt * 0.06;
   });
 
   return (
     <mesh ref={ref} geometry={geometry} position={position} scale={scale} castShadow receiveShadow>
-      <meshPhysicalMaterial
-        color="#b88748"            // dark wheat crust
-        roughness={0.62}
-        metalness={0.02}
-        clearcoat={0.15}
-        clearcoatRoughness={0.85}
-        sheen={0.4}
-        sheenColor="#e1b271"
-        sheenRoughness={0.7}
-        // Fake-SSS: a touch of transmission + thickness + warm attenuation
-        transmission={0.06}
-        thickness={0.5}
-        attenuationColor="#d9a35d"
-        attenuationDistance={0.6}
-        emissive="#f0c989"
-        emissiveIntensity={0.12 * warmth}
+      <meshStandardMaterial
+        vertexColors
+        roughness={0.82}
+        metalness={0}
+        emissive="#7a3d12"
+        emissiveIntensity={0.05 * warmth}
       />
     </mesh>
   );
@@ -102,6 +141,12 @@ function hash3(x: number, y: number, z: number): number {
 }
 
 function smoothstep(t: number) {
+  return t * t * (3 - 2 * t);
+}
+
+/** 3-arg smoothstep (edge0, edge1, x) — GLSL-style, clamped. */
+function sstep(e0: number, e1: number, x: number): number {
+  const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0)));
   return t * t * (3 - 2 * t);
 }
 

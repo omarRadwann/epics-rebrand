@@ -1,22 +1,25 @@
 "use client";
 
 /**
- * Wheat-grain particle field — 8000 instanced specks (3200 on mobile).
+ * Wheat-grain particle field — instanced specks (count from perfBudget:
+ * 2800 desktop-high → 900 mobile → 600 reduced).
  *
  * Each grain has a randomized resting position around the vitrine,
- * a slow drift, cursor-aware displacement, and — driven by scroll
- * progress 0..1 — condenses toward sample points along the "EPICS"
- * wordmark, painting the brand mark out of grains.
+ * a slow drift, and — driven by scroll progress 0..1 — condenses
+ * toward sample points along the "EPICS" wordmark, painting the brand
+ * mark out of grains.
  *
  * Per brief §2 Moon #1: "particles condense into the form of the
  * brand wordmark 'EPICS'."
  *
  * Implementation: a single InstancedMesh + per-instance Float32 arrays
- * for rest/target positions. Drift + lerp in useFrame.
+ * for rest/target positions. Drift + lerp in useFrame. The cursor-pull
+ * displacement was removed — its per-instance hypot/branch cost was not
+ * worth the subtle visual payoff on a field this size.
  */
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { useScrollDirector } from "@/lib/hooks/useScrollDirector";
 import { usePerfTier } from "@/lib/hooks/usePerfTier";
 import { localProgress, SCENE_RANGES } from "@/lib/three/sceneRanges";
@@ -102,13 +105,10 @@ const WORDMARK_SAMPLES: ReadonlyArray<readonly [number, number]> = (() => {
 })();
 
 const SCRATCH_OBJ = new THREE.Object3D();
-const SCRATCH_V = new THREE.Vector3();
-const SCRATCH_CURSOR = new THREE.Vector3();
 
 export function WheatGrains({ count, range }: WheatGrainsProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const profile = usePerfTier();
-  const { size } = useThree();
   const sceneRange =
     range ?? SCENE_RANGES.vitrine ?? { start: 0, end: 1, fadeIn: 0, fadeOut: 1 };
 
@@ -155,20 +155,6 @@ export function WheatGrains({ count, range }: WheatGrainsProps) {
     return arr;
   }, [count]);
 
-  // Cursor in normalized device coords, smoothed
-  const cursor = useRef(new THREE.Vector2(0, 0));
-  const cursorWorld = useRef(new THREE.Vector3(0, 0, 0));
-
-  useEffect(() => {
-    if (!profile.animations.cursorPull) return;
-    const onMove = (e: PointerEvent) => {
-      cursor.current.x = (e.clientX / size.width) * 2 - 1;
-      cursor.current.y = -((e.clientY / size.height) * 2 - 1);
-    };
-    window.addEventListener("pointermove", onMove, { passive: true });
-    return () => window.removeEventListener("pointermove", onMove);
-  }, [profile.animations.cursorPull, size.width, size.height]);
-
   // Initialize all instance matrices once
   useEffect(() => {
     const mesh = meshRef.current;
@@ -189,7 +175,7 @@ export function WheatGrains({ count, range }: WheatGrainsProps) {
     mesh.instanceMatrix.needsUpdate = true;
   }, [count, restPositions]);
 
-  useFrame((state, dt) => {
+  useFrame((state) => {
     const mesh = meshRef.current;
     if (!mesh) return;
     const t = state.clock.elapsedTime;
@@ -205,12 +191,6 @@ export function WheatGrains({ count, range }: WheatGrainsProps) {
     // wordmark fully forms by scroll ~0.16, the corridor handoff point.
     const condense = THREE.MathUtils.clamp((progress - 0.22) / 0.66, 0, 1);
     const condenseEased = condense * condense * (3 - 2 * condense); // smoothstep
-
-    // Cursor in world: project from screen NDC onto plane z = -1.0
-    if (profile.animations.cursorPull) {
-      SCRATCH_CURSOR.set(cursor.current.x, cursor.current.y, -1.0).unproject(state.camera);
-      cursorWorld.current.lerp(SCRATCH_CURSOR, Math.min(1, dt * 6));
-    }
 
     const dummy = SCRATCH_OBJ;
     for (let i = 0; i < count; i++) {
@@ -228,20 +208,9 @@ export function WheatGrains({ count, range }: WheatGrainsProps) {
         ? Math.sin(t * speed + phase) * 0.06
         : 0;
 
-      // Cursor pull: particles bow AWAY from cursor with falloff
-      let px = rx;
-      let py = ry + drift;
-      let pz = rz;
-
-      if (profile.animations.cursorPull && condenseEased < 0.6) {
-        const dx = rx - cursorWorld.current.x;
-        const dy = ry - cursorWorld.current.y;
-        const dist = Math.hypot(dx, dy);
-        const falloff = Math.max(0, 1 - dist / 1.5);
-        const push = falloff * falloff * 0.25;
-        px += (dx / (dist + 1e-3)) * push;
-        py += (dy / (dist + 1e-3)) * push;
-      }
+      const px = rx;
+      const py = ry + drift;
+      const pz = rz;
 
       // Mix toward wordmark targets by condense factor
       const fx = px + (tx - px) * condenseEased;
@@ -258,8 +227,10 @@ export function WheatGrains({ count, range }: WheatGrainsProps) {
         phase * 0.7 + t * spin * 0.4
       );
 
-      // Shrink slightly when locked (crisper wordmark)
-      const sBase = 0.012 + 0.018 * (0.5 + Math.sin(phase * 3) * 0.5);
+      // Shrink slightly when locked (crisper wordmark). Base size
+      // nudged up to compensate for the lower instance count — the
+      // rest field still needs to read as full.
+      const sBase = 0.016 + 0.022 * (0.5 + Math.sin(phase * 3) * 0.5);
       const s = sBase * (1 - condenseEased * 0.45);
       dummy.scale.setScalar(s);
 

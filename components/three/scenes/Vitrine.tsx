@@ -13,13 +13,7 @@
 import { useEffect, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Environment, MeshTransmissionMaterial } from "@react-three/drei";
-import {
-  Bloom,
-  DepthOfField,
-  EffectComposer,
-  Noise,
-  Vignette,
-} from "@react-three/postprocessing";
+import { Bloom, EffectComposer, Noise, Vignette } from "@react-three/postprocessing";
 import { KernelSize } from "postprocessing";
 import * as THREE from "three";
 
@@ -119,22 +113,25 @@ export function Vitrine({ range }: VitrineProps = {}) {
 
         {/* Glass vitrine shell — refraction + thin walls.
             Drei's MeshTransmissionMaterial handles thickness/refraction
-            without us writing a custom shader. */}
+            without us writing a custom shader. Sample/resolution kept
+            deliberately low: a thin display case doesn't need a heavy
+            multi-sample buffer, and the loaf must read CLEARLY through
+            it — heavy distortion was muddying the specimen. */}
         <mesh position={[0, 0.05, 0]}>
           <boxGeometry args={[2.2, 1.3, 0.95]} />
           <MeshTransmissionMaterial
-            samples={profile.tier === "desktop-high" ? 8 : 4}
-            resolution={profile.tier === "desktop-high" ? 256 : 128}
-            transmission={0.98}
-            roughness={0.0}
-            thickness={0.18}
-            ior={1.48}
-            chromaticAberration={profile.postprocessing.chromaticAberration ? 0.04 : 0}
-            anisotropy={0.1}
-            distortion={0.08}
-            distortionScale={0.4}
-            temporalDistortion={0.05}
-            attenuationDistance={0.6}
+            samples={2}
+            resolution={64}
+            transmission={0.96}
+            roughness={0.03}
+            thickness={0.14}
+            ior={1.46}
+            chromaticAberration={profile.postprocessing.chromaticAberration ? 0.02 : 0}
+            anisotropy={0.05}
+            distortion={0.02}
+            distortionScale={0.2}
+            temporalDistortion={0}
+            attenuationDistance={0.8}
             attenuationColor="#f5efe2"
             backside={false}
           />
@@ -162,39 +159,29 @@ export function Vitrine({ range }: VitrineProps = {}) {
 
       {/* ============================================================
           Postprocessing — gated by perf profile.
-          Bloom intensity 0.4 at threshold 0.9 per brief §2 Moon #1.
-          DoF focuses on the loaf at z ~ 0, with shallow falloff.
+          Bloom for the warm lamp glow, light grain, soft vignette.
+          DepthOfField was dropped: it blurred the specimen the scene
+          exists to show, and its per-frame cost was not worth it.
           ============================================================ */}
-      {(profile.postprocessing.bloom ||
-        profile.postprocessing.dof ||
-        profile.postprocessing.grain) && (
+      {(profile.postprocessing.bloom || profile.postprocessing.grain) && (
         <EffectComposer multisampling={0}>
           {profile.postprocessing.bloom ? (
             <Bloom
-              intensity={0.45}
-              luminanceThreshold={0.86}
+              intensity={0.4}
+              luminanceThreshold={0.88}
               luminanceSmoothing={0.18}
               mipmapBlur
-              kernelSize={KernelSize.LARGE}
-            />
-          ) : (
-            <></>
-          )}
-          {profile.postprocessing.dof ? (
-            <DepthOfField
-              focusDistance={0.012}
-              focalLength={0.04}
-              bokehScale={2.4}
+              kernelSize={KernelSize.MEDIUM}
             />
           ) : (
             <></>
           )}
           {profile.postprocessing.grain ? (
-            <Noise opacity={0.06} premultiply />
+            <Noise opacity={0.05} premultiply />
           ) : (
             <></>
           )}
-          <Vignette eskil={false} offset={0.18} darkness={0.55} />
+          <Vignette eskil={false} offset={0.2} darkness={0.5} />
         </EffectComposer>
       )}
     </>

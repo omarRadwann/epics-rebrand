@@ -31,31 +31,35 @@ export interface PerfProfile {
 }
 
 export const profiles: Record<Tier, PerfProfile> = {
+  // Counts cut hard from the original brief target (8000): the
+  // per-frame instanced-matrix rebuild was the home page's biggest
+  // main-thread cost. 2800 still reads as a full grain field and
+  // gives the EPICS wordmark ample density (~14 grains per sample).
   "desktop-high": {
     tier: "desktop-high",
     dprCap: [1, 2],
-    particles: { wheatGrains: 8000, sugarCrystals: 5000 },
-    postprocessing: { bloom: true, chromaticAberration: true, dof: true, grain: true },
-    animations: { handheldCamera: true, particleDrift: true, cursorPull: true },
+    particles: { wheatGrains: 2800, sugarCrystals: 1800 },
+    postprocessing: { bloom: true, chromaticAberration: true, dof: false, grain: true },
+    animations: { handheldCamera: true, particleDrift: true, cursorPull: false },
   },
   "desktop-low": {
     tier: "desktop-low",
     dprCap: [1, 1.5],
-    particles: { wheatGrains: 4000, sugarCrystals: 2500 },
+    particles: { wheatGrains: 1600, sugarCrystals: 1000 },
     postprocessing: { bloom: true, chromaticAberration: false, dof: false, grain: true },
-    animations: { handheldCamera: true, particleDrift: true, cursorPull: true },
+    animations: { handheldCamera: true, particleDrift: true, cursorPull: false },
   },
   mobile: {
     tier: "mobile",
     dprCap: [1, 1.5],
-    particles: { wheatGrains: 3200, sugarCrystals: 2000 },
+    particles: { wheatGrains: 900, sugarCrystals: 600 },
     postprocessing: { bloom: false, chromaticAberration: false, dof: false, grain: false },
     animations: { handheldCamera: false, particleDrift: true, cursorPull: false },
   },
   reduced: {
     tier: "reduced",
     dprCap: [1, 1],
-    particles: { wheatGrains: 1000, sugarCrystals: 600 },
+    particles: { wheatGrains: 600, sugarCrystals: 400 },
     postprocessing: { bloom: false, chromaticAberration: false, dof: false, grain: false },
     animations: { handheldCamera: false, particleDrift: false, cursorPull: false },
   },

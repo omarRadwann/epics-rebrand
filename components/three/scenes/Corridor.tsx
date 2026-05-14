@@ -392,21 +392,25 @@ function ShelfCenterpiece({
     <group ref={groupRef} position={[0, 0.05, 0]}>
       <mesh castShadow>
         <coneGeometry args={[0.42, 0.85, 6, 1]} />
+        {/* Sample/resolution kept low and backside off — a single-pass
+            transmission still disperses convincingly at this scale, and
+            the multi-sample backside buffer was the corridor's heaviest
+            per-frame cost. */}
         <MeshTransmissionMaterial
-          samples={tier === "desktop-high" ? 6 : 3}
-          resolution={tier === "desktop-high" ? 256 : 128}
-          transmission={0.96}
-          roughness={0.05}
-          thickness={0.45}
-          ior={1.52}
-          chromaticAberration={0.18}
-          anisotropy={0.4}
-          distortion={0.12}
-          distortionScale={0.5}
-          temporalDistortion={0.08}
-          attenuationDistance={0.6}
+          samples={tier === "desktop-high" ? 2 : 1}
+          resolution={64}
+          transmission={0.94}
+          roughness={0.06}
+          thickness={0.4}
+          ior={1.5}
+          chromaticAberration={0.12}
+          anisotropy={0.2}
+          distortion={0.05}
+          distortionScale={0.3}
+          temporalDistortion={0}
+          attenuationDistance={0.7}
           attenuationColor="#f5efe2"
-          backside={true}
+          backside={false}
         />
       </mesh>
     </group>
