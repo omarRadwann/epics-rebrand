@@ -31,35 +31,36 @@ export interface PerfProfile {
 }
 
 export const profiles: Record<Tier, PerfProfile> = {
-  // Counts cut hard from the original brief target (8000): the
-  // per-frame instanced-matrix rebuild was the home page's biggest
-  // main-thread cost. 2800 still reads as a full grain field and
-  // gives the EPICS wordmark ample density (~14 grains per sample).
+  // Counts cut hard from the original brief target (8000). Beyond the
+  // per-frame cost, a dense viewport-wide field just read as visual
+  // noise — confetti, not an elegant specimen backdrop. ~1100 grains,
+  // tightly clustered behind the loaf, still gives the EPICS wordmark
+  // enough density (~6 per sample) while keeping the composition clean.
   "desktop-high": {
     tier: "desktop-high",
     dprCap: [1, 2],
-    particles: { wheatGrains: 2800, sugarCrystals: 1800 },
+    particles: { wheatGrains: 1100, sugarCrystals: 1800 },
     postprocessing: { bloom: true, chromaticAberration: true, dof: false, grain: true },
     animations: { handheldCamera: true, particleDrift: true, cursorPull: false },
   },
   "desktop-low": {
     tier: "desktop-low",
     dprCap: [1, 1.5],
-    particles: { wheatGrains: 1600, sugarCrystals: 1000 },
+    particles: { wheatGrains: 750, sugarCrystals: 1000 },
     postprocessing: { bloom: true, chromaticAberration: false, dof: false, grain: true },
     animations: { handheldCamera: true, particleDrift: true, cursorPull: false },
   },
   mobile: {
     tier: "mobile",
     dprCap: [1, 1.5],
-    particles: { wheatGrains: 900, sugarCrystals: 600 },
+    particles: { wheatGrains: 480, sugarCrystals: 600 },
     postprocessing: { bloom: false, chromaticAberration: false, dof: false, grain: false },
     animations: { handheldCamera: false, particleDrift: true, cursorPull: false },
   },
   reduced: {
     tier: "reduced",
     dprCap: [1, 1],
-    particles: { wheatGrains: 600, sugarCrystals: 400 },
+    particles: { wheatGrains: 320, sugarCrystals: 400 },
     postprocessing: { bloom: false, chromaticAberration: false, dof: false, grain: false },
     animations: { handheldCamera: false, particleDrift: false, cursorPull: false },
   },

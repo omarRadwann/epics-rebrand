@@ -12,7 +12,7 @@
  */
 import { useEffect, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { ContactShadows, Environment, MeshTransmissionMaterial } from "@react-three/drei";
+import { ContactShadows, Environment } from "@react-three/drei";
 import { Bloom, EffectComposer, Noise, Vignette } from "@react-three/postprocessing";
 import { KernelSize } from "postprocessing";
 import * as THREE from "three";
@@ -84,63 +84,56 @@ export function Vitrine({ range }: VitrineProps = {}) {
 
   return (
     <>
-      {/* Warm interior HDRI for reflections + ambient term */}
-      <Environment preset="apartment" environmentIntensity={0.55} />
+      {/* Environment kept LOW — it only provides soft reflections + a
+          base ambient term. The explicit key/fill/rim lights below do
+          the actual shaping. At high intensity the apartment HDRI just
+          washed the whole scene to one flat beige. */}
+      <Environment preset="apartment" environmentIntensity={0.25} />
 
-      {/* Key + fill lighting — brand-correct warm bias */}
-      <ambientLight intensity={0.18} color="#f6e9cf" />
+      {/* ---- Deliberate 3-point studio rig ---- */}
+      <ambientLight intensity={0.12} color="#f0e4cc" />
+      {/* Warm KEY — camera-right, high + strong. The dominant shaper:
+          carves the loaf's crust, throws the contact shadow. */}
       <directionalLight
-        position={[2.5, 3.5, 2.2]}
-        intensity={1.8}
-        color="#f4d5a0"
+        position={[3.5, 3, 2.5]}
+        intensity={3.0}
+        color="#f4c576"
         castShadow
         shadow-mapSize={[1024, 1024]}
-        shadow-bias={-0.0001}
+        shadow-bias={-0.0002}
       />
-      <directionalLight position={[-3, 1, -2]} intensity={0.35} color="#7a8aa0" />
-      <pointLight position={[0, 1.5, 1.5]} intensity={0.4} color="#ffb064" distance={4.5} />
+      {/* Cool FILL — camera-left, soft. Just lifts the shadow side so
+          it doesn't go dead black; the cool tint adds depth. */}
+      <directionalLight position={[-3.5, 1.5, 1]} intensity={0.6} color="#a8b8c8" />
+      {/* Warm RIM — behind + above, separates the loaf silhouette from
+          the paper background so it reads as a distinct specimen. */}
+      <directionalLight position={[-1, 2.6, -3]} intensity={0.85} color="#ffcaa0" />
+      {/* Baker's-lamp accent — a low warm point glow under the front lip. */}
+      <pointLight position={[0, 0.5, 1.7]} intensity={0.35} color="#ffb978" distance={5} />
 
-      {/* Vitrine assembly: plinth + glass shell + specimen */}
+      {/* Vitrine assembly: plinth + specimen + display frame */}
       <group ref={groupRef}>
-        {/* Plinth — paper-cream pedestal underfoot */}
-        <mesh position={[0, -0.65, 0]} receiveShadow>
-          <boxGeometry args={[2.4, 0.1, 1.1]} />
-          <meshStandardMaterial color="#e4d9c0" roughness={0.85} metalness={0} />
+        {/* Plinth — a dark stone pedestal. Deliberately much darker than
+            the cream paper so the warm loaf has something to sit AGAINST
+            instead of dissolving into a same-tone beige field. */}
+        <mesh position={[0, -0.48, 0]} receiveShadow castShadow>
+          <boxGeometry args={[2.6, 0.16, 1.3]} />
+          <meshStandardMaterial color="#3b362f" roughness={0.78} metalness={0.04} />
         </mesh>
 
-        {/* Loaf — Moon #1 specimen */}
-        <Loaf position={[0, -0.1, 0]} scale={0.7} />
+        {/* Loaf — Moon #1 specimen, scaled up to OWN the centre of the
+            composition and raised so the crust sits near eye level
+            rather than floating dwarfed in a void. */}
+        <Loaf position={[0, -0.2, 0]} scale={1.05} warmth={1.15} />
 
-        {/* Glass vitrine shell — refraction + thin walls.
-            Drei's MeshTransmissionMaterial handles thickness/refraction
-            without us writing a custom shader. Sample/resolution kept
-            deliberately low: a thin display case doesn't need a heavy
-            multi-sample buffer, and the loaf must read CLEARLY through
-            it — heavy distortion was muddying the specimen. */}
-        <mesh position={[0, 0.05, 0]}>
-          <boxGeometry args={[2.2, 1.3, 0.95]} />
-          <MeshTransmissionMaterial
-            samples={2}
-            resolution={64}
-            transmission={0.96}
-            roughness={0.03}
-            thickness={0.14}
-            ior={1.46}
-            chromaticAberration={profile.postprocessing.chromaticAberration ? 0.02 : 0}
-            anisotropy={0.05}
-            distortion={0.02}
-            distortionScale={0.2}
-            temporalDistortion={0}
-            attenuationDistance={0.8}
-            attenuationColor="#f5efe2"
-            backside={false}
-          />
-        </mesh>
-
-        {/* Hairline frame around the vitrine — accentuates the catalogue feel */}
-        <lineSegments position={[0, 0.05, 0]}>
-          <edgesGeometry args={[new THREE.BoxGeometry(2.2, 1.3, 0.95)]} />
-          <lineBasicMaterial color="#161512" transparent opacity={0.18} />
+        {/* Display frame — the "vitrine" is now a hairline museum-case
+            skeleton, NOT a transmission-glass slab. Cheap glass refraction
+            read as a muddy plastic box and buried the specimen; an
+            implied case in fine ink lines is more elegant and far
+            lighter to render. */}
+        <lineSegments position={[0, 0.175, 0]}>
+          <edgesGeometry args={[new THREE.BoxGeometry(2.7, 1.15, 1.4)]} />
+          <lineBasicMaterial color="#161512" transparent opacity={0.5} />
         </lineSegments>
       </group>
 
@@ -149,17 +142,15 @@ export function Vitrine({ range }: VitrineProps = {}) {
 
       {/* Contact shadow — grounds the vitrine in space. Drei renders
           this from below into a low-res buffer, so the loaf + plinth
-          + glass cast a soft, real-feeling shadow on the floor instead
-          of the flat catch-shadow plane that was here before. This is
-          one of the cheapest, most reliable "amateur → grounded" wins
-          in R3F. Sits just below the plinth's underside (y = -0.7). */}
+          cast a soft, real-feeling shadow on the floor. Sits just
+          below the plinth's underside (plinth base ≈ y -0.56). */}
       <ContactShadows
-        position={[0, -0.71, 0]}
-        scale={6}
+        position={[0, -0.57, 0]}
+        scale={5}
         resolution={256}
-        blur={2.6}
-        opacity={0.42}
-        far={2.2}
+        blur={2.4}
+        opacity={0.5}
+        far={1.8}
         color="#161512"
       />
 

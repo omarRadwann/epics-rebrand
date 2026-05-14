@@ -112,17 +112,22 @@ export function WheatGrains({ count, range }: WheatGrainsProps) {
   const sceneRange =
     range ?? SCENE_RANGES.vitrine ?? { start: 0, end: 1, fadeIn: 0, fadeOut: 1 };
 
-  // Rest positions (where particles drift around when scroll = 0)
+  // Rest positions (where particles drift around when scroll = 0).
+  // A CONTAINED drift volume pushed BEHIND the loaf — not a viewport-
+  // wide scatter. The old field used radius up to ~3.9 with grains in
+  // the foreground plane, so it read as confetti colliding with the
+  // headline. Tight radius + a hard negative-z push turns it into a
+  // depth field sitting behind the specimen.
   const restPositions = useMemo(() => {
     const arr = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      // Distribute in a thick volume behind+around the vitrine
-      const radius = 1.4 + Math.random() * 2.5;
+      const radius = 0.8 + Math.random() * 1.7;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      arr[i * 3 + 0] = radius * Math.sin(phi) * Math.cos(theta);
-      arr[i * 3 + 1] = (Math.random() - 0.5) * 2.6;
-      arr[i * 3 + 2] = -0.5 + radius * Math.cos(phi) * 0.6 - 0.6;
+      arr[i * 3 + 0] = radius * Math.sin(phi) * Math.cos(theta) * 0.95;
+      arr[i * 3 + 1] = (Math.random() - 0.5) * 1.7;
+      // always behind the loaf (loaf front face ≈ z +0.55)
+      arr[i * 3 + 2] = -0.7 - Math.random() * 1.7;
     }
     return arr;
   }, [count]);
