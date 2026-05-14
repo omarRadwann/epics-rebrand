@@ -37,10 +37,14 @@ export default function HomeArabic() {
 
       <main id="main" className="relative">
         {/* Hero — Arabic-first, no canvas behind in Phase 10. The
-            corridor + vitrine scenes will be mirror-flipped in Phase 11. */}
+            corridor + vitrine scenes will be mirror-flipped in Phase 11.
+            items-start (NOT items-end): in a dir=rtl column flex the
+            cross-axis start is the RIGHT edge, so items-start is what
+            mirrors the LTR hero's left-aligned content onto the right.
+            items-end pushed the whole hero block to the left. */}
         <section
           aria-label="بانتري العيّنات"
-          className="relative flex min-h-[80vh] flex-col items-end justify-end overflow-hidden px-6 pb-16 pt-24 sm:px-12 sm:pb-24 sm:pt-32 lg:px-24"
+          className="relative flex min-h-[80vh] flex-col items-start justify-end overflow-hidden px-6 pb-16 pt-24 sm:px-12 sm:pb-24 sm:pt-32 lg:px-24"
         >
           <p className="specimen-lot mb-6 text-ink/60">
             إيبكس · العدد ٢٦ · بانتري العيّنات · ٢٠٢٦

@@ -4,13 +4,21 @@
  * Per-character or per-word reveal. Per brief §5: stagger 0.02s,
  * ease [0.16, 1, 0.3, 1].
  *
+ * Re-triggers on every viewport enter (viewport.once = false) so
+ * scrolling back up replays the stagger. viewport.amount is "some"
+ * (any pixel visible) — a high numeric threshold silently never fires
+ * for headlines taller or wider than the viewport, which is exactly
+ * what once left hero headings stuck invisible. The memoised
+ * motion.create() (see Reveal.tsx for the full history) is what makes
+ * the viewport trigger reliable now.
+ *
  * Usage:
  *   <SplitText text="On the record." mode="char" />
  *   <SplitText text="Three shelves." mode="word" stagger={0.05} as="h1" />
  */
-import { motion, type Variants } from "framer-motion";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { easeEntrance } from "@/lib/motion/eases";
-import { useEffect, useMemo, useState, type ElementType } from "react";
+import { createElement, useMemo, type ElementType } from "react";
 
 interface SplitTextProps {
   text: string;
@@ -51,26 +59,25 @@ export function SplitText({
       : text.split(/(\s+)/); // keep spaces in word mode for layout
 
   // motion.create() must be memoised — calling it inline on every
-  // render returns a fresh component type, which remounts the subtree.
+  // render returns a fresh component type, which remounts the subtree
+  // (and silently kills the viewport observer mid-scroll).
   const Wrapper = useMemo(() => motion.create(as as ElementType), [as]);
+  const reduced = useReducedMotion();
 
-  // Trigger the reveal on mount, not via whileInView / useInView. Both
-  // IntersectionObserver paths silently failed to fire for several
-  // above-the-fold headings, so they rendered permanently invisible
-  // (stuck at opacity 0). A mount trigger is reliable and is the right
-  // behaviour for a heading anyway — it should animate in as soon as
-  // it exists, not wait for a scroll that may never come.
-  const [shown, setShown] = useState(false);
-  useEffect(() => {
-    setShown(true);
-  }, []);
+  // Reduced motion: render the text plainly, fully visible, no stagger.
+  // createElement (not <Tag/>) — JSX can't infer children for a value
+  // typed as ElementType.
+  if (reduced) {
+    return createElement(as, { className, "aria-label": text }, text);
+  }
 
   return (
     <Wrapper
       className={className}
       variants={parentVariants(stagger, delay)}
       initial="hidden"
-      animate={shown ? "shown" : "hidden"}
+      whileInView="shown"
+      viewport={{ once: false, amount: "some" }}
       aria-label={text}
       style={{ display: "inline-block", overflow: "hidden" }}
     >
