@@ -75,7 +75,11 @@ export function SplitText({
       style={{ display: "inline-block", overflow: "hidden" }}
     >
       {tokens.map((token, i) => {
-        if (mode === "word" && /^\s+$/.test(token)) {
+        // Whitespace tokens render as plain, non-animated spans in BOTH
+        // modes. In char mode a " " token inside a display:inline-block
+        // span collapses to zero width, jamming every word together
+        // ("Breadthatdoesn'tapologise"). A space need not animate anyway.
+        if (/^\s+$/.test(token)) {
           return (
             <span key={i} aria-hidden style={{ whiteSpace: "pre" }}>
               {token}
