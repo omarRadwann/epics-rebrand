@@ -129,17 +129,20 @@ export function ManifestoText({ range }: ManifestoTextProps = {}) {
       </mesh>
 
       {/* The extruded headline. Drei's <Text3D> uses three's FontLoader
-          (typeface JSON) under the hood. Sized DOWN hard (0.62 -> 0.4)
-          and pushed lower-LEFT: at full size it burst the viewport and
-          collided with the DOM blockquote, which sits in the right
-          column. Offset left, it fills the empty left column as a quiet
-          3D echo of the small DOM heading instead of fighting the copy.
-          Font: self-hosted optimer typeface JSON (see MANIFESTO_FONT) —
-          no external CDN dependency at runtime. */}
-      <Center ref={textRef} position={[-1.0, -0.35, -0.2]}>
+          (typeface JSON) under the hood. Sized DOWN hard (0.62 -> 0.4 ->
+          0.3) and pushed lower-LEFT and deeper into Z: at larger sizes it
+          burst the viewport and its right edge collided with the DOM
+          blockquote, which sits in the right column (col-start-5). At
+          size 0.3, centered at x=-1.3, it spans roughly -2.75..+0.15 —
+          firmly in the empty left column, clear of the copy. Z pushed to
+          -1.0 so it reads as a quiet, recessed 3D echo of the small DOM
+          heading rather than a slab fighting the manifesto for the same
+          plane. Font: self-hosted optimer typeface JSON (see
+          MANIFESTO_FONT) — no external CDN dependency at runtime. */}
+      <Center ref={textRef} position={[-1.3, -0.4, -1.0]}>
         <Text3D
           font={MANIFESTO_FONT}
-          size={0.4}
+          size={0.3}
           height={0.1}
           curveSegments={8}
           bevelEnabled
