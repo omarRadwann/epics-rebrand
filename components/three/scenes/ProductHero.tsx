@@ -98,7 +98,7 @@ export function ProductHero({ product }: ProductHeroProps) {
 
 /* ============================================================
    Category-driven geometry. PKU gets a prismatic crystal,
-   baking gets the procedural loaf, packets get a stylised
+   baking gets the GLB loaf, packets get a stylised
    package box. All scaled to read inside the PDP viewport.
    ============================================================ */
 function ProductGeometry({

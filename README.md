@@ -47,7 +47,7 @@ pnpm lint
 
 | # | Scene | Status | Route |
 |---|---|---|---|
-| 1 | The Specimen Vitrine — rotating museum vitrine, procedural loaf with fake-SSS, 8000 wheat-grain particles condensing into the EPICS wordmark on scroll | ✅ Phase 2 | `/playground/scene-01-vitrine` |
+| 1 | The Specimen Vitrine — rotating museum vitrine, a real specimen loaf in a hairline display case, wheat-grain particles condensing into the EPICS wordmark on scroll | ✅ Phase 2 | `/playground/scene-01-vitrine` |
 | 2 | Three Shelves — camera flies through corridor (wheat-gold / cool blue / prismatic) | Phase 4 | `/playground/scene-02-corridor` |
 | 3 | Specimen Slides — glass microscope-slide product cards with tilt + chromatic aberration | Phase 6 | `/shop` |
 | 4 | On The Record — 3D extruded manifesto text + caustic GLSL backdrop | Phase 5 | `/` (mid-scroll) |

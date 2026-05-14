@@ -3,10 +3,11 @@
 /**
  * Moon #1 — "The Specimen Vitrine"
  *
- * A slowly rotating museum vitrine in negative space. Inside: a
- * procedural loaf rendered with fake subsurface scattering. Behind:
- * a slow-drifting field of ~8000 wheat-grain particles that respond
- * to the cursor and condense toward the "EPICS" wordmark on scroll.
+ * A slowly rotating museum vitrine in negative space. Inside: a real
+ * CC0 GLB loaf on a dark stone plinth, framed by a hairline display
+ * case (no transmission glass). Behind: a contained, slow-drifting
+ * field of wheat-grain particles (~500 desktop-high) that condense
+ * toward the "EPICS" wordmark on scroll.
  *
  * The DOM scrolls; this scene reacts. Wired through useScrollDirector.
  */

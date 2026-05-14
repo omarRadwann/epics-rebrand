@@ -46,15 +46,16 @@ export default function PlaygroundVitrine() {
             The Specimen Vitrine.
           </h1>
           <p className="mt-5 max-w-md text-[15px] leading-[1.55] text-ink/70">
-            Procedural loaf, vitrine refraction, 8000 wheat-grain instances drifting in
-            warmth-biased light. Scroll to condense them into the brand mark.
+            A real specimen loaf on a dark plinth inside a hairline display case — a
+            contained field of wheat grains drifts behind it in warmth-biased light.
+            Scroll to condense them into the brand mark.
           </p>
         </section>
 
         {/* Scroll spacers — give the scene 200vh of progress so condensation
             (which happens 0.04 .. 0.16) is comfortably readable. */}
         <section className="min-h-[100vh] px-6 sm:px-12 lg:px-24">
-          <ScrollMarker label="SCROLL · 50%" hint="Particles bow away from the cursor as they begin to condense." />
+          <ScrollMarker label="SCROLL · 50%" hint="The wheat grains lift and begin to condense toward the wordmark." />
         </section>
 
         <section className="min-h-[100vh] px-6 sm:px-12 lg:px-24">
