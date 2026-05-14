@@ -39,6 +39,7 @@ import {
 } from "@react-three/postprocessing";
 import { BlendFunction, KernelSize } from "postprocessing";
 
+import { Loaf } from "./Loaf";
 import { useScrollDirector } from "@/lib/hooks/useScrollDirector";
 import { usePerfTier } from "@/lib/hooks/usePerfTier";
 import { localProgress, SCENE_RANGES } from "@/lib/three/sceneRanges";
@@ -336,27 +337,14 @@ function ShelfCenterpiece({
   });
 
   if (index === 0) {
-    // S-01 Gluten-Free — three stacked loaf-like blocks (a wheat-gold
-    // suggestion). The fuller procedural loaf can be ported here later.
+    // S-01 Gluten-Free — the real bread specimen: the same CC0 GLB loaf
+    // the home vitrine uses. A bread shelf needs actual bread on it,
+    // not the placeholder stacked blocks that were here (they read as
+    // programmer-art). Group sits on the shelf floor (y ≈ -0.55); the
+    // Loaf's base-at-origin pivot means it rests cleanly on it.
     return (
-      <group ref={groupRef} position={[0, 0.05, 0]}>
-        <mesh position={[0, -0.18, 0]} castShadow>
-          <boxGeometry args={[0.85, 0.25, 0.5]} />
-          <meshStandardMaterial color="#b88748" roughness={0.65} />
-        </mesh>
-        <mesh position={[0, 0.08, 0]} castShadow>
-          <boxGeometry args={[0.75, 0.22, 0.45]} />
-          <meshStandardMaterial color="#c79a5c" roughness={0.6} />
-        </mesh>
-        <mesh position={[0, 0.32, 0]} castShadow>
-          <boxGeometry args={[0.6, 0.2, 0.4]} />
-          <meshStandardMaterial
-            color="#d6ad6f"
-            roughness={0.55}
-            emissive="#f0c989"
-            emissiveIntensity={0.18}
-          />
-        </mesh>
+      <group ref={groupRef} position={[0, -0.55, 0]}>
+        <Loaf position={[0, 0, 0]} scale={0.5} warmth={1.35} />
       </group>
     );
   }

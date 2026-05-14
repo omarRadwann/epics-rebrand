@@ -123,11 +123,11 @@ export function Vitrine({ range }: VitrineProps = {}) {
         </mesh>
 
         {/* Loaf — Moon #1 specimen. Base sits on the plinth top surface
-            (plinth centre -0.48 + half-height 0.08 = -0.40). Scale 0.62:
-            the GLB normalises to a 2.0-long box, so 0.62 puts the loaf
-            at ~0.82 tall / ~1.24 long — prominent, but fits inside the
-            display frame through its full rotation. */}
-        <Loaf position={[0, -0.4, 0]} scale={0.62} warmth={1.15} />
+            (plinth centre -0.48 + half-height 0.08 = -0.40). Scale 0.72:
+            the GLB normalises to a 2.0-long box, so 0.72 puts the loaf
+            at ~0.95 tall / ~1.44 long — owns the centre of the display
+            frame while still clearing it through a full rotation. */}
+        <Loaf position={[0, -0.4, 0]} scale={0.72} warmth={1.15} />
 
         {/* Display frame — the "vitrine" is a hairline museum-case
             skeleton, NOT a transmission-glass slab. Cheap glass
