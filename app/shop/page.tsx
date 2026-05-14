@@ -24,7 +24,7 @@ export default function ShopPage() {
               The whole pantry.
             </h1>
             <p className="mt-6 max-w-xl text-[18px] leading-[1.55] text-ink/75">
-              {products.length} specimens, three shelves. Filter by the strikethrough that
+              {products.length + wholesale.length} specimens, three shelves. Filter by the strikethrough that
               matters to your body — gluten, sugar, protein.
             </p>
           </div>

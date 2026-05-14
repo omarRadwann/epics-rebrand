@@ -7,9 +7,15 @@
  *   <Reveal>...</Reveal>
  *   <Reveal as="section" delay={0.15}>...</Reveal>
  */
-import { motion, type Variants } from "framer-motion";
+import { motion, useInView, type Variants } from "framer-motion";
 import { easeEntrance } from "@/lib/motion/eases";
-import { type ComponentProps, type ElementType, type ReactNode } from "react";
+import {
+  useMemo,
+  useRef,
+  type ComponentProps,
+  type ElementType,
+  type ReactNode,
+} from "react";
 
 interface RevealProps {
   children: ReactNode;
@@ -38,18 +44,36 @@ export function Reveal({
   className,
   id,
   ...rest
-}: RevealProps & Omit<ComponentProps<typeof motion.div>, "children" | "variants" | "initial" | "whileInView" | "viewport" | "transition">) {
-  // framer-motion supports motion(tag) for custom elements
-  const Component = motion.create(as as ElementType);
+}: RevealProps &
+  Omit<
+    ComponentProps<typeof motion.div>,
+    | "children"
+    | "variants"
+    | "initial"
+    | "animate"
+    | "whileInView"
+    | "viewport"
+    | "transition"
+  >) {
+  // motion.create() must be memoised — calling it inline on every
+  // render returns a fresh component type, which remounts the subtree
+  // (and resets the in-view observer) every render.
+  const Component = useMemo(() => motion.create(as as ElementType), [as]);
+
+  // useInView fires reliably for elements already in the viewport on
+  // mount, unlike the previous whileInView + viewport config which
+  // left above-the-fold sections stuck at opacity 0 until a scroll.
+  const ref = useRef<HTMLElement>(null);
+  const inView = useInView(ref, { once: true, amount });
 
   return (
     <Component
+      ref={ref}
       id={id}
       className={className}
       variants={variants}
       initial="hidden"
-      whileInView="shown"
-      viewport={{ once: true, amount }}
+      animate={inView ? "shown" : "hidden"}
       transition={{ delay }}
       {...rest}
     >

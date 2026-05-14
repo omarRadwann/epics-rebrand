@@ -6,10 +6,16 @@
  * (--font-arabic / Tajawal in fallback, 29LT Bukra in production) is
  * applied across all /ar/* routes.
  *
+ * <LocaleHtml> additionally corrects the root <html lang/dir> on the
+ * live document — the App Router root layout owns <html> and a child
+ * layout can't change its attributes server-side.
+ *
  * 3D scenes inherit the RTL flag via a runtime check in usePerfTier or
  * an explicit prop in Phase 10 polish. For Phase 10 first ship the DOM
  * RTL flips correctly; mirror-flip the canvas in a follow-up.
  */
+import { LocaleHtml } from "./LocaleHtml";
+
 export default function ArabicLayout({
   children,
 }: {
@@ -17,6 +23,7 @@ export default function ArabicLayout({
 }) {
   return (
     <div lang="ar" dir="rtl" className="font-arabic">
+      <LocaleHtml />
       {children}
     </div>
   );

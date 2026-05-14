@@ -8,9 +8,9 @@
  *   <SplitText text="On the record." mode="char" />
  *   <SplitText text="Three shelves." mode="word" stagger={0.05} as="h1" />
  */
-import { motion, type Variants } from "framer-motion";
+import { motion, useInView, type Variants } from "framer-motion";
 import { easeEntrance } from "@/lib/motion/eases";
-import { type ElementType } from "react";
+import { useMemo, useRef, type ElementType } from "react";
 
 interface SplitTextProps {
   text: string;
@@ -50,15 +50,25 @@ export function SplitText({
       ? Array.from(text)
       : text.split(/(\s+)/); // keep spaces in word mode for layout
 
-  const Wrapper = motion.create(as as ElementType);
+  // motion.create() must be memoised — calling it inline on every
+  // render returns a fresh component type, which remounts the whole
+  // subtree (and resets the in-view observer) every render.
+  const Wrapper = useMemo(() => motion.create(as as ElementType), [as]);
+
+  // useInView fires reliably for elements that are already in the
+  // viewport on mount. The previous whileInView + viewport={{ amount:
+  // 0.6 }} silently never triggered for above-the-fold headings, so
+  // they rendered permanently invisible until the user scrolled.
+  const ref = useRef<HTMLElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.2 });
 
   return (
     <Wrapper
+      ref={ref}
       className={className}
       variants={parentVariants(stagger, delay)}
       initial="hidden"
-      whileInView="shown"
-      viewport={{ once: true, amount: 0.6 }}
+      animate={inView ? "shown" : "hidden"}
       aria-label={text}
       style={{ display: "inline-block", overflow: "hidden" }}
     >
@@ -73,7 +83,7 @@ export function SplitText({
         return (
           <span key={i} aria-hidden style={{ display: "inline-block", overflow: "hidden" }}>
             <motion.span variants={childVariants} style={{ display: "inline-block" }}>
-              {token === " " ? " " : token}
+              {token === " " ? " " : token}
             </motion.span>
           </span>
         );
