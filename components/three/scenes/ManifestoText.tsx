@@ -26,6 +26,12 @@ import { Text3D, Center } from "@react-three/drei";
 import { useScrollDirector } from "@/lib/hooks/useScrollDirector";
 import { usePerfTier } from "@/lib/hooks/usePerfTier";
 import { localProgress, SCENE_RANGES } from "@/lib/three/sceneRanges";
+import { asset } from "@/lib/asset";
+
+// Self-hosted typeface JSON (was loaded from the threejs.org CDN —
+// a fragile external runtime dependency). Now served from public/fonts/
+// and basePath-aware via asset().
+const MANIFESTO_FONT = asset("/fonts/optimer_regular.typeface.json");
 
 interface ManifestoTextProps {
   range?: { start: number; end: number };
@@ -128,11 +134,11 @@ export function ManifestoText({ range }: ManifestoTextProps = {}) {
           collided with the DOM blockquote, which sits in the right
           column. Offset left, it fills the empty left column as a quiet
           3D echo of the small DOM heading instead of fighting the copy.
-          Font note: still the threejs.org optimer JSON — a self-hosted
-          brand typeface JSON is a separate task. */}
+          Font: self-hosted optimer typeface JSON (see MANIFESTO_FONT) —
+          no external CDN dependency at runtime. */}
       <Center ref={textRef} position={[-1.0, -0.35, -0.2]}>
         <Text3D
-          font="https://threejs.org/examples/fonts/optimer_regular.typeface.json"
+          font={MANIFESTO_FONT}
           size={0.4}
           height={0.1}
           curveSegments={8}

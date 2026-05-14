@@ -95,9 +95,9 @@ edge-on → face-on → edge-on across local progress, with a subtle
 breathing scale at peak readability. Custom GLSL caustic shader on a
 16×9 plane behind it (stacked value-noise + smoothstep vignette,
 tinted to brand paper), authored as a TS template-string module — no
-glsl loader required for Next.js Webpack. Known rough edge: the
-typeface JSON is still loaded from the threejs.org CDN — a self-hosted
-brand typeface is a separate task.
+glsl loader required for Next.js Webpack. The `optimer` typeface JSON
+is self-hosted under `public/fonts/` (basePath-aware via `asset()`) —
+no external CDN dependency at runtime.
 
 ### Moon #5 — Stamp Room (`components/three/scenes/StampRoom.tsx`)
 Three embossed PBR seals (ISO 22000, ISO 9001, Halal) in a dark room
@@ -183,10 +183,10 @@ deploy.
    canvas. To wire Moons in, mirror-flip camera handedness (or use
    `scene.scale.x = -1` on the canvas root) and negate FM `x` values
    in the scene's useFrame.
-4. **Manifesto typeface on CDN** — `ManifestoText.tsx` still loads the
-   `optimer` typeface JSON from threejs.org. Self-host it under
-   `public/fonts/` (or swap to a brand typeface JSON) so the scene has
-   no external runtime dependency.
+4. **Manifesto typeface is a placeholder** — `ManifestoText.tsx` now
+   self-hosts the three.js `optimer` typeface JSON under `public/fonts/`
+   (no CDN dependency), but `optimer` is a generic fallback. A proper
+   brand typeface JSON would be a single-line swap of `MANIFESTO_FONT`.
 5. **Production fonts still on hold** — PP Editorial New (paid) and
    29LT Bukra (paid). Both swaps are single-file changes in
    `app/layout.tsx` once licenses land. Newsreader + Tajawal are the
