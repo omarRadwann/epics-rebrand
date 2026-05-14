@@ -96,15 +96,19 @@ export function ManifestoText({ range }: ManifestoTextProps = {}) {
 
   return (
     <>
-      {/* Dim ambient + a single key light to model the extruded face */}
-      <ambientLight intensity={0.4} color="#f6e9cf" />
+      {/* Crisp key + cool fill + warm rim so the extruded faces and
+          bevels read sharp. Ambient kept low — at 0.4 it flattened the
+          letterforms into a muddy grey slab. */}
+      <ambientLight intensity={0.26} color="#f6e9cf" />
       <directionalLight
-        position={[2, 3, 2.5]}
-        intensity={1.6}
-        color="#f4d5a0"
+        position={[2.5, 3, 3]}
+        intensity={2.3}
+        color="#f4d8a8"
         castShadow
       />
-      <directionalLight position={[-3, 1, -2]} intensity={0.3} color="#c8b8a0" />
+      <directionalLight position={[-3, 1, -1]} intensity={0.4} color="#aebccb" />
+      {/* warm rim from behind — catches the extrusion edges */}
+      <directionalLight position={[-1.5, 1.5, -3]} intensity={0.9} color="#ffc48f" />
 
       {/* Caustic backdrop — a single plane far behind the text */}
       <mesh position={[0, 0, -3]}>
@@ -118,30 +122,33 @@ export function ManifestoText({ range }: ManifestoTextProps = {}) {
         />
       </mesh>
 
-      {/* The extruded headline. Drei's <Text3D> uses troika-three-text
-          under the hood. Font is loaded from the public folder — we
-          serve a default JSON font from drei's CDN for the playground;
-          production should self-host a brand font (Newsreader JSON
-          will be added in Phase 11 alongside the font license work). */}
-      <Center ref={textRef}>
+      {/* The extruded headline. Drei's <Text3D> uses three's FontLoader
+          (typeface JSON) under the hood. Sized DOWN hard (0.62 -> 0.4)
+          and pushed lower-LEFT: at full size it burst the viewport and
+          collided with the DOM blockquote, which sits in the right
+          column. Offset left, it fills the empty left column as a quiet
+          3D echo of the small DOM heading instead of fighting the copy.
+          Font note: still the threejs.org optimer JSON — a self-hosted
+          brand typeface JSON is a separate task. */}
+      <Center ref={textRef} position={[-1.0, -0.35, -0.2]}>
         <Text3D
           font="https://threejs.org/examples/fonts/optimer_regular.typeface.json"
-          size={0.62}
-          height={0.16}
+          size={0.4}
+          height={0.1}
           curveSegments={8}
           bevelEnabled
-          bevelThickness={0.012}
-          bevelSize={0.008}
+          bevelThickness={0.01}
+          bevelSize={0.006}
           bevelSegments={4}
         >
           On the record.
           <meshPhysicalMaterial
-            color="#161512"
-            roughness={0.45}
-            metalness={0.15}
-            clearcoat={0.6}
-            clearcoatRoughness={0.25}
-            sheen={0.3}
+            color="#2a241d"
+            roughness={0.36}
+            metalness={0}
+            clearcoat={0.85}
+            clearcoatRoughness={0.18}
+            sheen={0.4}
             sheenColor="#e1b271"
           />
         </Text3D>
