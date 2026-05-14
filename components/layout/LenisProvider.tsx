@@ -39,6 +39,17 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
         setVelocity(velocity);
       });
 
+      // Seed the scroll director with the CURRENT position. When a page
+      // loads already-scrolled (browser scroll restoration after reload
+      // or back-nav) Lenis doesn't emit an initial "scroll" event, so the
+      // director would stay at 0 and the canvas would show the wrong Moon
+      // scene until the user scrolls. Emit once on mount to fix that.
+      setProgress(lenis.progress || 0);
+
+      // Expose the instance for programmatic scroll + debugging. Harmless
+      // in production; lets devtools / e2e tests drive the smooth scroll.
+      (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
+
       const loop = (time: number) => {
         lenis?.raf(time);
         raf = requestAnimationFrame(loop);
