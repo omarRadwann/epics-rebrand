@@ -203,14 +203,18 @@ export function Corridor({ range }: CorridorProps = {}) {
       ))}
 
       {/* Ambient + low fill so we don't fully black-out the corridor
-          between shelves. */}
-      <ambientLight intensity={0.18} color="#f6e9cf" />
+          between shelves. Lifted 0.18 -> 0.26: the wide transit gaps
+          between dioramas were reading as dead-black voids rather than
+          the quiet beat before each reveal. */}
+      <ambientLight intensity={0.26} color="#f6e9cf" />
 
       {/* Rim light from behind/above the camera — adds a subtle horizon
-          glow so the corridor entrance reads against pure-dark walls. */}
+          glow so the corridor entrance reads against pure-dark walls.
+          Nudged 0.45 -> 0.6 so the floor/walls keep a faint warm read
+          through the gaps. */}
       <directionalLight
         position={[1.5, 2.5, 4]}
-        intensity={0.45}
+        intensity={0.6}
         color="#e0d3b8"
       />
 

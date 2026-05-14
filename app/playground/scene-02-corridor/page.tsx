@@ -58,7 +58,7 @@ export default function PlaygroundCorridor() {
             code="S-01"
             label="Gluten-Free"
             tone="text-shelf-01"
-            hint="Wheat-gold key light, the loaf trio at rest."
+            hint="Wheat-gold key light, a single loaf at rest on the plinth."
           />
         </section>
 
@@ -68,7 +68,7 @@ export default function PlaygroundCorridor() {
             code="S-02"
             label="Sugar-Free"
             tone="text-shelf-02"
-            hint="Cool blue, crystalline sugar cube refracting the key."
+            hint="Cool blue, a faceted sugar crystal catching the key."
           />
         </section>
 

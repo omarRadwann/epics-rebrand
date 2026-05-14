@@ -247,8 +247,11 @@ export function WheatGrains({ count, range }: WheatGrainsProps) {
 
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]} frustumCulled={false}>
-      {/* Tiny stretched icosahedron = wheat-grain shape, low-poly */}
-      <icosahedronGeometry args={[1, 0]} />
+      {/* Tiny stretched icosahedron = wheat-grain shape. Detail 1
+          (20 -> 80 faces) — detail 0 read as hard hexagons when a grain
+          drifted close to camera; the extra subdivision is cheap at this
+          instance count and rounds the silhouette. */}
+      <icosahedronGeometry args={[1, 1]} />
       {/* Pale cool-cream, matte, no emissive — the old wheat-tan +
           warm emissive put the grains in the same colour family as the
           loaf, so they read as brown dirt specks competing with the

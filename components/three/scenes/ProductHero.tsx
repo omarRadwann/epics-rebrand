@@ -180,7 +180,7 @@ function ProductGeometry({
   if (isSweet) {
     return (
       <group ref={groupRef} scale={0.95}>
-        {/* Stacked bake form — three layers like the corridor S-01 trio */}
+        {/* Stacked bake form — three tapered layers, a cake/basbousa silhouette */}
         <mesh position={[0, -0.3, 0]} castShadow>
           <boxGeometry args={[0.95, 0.28, 0.55]} />
           <meshStandardMaterial color="#b88748" roughness={0.65} />

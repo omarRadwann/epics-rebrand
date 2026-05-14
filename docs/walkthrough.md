@@ -10,7 +10,7 @@
 A Next.js 15 + React 19 + Tailwind 4 site for Epics with all five Moon
 scenes shipped, wired through a single shared R3F canvas and a measured
 scroll-range dispatcher. The static export passes (`pnpm build` →
-67 pages, 154 kB initial JS on `/`), the typecheck is clean, and the
+67 pages, 155 kB initial JS on `/`), the typecheck is clean, and the
 GitHub Actions workflow gates on typecheck before deploy.
 
 Routes worth opening, in order:
@@ -55,20 +55,28 @@ swaps read as cuts, not pops. Past 0.99 the canvas unmounts entirely.
 ## The five Moon scenes
 
 ### Moon #1 — Specimen Vitrine (`components/three/scenes/Vitrine.tsx`)
-Procedural loaf (stretched icosahedron + multi-octave value-noise
-displacement) inside a `MeshTransmissionMaterial` glass vitrine, lit
-warm. ~8000 wheat-grain instances (`particles/WheatGrains.tsx`) drift
-around it, respond to the cursor, and condense into the EPICS wordmark
-on scroll. Postprocessing: bloom (0.45 / 0.86), DoF (focus 0.012,
-focal 0.04), film grain, vignette — all gated by `usePerfTier`.
+A real CC0 GLB loaf (`scenes/Loaf.tsx` — Quaternius, ~29 KB, 412 tris,
+normalised on load) sits on a dark stone plinth inside a hairline
+`lineSegments` display frame — a museum-case skeleton, not a glass
+slab. Cheap transmission glass read as a muddy plastic box and buried
+the specimen, so it was cut. Lit by a deliberate 3-light studio rig
+(warm key / cool fill / warm rim) plus a baker's-lamp point accent;
+`ContactShadows` grounds the assembly. A contained field of wheat-grain
+instances (`particles/WheatGrains.tsx` — ~500 desktop-high, behind the
+loaf) drifts and condenses into the EPICS wordmark on scroll.
+Postprocessing: bloom, film grain, vignette — gated by `usePerfTier`.
+(DoF was dropped: it blurred the specimen the scene exists to show.)
 
 ### Moon #2 — Three Shelves Corridor (`components/three/scenes/Corridor.tsx`)
-Catmull-Rom curve flies the camera through three illuminated dioramas:
-S-01 wheat-gold stacked loaf trio, S-02 cool-blue icosahedron sugar
-cube with transmission + dispersion, S-03 prismatic refractive cone
-(`MeshTransmissionMaterial` with chromatic aberration). Camera
-position uses 85% of the curve length; lookAt uses positionT + 0.15
-so it always looks forward and lands cleanly on the final crystal.
+Catmull-Rom curve flies the camera through three illuminated dioramas,
+each on its own dark plinth under a per-shelf 3-light rig:
+S-01 the real GLB loaf under a wheat-gold key, S-02 a faceted
+icosahedron sugar crystal (glossy `meshPhysicalMaterial`, full
+clearcoat, flat shading — no transmission), S-03 a faceted prismatic
+cone (clearcoat + iridescence, flat shading). Cheap transmission was
+cut here for the same reason as the vitrine. Camera position uses 85%
+of the curve length; lookAt uses positionT + 0.15 and drops ~0.5 in Y
+so each centrepiece lands framed rather than clipped at the bottom.
 
 ### Moon #3 — Specimen Slides (`components/ui/SpecimenSlide.tsx`)
 Glass-microscope-slide product cards on `/shop`. On hover the card
@@ -79,20 +87,26 @@ scramble on enter-viewport. Numbered "slide tab" hairlines on
 top/bottom expand on hover. Pomegranate accents for Crystal PKU.
 
 ### Moon #4 — On The Record (`components/three/scenes/ManifestoText.tsx`)
-3D extruded "On the record." headline via drei `<Text3D>`
-(`troika-three-text` under the hood). Rotates edge-on → face-on →
-edge-on across local progress, with a subtle breathing scale at peak
-readability. Custom GLSL caustic shader on a 16×9 plane behind it
-(stacked value-noise + smoothstep vignette, tinted to brand paper).
-Shader authored as a TS template-string module — no glsl loader
-required for Next.js Webpack.
+3D extruded "On the record." headline via drei `<Text3D>` (three's
+`FontLoader` / typeface JSON under the hood). Sized down and offset
+lower-left so it reads as a quiet 3D echo of the small DOM heading
+instead of fighting the blockquote in the right column. Rotates
+edge-on → face-on → edge-on across local progress, with a subtle
+breathing scale at peak readability. Custom GLSL caustic shader on a
+16×9 plane behind it (stacked value-noise + smoothstep vignette,
+tinted to brand paper), authored as a TS template-string module — no
+glsl loader required for Next.js Webpack. Known rough edge: the
+typeface JSON is still loaded from the threejs.org CDN — a self-hosted
+brand typeface is a separate task.
 
 ### Moon #5 — Stamp Room (`components/three/scenes/StampRoom.tsx`)
 Three embossed PBR seals (ISO 22000, ISO 9001, Halal) in a dark room
-under a single spotlight. Each seal is a cylinder with a raised gold
-inner ring + drei `<Text>` label etched on the face. Idle slow
-rotation gives way to face-on framing at each seal's centre-scroll
-moment. Caption typesetting below each in mono.
+under a single warm spotlight, with a cool fill + warm rim lifting
+them off the dark. Each seal is a camera-facing struck disc with a
+raised `torusGeometry` gold rim proud of the face and a drei `<Text>`
+label on the face. Idle slow rotation gives way to face-on framing at
+each seal's centre-scroll moment. Caption typesetting below each in
+mono.
 
 ---
 
@@ -141,7 +155,7 @@ its range from `SCENE_RANGES`.
 | Gate | Status |
 |---|---|
 | `pnpm typecheck` | ✅ clean (`tsc --noEmit` zero errors) |
-| `pnpm build` | ✅ 67 static pages, 154 kB initial JS on `/` |
+| `pnpm build` | ✅ 67 static pages, 155 kB initial JS on `/` |
 | Vitrine condenses to EPICS wordmark on scroll | ✅ verified visually at scroll 1.0 of playground |
 | Corridor: S-01 / S-02 / S-03 land at scroll 0.0 / 0.55 / 0.95 | ✅ verified in playground |
 | Manifesto extruded text rotates face-on at scroll 0.5 of its range | ✅ verified at home scroll 0.48 |
@@ -169,10 +183,10 @@ deploy.
    canvas. To wire Moons in, mirror-flip camera handedness (or use
    `scene.scale.x = -1` on the canvas root) and negate FM `x` values
    in the scene's useFrame.
-4. **MeshTransmissionMaterial cost** — the most expensive draw in
-   Vitrine and Corridor. If a perf trace shows it under budget on
-   mid-tier devices, drop the `samples` / `resolution` for
-   desktop-low further.
+4. **Manifesto typeface on CDN** — `ManifestoText.tsx` still loads the
+   `optimer` typeface JSON from threejs.org. Self-host it under
+   `public/fonts/` (or swap to a brand typeface JSON) so the scene has
+   no external runtime dependency.
 5. **Production fonts still on hold** — PP Editorial New (paid) and
    29LT Bukra (paid). Both swaps are single-file changes in
    `app/layout.tsx` once licenses land. Newsreader + Tajawal are the
@@ -224,7 +238,7 @@ components/
       StampRoom.tsx                      ← Moon #5
       ProductHero.tsx                    ← PDP 3D hero
     particles/
-      WheatGrains.tsx                    ← 8000 instances + EPICS condensation
+      WheatGrains.tsx                    ← ~500 instances + EPICS condensation
 
 lib/
   motion/eases.ts                        ← entrance/exit curves + springs
