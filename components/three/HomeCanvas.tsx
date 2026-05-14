@@ -3,10 +3,14 @@
 /**
  * Home-page R3F canvas host + multi-scene dispatcher.
  *
- * The home page scrolls through several scenes (Vitrine → Corridor →
- * Manifesto → Stamps, with non-canvas DOM sections in between). One
+ * The home page scrolls through several scenes (Vitrine → Manifesto →
+ * Corridor → Stamps, with non-canvas DOM sections in between). One
  * canvas, one WebGL context — the active scene's component is mounted
  * inside; siblings unmount when scrolled out of their range.
+ *
+ * Scene ranges are MEASURED from the live DOM ([data-scene] sections)
+ * via useMeasuredRanges, so they adapt to viewport size, font-load
+ * reflow, and content edits — no hardcoded percentages.
  *
  * The canvas wrapper crossfades at scene boundaries so the swap reads
  * as a clean cut rather than a hard pop. Past the last scene's range
@@ -15,13 +19,14 @@
  * Per Moonshot Brief §6 scroll choreography.
  */
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useScrollDirector } from "@/lib/hooks/useScrollDirector";
+import { fadeAlpha, type SceneRange } from "@/lib/three/sceneRanges";
 import {
-  SCENE_RANGES,
-  fadeAlpha,
-  sceneAt,
-} from "@/lib/three/sceneRanges";
+  useMeasuredRanges,
+  measuredSceneAt,
+  type MeasuredRanges,
+} from "@/lib/three/useMeasuredRanges";
 
 const CanvasRoot = dynamic(
   () => import("./CanvasRoot").then((m) => m.CanvasRoot),
@@ -48,11 +53,13 @@ const StampRoom = dynamic(
   { ssr: false }
 );
 
-// Keep canvas alive until past the last canvas scene (stamps ends at 0.97).
-// Pad slightly so the fade-out completes before unmount.
-const UNMOUNT_AFTER = 0.99;
-
 export function HomeCanvas() {
+  const measured = useMeasuredRanges();
+  // Keep the latest measured ranges in a ref so the scroll subscriber
+  // (which is set up once) always reads current values.
+  const rangesRef = useRef<MeasuredRanges>(measured);
+  rangesRef.current = measured;
+
   const [scene, setScene] = useState<string>("vitrine");
   const [opacity, setOpacity] = useState(1);
   const [mounted, setMounted] = useState(true);
@@ -64,20 +71,29 @@ export function HomeCanvas() {
 
     const unsub = useScrollDirector.subscribe((state) => {
       const p = state.progress;
+      const ranges = rangesRef.current;
 
-      const activeScene = sceneAt(p);
+      const activeScene = measuredSceneAt(p, ranges);
+      const range: SceneRange | null =
+        activeScene !== "none" ? (ranges[activeScene] ?? null) : null;
 
-      // Compute fade alpha against whichever scene currently owns p, or
-      // — if we're between scenes — use the nearest range's fade-out.
-      const range =
-        activeScene !== "none"
-          ? (SCENE_RANGES[activeScene] ?? null)
-          : null;
       const alpha = range ? fadeAlpha(p, range) : 0;
       const bucket = Math.round(alpha * 16);
-      const nextMounted = p < UNMOUNT_AFTER;
 
-      if (activeScene !== lastScene && activeScene !== "none" && activeScene !== "specimens") {
+      // Canvas stays mounted while p is inside ANY measured range.
+      // Compute the latest scene end so we can release the WebGL
+      // context once the user has scrolled past every canvas scene.
+      let lastEnd = 0;
+      for (const r of Object.values(ranges)) {
+        if (r && r.end > lastEnd) lastEnd = r.end;
+      }
+      const nextMounted = p < lastEnd + 0.02;
+
+      if (
+        activeScene !== lastScene &&
+        activeScene !== "none" &&
+        activeScene !== "specimens"
+      ) {
         lastScene = activeScene;
         setScene(activeScene);
       }
@@ -95,6 +111,10 @@ export function HomeCanvas() {
 
   if (!mounted) return null;
 
+  // Pass the measured range to each scene so it normalises its local
+  // progress against the live DOM, not the static fallback.
+  const activeRange = measured[scene as keyof MeasuredRanges];
+
   return (
     <div
       style={{
@@ -104,10 +124,10 @@ export function HomeCanvas() {
       }}
     >
       <CanvasRoot>
-        {scene === "vitrine" && <Vitrine />}
-        {scene === "corridor" && <Corridor />}
-        {scene === "manifesto" && <ManifestoText />}
-        {scene === "stamps" && <StampRoom />}
+        {scene === "vitrine" && <Vitrine range={activeRange} />}
+        {scene === "corridor" && <Corridor range={activeRange} />}
+        {scene === "manifesto" && <ManifestoText range={activeRange} />}
+        {scene === "stamps" && <StampRoom range={activeRange} />}
       </CanvasRoot>
     </div>
   );

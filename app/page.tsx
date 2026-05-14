@@ -62,6 +62,7 @@ export default function Home() {
             ============================================================ */}
         <section
           id="hero"
+          data-scene="vitrine"
           aria-label="Specimen Pantry"
           className="relative flex min-h-[140vh] flex-col items-start justify-end overflow-hidden px-6 pb-16 pt-24 sm:px-12 sm:pb-24 sm:pt-32 lg:px-24"
         >
@@ -165,7 +166,7 @@ export default function Home() {
         {/* ============================================================
             MANIFESTO INTRO — split-text headline + the 60-word anchor
             ============================================================ */}
-        <Reveal as="section" id="manifesto" className="border-b border-ink/40">
+        <Reveal as="section" id="manifesto" data-scene="manifesto" className="border-b border-ink/40">
           <div className="mx-auto grid max-w-[1440px] grid-cols-12 gap-x-8 px-6 py-24 sm:px-12 lg:px-24">
             <div className="col-span-12 md:col-span-3">
               <p className="specimen-lot">M-01 · MANIFESTO</p>
@@ -210,7 +211,7 @@ export default function Home() {
             the corners; the tall min-height gives the camera flight
             full scroll-real-estate.
             ============================================================ */}
-        <Reveal as="section" className="relative">
+        <Reveal as="section" data-scene="corridor" className="relative">
           <div className="mx-auto flex min-h-[140vh] max-w-[1440px] flex-col justify-between px-6 py-24 sm:px-12 lg:px-24">
             <header className="flex flex-wrap items-baseline justify-between gap-4">
               <div>
@@ -324,7 +325,7 @@ export default function Home() {
             typographic certification specs sit at the bottom over the
             3D scene's natural floor area.
             ============================================================ */}
-        <Reveal as="section" className="relative text-paper">
+        <Reveal as="section" data-scene="stamps" className="relative text-paper">
           <div className="mx-auto flex min-h-[120vh] max-w-[1440px] flex-col justify-between px-6 py-24 sm:px-12 lg:px-24">
             <header>
               <p className="specimen-lot text-paper/65">X-01 · CERTIFICATIONS</p>
