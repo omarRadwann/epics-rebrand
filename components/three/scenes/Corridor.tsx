@@ -147,6 +147,10 @@ export function Corridor({ range }: CorridorProps = {}) {
     camera.position.lerp(targetVec.current, 0.14);
 
     path.getPointAt(lookT, lookVec.current);
+    // Drop the look target toward specimen height. The camera path runs
+    // ~0.6 above the plinths; looking straight along it clipped every
+    // centerpiece at the bottom of the frame instead of centring it.
+    lookVec.current.y -= 0.5;
     camera.lookAt(lookVec.current);
   });
 

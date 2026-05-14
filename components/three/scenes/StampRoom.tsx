@@ -92,20 +92,23 @@ export function StampRoom({ range }: StampRoomProps = {}) {
 
   return (
     <>
-      <Environment preset="city" environmentIntensity={0.25} />
-      {/* Single key light from front-top, very directional — gives the
-          seal embossing its catch-and-shadow. */}
-      <ambientLight intensity={0.08} color="#1d1c1a" />
+      <Environment preset="city" environmentIntensity={0.3} />
+      {/* Dramatic key from front-top — the spotlight that catches the
+          embossed rim — plus a soft cool fill and a warm rim so the
+          medallions read as struck metal, not flat dark coins. */}
+      <ambientLight intensity={0.14} color="#2a2722" />
       <spotLight
-        position={[0, 2.5, 3]}
+        position={[1.2, 2.6, 3]}
         target-position={[0, 0, 0]}
         angle={0.7}
         penumbra={0.85}
-        intensity={2.8}
+        intensity={3.0}
         color="#f4d5a0"
         castShadow
         shadow-mapSize={[1024, 1024]}
       />
+      <directionalLight position={[-3, 0.5, 2]} intensity={0.5} color="#9fb0c4" />
+      <directionalLight position={[0, 1, -3]} intensity={0.7} color="#ffca92" />
 
       {/* The dark room floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.9, 0]} receiveShadow>
@@ -176,37 +179,40 @@ function Seal({
 
   return (
     <group ref={ref} position={[seal.x, 0, 0]}>
-      {/* The seal disc — embossed metallic feel via clearcoat */}
-      <mesh castShadow receiveShadow>
-        <cylinderGeometry args={[0.5, 0.5, 0.08, 64, 1, false]} />
+      {/* Base disc — a struck medallion FACING THE CAMERA (+Z).
+          cylinderGeometry's flat faces sit on the ±Y axis, so it's
+          rotated upright; without this the seals showed edge-on as
+          thin ellipses and the face/label never read. */}
+      <mesh castShadow receiveShadow rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.5, 0.5, 0.1, 64]} />
         <meshPhysicalMaterial
           color={seal.color}
-          roughness={0.55}
-          metalness={0.4}
-          clearcoat={0.9}
-          clearcoatRoughness={0.3}
-          anisotropy={0.6}
-          anisotropyRotation={Math.PI * 0.25}
-          sheen={0.6}
+          roughness={0.5}
+          metalness={0.3}
+          clearcoat={0.8}
+          clearcoatRoughness={0.35}
+          sheen={0.5}
           sheenColor="#f0c989"
         />
       </mesh>
-      {/* Inner ring (raised) */}
-      <mesh position={[0, 0.045, 0]}>
-        <ringGeometry args={[0.34, 0.42, 64]} />
+      {/* Raised rim — a real 3D torus proud of the face. The old flat
+          ringGeometry rendered in the wrong plane (perpendicular to
+          the disc); a torus reads as an embossed rim. */}
+      <mesh position={[0, 0, 0.055]}>
+        <torusGeometry args={[0.4, 0.028, 16, 64]} />
         <meshStandardMaterial
-          color="#f0c989"
-          roughness={0.55}
-          metalness={0.7}
-          emissive="#f0c989"
-          emissiveIntensity={0.08}
+          color="#e6c585"
+          roughness={0.38}
+          metalness={0.65}
+          emissive="#e6c585"
+          emissiveIntensity={0.07}
         />
       </mesh>
-      {/* Label etched on the face */}
+      {/* Label struck on the face — troika Text faces +Z by default,
+          sat just proud of the disc surface. */}
       <Text
-        position={[0, 0.046, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        fontSize={0.12}
+        position={[0, 0.04, 0.052]}
+        fontSize={0.11}
         color="#f5efe2"
         anchorX="center"
         anchorY="middle"
@@ -214,10 +220,10 @@ function Seal({
       >
         {seal.label}
       </Text>
-      {/* Caption under the seal */}
+      {/* Caption below the seal — teletype detail line */}
       <Text
         position={[0, -0.78, 0]}
-        fontSize={0.06}
+        fontSize={0.058}
         color="#b6b0a6"
         anchorX="center"
         anchorY="middle"
