@@ -121,10 +121,10 @@ export function Vitrine({ range }: VitrineProps = {}) {
           <meshStandardMaterial color="#3b362f" roughness={0.78} metalness={0.04} />
         </mesh>
 
-        {/* Loaf — Moon #1 specimen, scaled up to OWN the centre of the
-            composition and raised so the crust sits near eye level
-            rather than floating dwarfed in a void. */}
-        <Loaf position={[0, -0.2, 0]} scale={1.05} warmth={1.15} />
+        {/* Loaf — Moon #1 specimen. Base sits on the plinth top
+            surface (plinth centre -0.48 + half-height 0.08 = -0.40),
+            scaled to own the centre of the display frame. */}
+        <Loaf position={[0, -0.4, 0]} scale={1.05} warmth={1.15} />
 
         {/* Display frame — the "vitrine" is now a hairline museum-case
             skeleton, NOT a transmission-glass slab. Cheap glass refraction

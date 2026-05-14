@@ -202,10 +202,11 @@ function ProductGeometry({
     );
   }
 
-  // Default: a loaf, scaled up for hero
+  // Default: a loaf, scaled up for hero. Loaf base sits at y=0, so it's
+  // dropped to roughly centre it in the hero frame.
   return (
     <group ref={groupRef} scale={1.15}>
-      <Loaf position={[0, 0, 0]} scale={1.0} warmth={1.2} />
+      <Loaf position={[0, -0.4, 0]} scale={1.05} warmth={1.2} />
     </group>
   );
 }
