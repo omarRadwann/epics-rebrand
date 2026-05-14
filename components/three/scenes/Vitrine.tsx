@@ -12,7 +12,7 @@
  */
 import { useEffect, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Environment, MeshTransmissionMaterial } from "@react-three/drei";
+import { ContactShadows, Environment, MeshTransmissionMaterial } from "@react-three/drei";
 import { Bloom, EffectComposer, Noise, Vignette } from "@react-three/postprocessing";
 import { KernelSize } from "postprocessing";
 import * as THREE from "three";
@@ -147,15 +147,21 @@ export function Vitrine({ range }: VitrineProps = {}) {
       {/* Wheat-grain particle field surrounds the whole composition */}
       <WheatGrains count={profile.particles.wheatGrains} range={sceneRange} />
 
-      {/* Soft ground catch-shadow — fills the space below the plinth */}
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, -0.7, 0]}
-        receiveShadow
-      >
-        <planeGeometry args={[8, 6]} />
-        <shadowMaterial transparent opacity={0.12} />
-      </mesh>
+      {/* Contact shadow — grounds the vitrine in space. Drei renders
+          this from below into a low-res buffer, so the loaf + plinth
+          + glass cast a soft, real-feeling shadow on the floor instead
+          of the flat catch-shadow plane that was here before. This is
+          one of the cheapest, most reliable "amateur → grounded" wins
+          in R3F. Sits just below the plinth's underside (y = -0.7). */}
+      <ContactShadows
+        position={[0, -0.71, 0]}
+        scale={6}
+        resolution={256}
+        blur={2.6}
+        opacity={0.42}
+        far={2.2}
+        color="#161512"
+      />
 
       {/* ============================================================
           Postprocessing — gated by perf profile.
